@@ -1,5 +1,7 @@
 #pragma once
 
+#include <unordered_map>
+
 class Game
 {
 public:
@@ -16,15 +18,24 @@ public:
      */
     static Game* Instance();
 
+    /** Returns a (possibly new) brush for the given color
+     */
+    ID2D1Brush* GetSolidBrush(D2D1::ColorF::Enum color);
+
 private:
     // Initialize device-independent resources.
     HRESULT CreateDeviceIndependentResources();
 
-    // Initialize device-dependent resources.
+    /** (Re-)Initialize device-dependent resources. This mainly initializes the renderTarget.
+     */
     HRESULT CreateDeviceResources();
 
     // Release device-dependent resource.
     void DiscardDeviceResources();
+
+    /** Releases all brushes and clears the brush map
+     */
+    void ReleaseBrushes();
 
     // Draw content.
     HRESULT OnRender();
@@ -38,11 +49,11 @@ private:
     //The current game instance
     static Game* instance;
 
-    HWND m_hwnd;
-    ID2D1Factory* m_pDirect2dFactory;
-    ID2D1HwndRenderTarget* m_pRenderTarget;
-    ID2D1SolidColorBrush* m_pLightSlateGrayBrush;
-    ID2D1SolidColorBrush* m_pCornflowerBlueBrush;
+    HWND hWnd;
+    ID2D1Factory* direct2DFactory;
+    ID2D1HwndRenderTarget* renderTarget;
     IDWriteFactory* writeFactory; //factory, used to create text formats
     IDWriteTextFormat* fpsTextFormat; //text format for FPS counter
+
+    std::unordered_map<D2D1::ColorF::Enum, ID2D1Brush*> brushMap; //map of color -> brush
 };

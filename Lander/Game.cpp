@@ -7,11 +7,9 @@ using namespace std;
 Game* Game::instance = nullptr;
 
 Game::Game() : 
-  m_hwnd(NULL),
-  m_pDirect2dFactory(nullptr),
-  m_pRenderTarget(nullptr),
-  m_pLightSlateGrayBrush(nullptr),
-  m_pCornflowerBlueBrush(nullptr),
+  hWnd(NULL),
+  direct2DFactory(nullptr),
+  renderTarget(nullptr),
   writeFactory(nullptr),
   fpsTextFormat(nullptr) {
   
@@ -24,10 +22,8 @@ Game* Game::Instance() {
 
 Game::~Game()
 {
-  SafeRelease(&m_pDirect2dFactory);
-  SafeRelease(&m_pRenderTarget);
-  SafeRelease(&m_pLightSlateGrayBrush);
-  SafeRelease(&m_pCornflowerBlueBrush);
+  SafeRelease(&direct2DFactory);
+  DiscardDeviceResources();
   SafeRelease(&writeFactory);
   SafeRelease(&fpsTextFormat);
 
@@ -93,20 +89,20 @@ HRESULT Game::Initialize()
 
     // The factory returns the current system DPI. This is also the value it will use
     // to create its own windows.
-    m_pDirect2dFactory->GetDesktopDpi(&dpiX, &dpiY);
+    direct2DFactory->GetDesktopDpi(&dpiX, &dpiY);
 
 
     // Create the window.
-    m_hwnd = CreateWindow("Lander Game Window", "Lander Game", WS_OVERLAPPEDWINDOW,
+    hWnd = CreateWindow("Lander Game Window", "Lander Game", WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, CW_USEDEFAULT,
         static_cast<UINT>(ceil(640.f * dpiX / 96.f)),
         static_cast<UINT>(ceil(480.f * dpiY / 96.f)),
         NULL, NULL, HINST_THISCOMPONENT, this);
 
-    hr = m_hwnd ? S_OK : E_FAIL;
+    hr = hWnd ? S_OK : E_FAIL;
     if (SUCCEEDED(hr)) {
-      ShowWindow(m_hwnd, SW_SHOWNORMAL);
-      UpdateWindow(m_hwnd);
+      ShowWindow(hWnd, SW_SHOWNORMAL);
+      UpdateWindow(hWnd);
     }
   }
 
@@ -115,62 +111,78 @@ HRESULT Game::Initialize()
 
 
 HRESULT Game::CreateDeviceIndependentResources() {
-    // Create a Direct2D factory.
-    auto result = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &m_pDirect2dFactory);
+  // Create a Direct2D factory.
+  auto result = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &direct2DFactory);
     
-    // Initialization for text usage
-    if (SUCCEEDED(result)) {
-      result = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**>(&writeFactory));    
-    }
+  // Initialization for text usage
+  if (SUCCEEDED(result)) {
+    result = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**>(&writeFactory));    
+  }
 
-    if (SUCCEEDED(result)) {
-      result = writeFactory->CreateTextFormat(
-        L"Consolas",
-        NULL,
-        DWRITE_FONT_WEIGHT_REGULAR,
-        DWRITE_FONT_STYLE_NORMAL,
-        DWRITE_FONT_STRETCH_NORMAL,
-        72.0f,
-        L"en-us",
-        &fpsTextFormat);
-    }
+  if (SUCCEEDED(result)) {
+    result = writeFactory->CreateTextFormat(
+      L"Consolas",
+      NULL,
+      DWRITE_FONT_WEIGHT_REGULAR,
+      DWRITE_FONT_STYLE_NORMAL,
+      DWRITE_FONT_STRETCH_NORMAL,
+      72.0f,
+      L"en-us",
+      &fpsTextFormat);
+  }
     
-    return result;
+  return result;
 }
 
 
 HRESULT Game::CreateDeviceResources() {
-  if (m_pRenderTarget)
+  if (renderTarget)
     return S_OK;
 
 
   RECT rc;
-  GetClientRect(m_hwnd, &rc);
+  GetClientRect(hWnd, &rc);
   D2D1_SIZE_U size = D2D1::SizeU(rc.right - rc.left, rc.bottom - rc.top);
 
   // Create a Direct2D render target.
-  HRESULT hr = m_pDirect2dFactory->CreateHwndRenderTarget(D2D1::RenderTargetProperties(), D2D1::HwndRenderTargetProperties(m_hwnd, size), &m_pRenderTarget);
+  HRESULT hr = direct2DFactory->CreateHwndRenderTarget(D2D1::RenderTargetProperties(), D2D1::HwndRenderTargetProperties(hWnd, size), &renderTarget);
 
+  ReleaseBrushes();
   
-  if (SUCCEEDED(hr)) {
-    // Create a gray brush.
-    hr = m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::LightSlateGray), &m_pLightSlateGrayBrush);
-  }
-
-  if (SUCCEEDED(hr)) {
-    // Create a blue brush.
-    hr = m_pRenderTarget->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::CornflowerBlue), &m_pCornflowerBlueBrush);
-  }
-
   return hr;
+}
+
+ID2D1Brush* Game::GetSolidBrush(D2D1::ColorF::Enum color) {
+  auto pos = brushMap.find(color);
+  if (pos != brushMap.end())
+    return pos->second;
+
+  //Brush not yet created, we have to create it
+  if (!renderTarget)
+    throw std::exception("Illegal use of GetSolidBrush() with uninitialized renderTarget");
+
+  ID2D1SolidColorBrush* brush = nullptr;
+  if (SUCCEEDED(renderTarget->CreateSolidColorBrush(D2D1::ColorF(color), &brush))) {
+    brushMap[color] = brush;
+    return brush;
+  }
+
+  throw std::exception("Brush creation failed!");
+}
+
+void Game::ReleaseBrushes() {
+  for(auto& entry : brushMap) {
+    entry.second->Release();
+  }
+
+  brushMap.clear();
 }
 
 
 void Game::DiscardDeviceResources()
 {
-    SafeRelease(&m_pRenderTarget);
-    SafeRelease(&m_pLightSlateGrayBrush);
-    SafeRelease(&m_pCornflowerBlueBrush);
+  ReleaseBrushes();  
+  SafeRelease(&renderTarget);
 }
 
 
@@ -224,6 +236,7 @@ LRESULT CALLBACK Game::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lP
 
 HRESULT Game::OnRender()
 {
+  using namespace D2D1;
   static chrono::steady_clock::time_point lastUpdate = chrono::steady_clock::now();
   static float avgFps = 0;
 
@@ -239,35 +252,25 @@ HRESULT Game::OnRender()
     avgFps = (0.9*avgFps) + (0.1*fps); //Take the average of ten frames
     lastUpdate = now;
 
-    m_pRenderTarget->BeginDraw();  //Initiate drawing
+    renderTarget->BeginDraw();  //Initiate drawing
     
-    m_pRenderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-    m_pRenderTarget->Clear(D2D1::ColorF(D2D1::ColorF::White)); //Set background color
-    D2D1_SIZE_F rtSize = m_pRenderTarget->GetSize();
+    renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
+    renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black)); //Set background color
+    D2D1_SIZE_F rtSize = renderTarget->GetSize();
 
     // Draw a grid background.
     int width = static_cast<int>(rtSize.width);
     int height = static_cast<int>(rtSize.height);
 
-    for (int x = 0; x < width; x += 10)
-    {
-        m_pRenderTarget->DrawLine(
-            D2D1::Point2F(static_cast<FLOAT>(x), 0.0f),
-            D2D1::Point2F(static_cast<FLOAT>(x), rtSize.height),
-            m_pLightSlateGrayBrush,
-            0.5f
-            );
+
+
+    for(int x = 0; x < width; x += 1) {
+      const float amplitude = height/5;
+      const float horizScale = 0.03;
+      renderTarget->DrawLine(Point2F(x, rtSize.height/2 + sin(x*horizScale)*amplitude), Point2F(x, rtSize.height), GetSolidBrush(ColorF::ForestGreen));
     }
 
-    for (int y = 0; y < height; y += 10)
-    {
-        m_pRenderTarget->DrawLine(
-            D2D1::Point2F(0.0f, static_cast<FLOAT>(y)),
-            D2D1::Point2F(rtSize.width, static_cast<FLOAT>(y)),
-            m_pLightSlateGrayBrush,
-            0.5f
-            );
-    }
+
 
     // Draw two rectangles.
     D2D1_RECT_F rectangle1 = D2D1::RectF(
@@ -285,20 +288,20 @@ HRESULT Game::OnRender()
         );
 
     // Draw a filled rectangle.
-    m_pRenderTarget->FillRectangle(&rectangle1,m_pLightSlateGrayBrush);
+    //renderTarget->FillRectangle(&rectangle1,m_pLightSlateGrayBrush);
 
     // Draw the outline of a rectangle.
-    m_pRenderTarget->DrawRectangle(&rectangle2, m_pCornflowerBlueBrush);
+    renderTarget->DrawRectangle(&rectangle2, GetSolidBrush(ColorF::CornflowerBlue));
 
     
     //Draw FPS counter
     std::wstring fpsStr(L"FPS: ");
     fpsStr += to_wstring(static_cast<int>(avgFps));
-    m_pRenderTarget->DrawText(fpsStr.c_str(), fpsStr.length(), fpsTextFormat, D2D1::RectF(0, 0, rtSize.width, rtSize.height), m_pCornflowerBlueBrush);
+    renderTarget->DrawText(fpsStr.c_str(), fpsStr.length(), fpsTextFormat, D2D1::RectF(0, 0, rtSize.width, rtSize.height), GetSolidBrush(ColorF::CornflowerBlue));
 
 
     
-    res = m_pRenderTarget->EndDraw();
+    res = renderTarget->EndDraw();
     if (res == D2DERR_RECREATE_TARGET) {
       res = S_OK;
       DiscardDeviceResources();    
@@ -312,11 +315,11 @@ HRESULT Game::OnRender()
 
 void Game::OnResize(UINT width, UINT height)
 {
-    if (m_pRenderTarget)
+    if (renderTarget)
     {
         // Note: This method can fail, but it's okay to ignore the
         // error here, because the error will be returned again
         // the next time EndDraw is called.
-        m_pRenderTarget->Resize(D2D1::SizeU(width, height));
+        renderTarget->Resize(D2D1::SizeU(width, height));
     }
 }

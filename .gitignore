@@ -2,3 +2,5 @@
 *.v12.suo
 **/Debug
 **/Release
+*.opensdf
+/ipch
