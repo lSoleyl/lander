@@ -145,11 +145,7 @@ HRESULT Game::CreateDeviceResources() {
   D2D1_SIZE_U size = D2D1::SizeU(rc.right - rc.left, rc.bottom - rc.top);
 
   // Create a Direct2D render target.
-  HRESULT hr = direct2DFactory->CreateHwndRenderTarget(D2D1::RenderTargetProperties(), D2D1::HwndRenderTargetProperties(hWnd, size), &renderTarget);
-
-  ReleaseBrushes();
-  
-  return hr;
+  return direct2DFactory->CreateHwndRenderTarget(D2D1::RenderTargetProperties(), D2D1::HwndRenderTargetProperties(hWnd, size), &renderTarget);
 }
 
 ID2D1Brush* Game::GetSolidBrush(D2D1::ColorF::Enum color) {
