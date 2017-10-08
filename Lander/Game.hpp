@@ -8,6 +8,10 @@ public:
     Game();
     ~Game();
 
+    // This will be the size of the game window
+    static const int WINDOW_WIDTH = 1024;
+    static const int WINDOW_HEIGHT = 768;
+
     // Register the window class and call methods for instantiating drawing resources
     HRESULT Initialize();
 

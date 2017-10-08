@@ -95,8 +95,8 @@ HRESULT Game::Initialize()
     // Create the window.
     hWnd = CreateWindow("Lander Game Window", "Lander Game", WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, CW_USEDEFAULT,
-        static_cast<UINT>(ceil(640.f * dpiX / 96.f)),
-        static_cast<UINT>(ceil(480.f * dpiY / 96.f)),
+        static_cast<UINT>(ceil(WINDOW_WIDTH * dpiX / 96.f)),
+        static_cast<UINT>(ceil(WINDOW_HEIGHT * dpiY / 96.f)),
         NULL, NULL, HINST_THISCOMPONENT, this);
 
     hr = hWnd ? S_OK : E_FAIL;
@@ -187,7 +187,7 @@ void Game::DiscardDeviceResources()
 
 
 
-LRESULT CALLBACK Game::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK Game::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
   LRESULT result = 0;
 
@@ -205,7 +205,7 @@ LRESULT CALLBACK Game::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lP
       break;
 
     case WM_DISPLAYCHANGE:
-      InvalidateRect(hwnd, NULL, FALSE);
+      InvalidateRect(hWnd, NULL, FALSE);
       result = 0;
       wasHandled = true;
       break;
@@ -213,10 +213,37 @@ LRESULT CALLBACK Game::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lP
     case WM_PAINT:
       // When the game has to redraw
       game->OnRender();
-      ValidateRect(hwnd, NULL);
+      ValidateRect(hWnd, NULL);
       result = 0;
       wasHandled = true;
       break;
+
+    // prevent size change by grabbing the border by returning a non resizable border
+    case WM_NCHITTEST:
+    {
+      auto result = DefWindowProc(hWnd, message, wParam, lParam);
+      switch (result) {
+      case HTSIZE: 
+      case HTBOTTOM:
+      case HTBOTTOMLEFT:
+      case HTBOTTOMRIGHT:
+      case HTLEFT:
+      case HTRIGHT:
+        return HTBORDER;
+      }
+
+      return result;
+    }
+
+    // prevent size change when maximizing by returning the window's height/width as max size
+    case WM_GETMINMAXINFO:
+    {
+      auto minmax = reinterpret_cast<MINMAXINFO*>(lParam);
+      minmax->ptMaxSize.x = WINDOW_WIDTH;
+      minmax->ptMaxSize.y = WINDOW_HEIGHT;
+      return 0;    
+    }
+
 
     case WM_DESTROY:
       PostQuitMessage(0);
@@ -227,7 +254,7 @@ LRESULT CALLBACK Game::WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lP
   }
 
   if (!wasHandled) {
-    result = DefWindowProc(hwnd, message, wParam, lParam);
+    result = DefWindowProc(hWnd, message, wParam, lParam);
   }
     
   return result;
