@@ -287,21 +287,13 @@ HRESULT Game::OnRender()
 
 
 
-    for(int x = 0; x < width; x += 1) {
+    for(int x = 0; x < width; ++x) {
       const float amplitude = height/5;
       const float horizScale = 0.03;
       renderTarget->DrawLine(Point2F(x, rtSize.height/2 + sin(x*horizScale)*amplitude), Point2F(x, rtSize.height), GetSolidBrush(ColorF::ForestGreen));
     }
 
 
-
-    // Draw two rectangles.
-    D2D1_RECT_F rectangle1 = D2D1::RectF(
-        rtSize.width/2 - 50.0f,
-        rtSize.height/2 - 50.0f,
-        rtSize.width/2 + 50.0f,
-        rtSize.height/2 + 50.0f
-        );
 
     D2D1_RECT_F rectangle2 = D2D1::RectF(
         rtSize.width/2 - 100.0f,
@@ -314,12 +306,14 @@ HRESULT Game::OnRender()
     //renderTarget->FillRectangle(&rectangle1,m_pLightSlateGrayBrush);
 
     // Draw the outline of a rectangle.
+    renderTarget->SetTransform(D2D1::Matrix3x2F::Rotation(45, Point2F(rtSize.width/2, rtSize.height/2))); //Rotate following rectangle by 45 degrees
     renderTarget->DrawRectangle(&rectangle2, GetSolidBrush(ColorF::CornflowerBlue));
 
     
     //Draw FPS counter
     std::wstring fpsStr(L"FPS: ");
     fpsStr += to_wstring(static_cast<int>(avgFps));
+    renderTarget->SetTransform(D2D1::Matrix3x2F::Identity()); //Reset transform (rotation)
     renderTarget->DrawText(fpsStr.c_str(), fpsStr.length(), fpsTextFormat, D2D1::RectF(0, 0, rtSize.width, rtSize.height), GetSolidBrush(ColorF::CornflowerBlue));
 
 
