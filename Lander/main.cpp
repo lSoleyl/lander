@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Game.hpp"
+#include "FPSCounter.hpp"
 
 
 /** main() for windows applications
@@ -15,6 +16,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR /*cmdline*/, int) {
     if (SUCCEEDED(CoInitialize(NULL))) {
         {
             Game app;
+            
+            //Add Game/View objects
+            FPSCounter fpsCounter;
+            app.AddObject(fpsCounter);
+
             if (SUCCEEDED(app.Initialize())) {
                 app.RunMessageLoop();
             }

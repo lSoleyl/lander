@@ -68,10 +68,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="FPSCounter.hpp" />
     <ClInclude Include="Game.hpp" />
+    <ClInclude Include="RenderInterface.hpp" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="ViewObject.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="FPSCounter.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="stdafx.cpp">

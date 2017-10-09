@@ -1,13 +1,12 @@
 #pragma once
 
-#include <unordered_map>
-
 class Game
 {
 public:
     Game();
     ~Game();
 
+    //TODO Create a larger window to have enough space for complex levels
     // This will be the size of the game window
     static const int WINDOW_WIDTH = 1024;
     static const int WINDOW_HEIGHT = 768;
@@ -22,10 +21,17 @@ public:
      */
     static Game* Instance();
 
+    /** Adds a view object to the game's render queue. The view objects's Initialize() gets called
+     *  after the game initializes. If the object is added after the game's initialization, Initialize() is called immediately.
+     *
+     * @param viewObject the viewObject to add. The Game doesn't take ownership of this object and the object has to make sure, it 
+     *                   exists at least until Deinitialize() gets called.
+     */
+    void AddObject(ViewObject& viewObject);
+
     /** Returns a (possibly new) brush for the given color
      */
     ID2D1Brush* GetSolidBrush(D2D1::ColorF::Enum color);
-
 private:
     // Initialize device-independent resources.
     HRESULT CreateDeviceIndependentResources();
@@ -56,8 +62,9 @@ private:
     HWND hWnd;
     ID2D1Factory* direct2DFactory;
     ID2D1HwndRenderTarget* renderTarget;
-    IDWriteFactory* writeFactory; //factory, used to create text formats
-    IDWriteTextFormat* fpsTextFormat; //text format for FPS counter
+    bool initialized;
 
     std::unordered_map<D2D1::ColorF::Enum, ID2D1Brush*> brushMap; //map of color -> brush
+
+    std::deque<ViewObject*> renderQueue; //List of objects, which get rendered on each draw
 };

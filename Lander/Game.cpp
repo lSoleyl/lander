@@ -10,8 +10,7 @@ Game::Game() :
   hWnd(NULL),
   direct2DFactory(nullptr),
   renderTarget(nullptr),
-  writeFactory(nullptr),
-  fpsTextFormat(nullptr) {
+  initialized(false) {
   
   Game::instance = this;
 }
@@ -22,10 +21,14 @@ Game* Game::Instance() {
 
 Game::~Game()
 {
+  //Deinitialize all view objects
+  for (auto viewObject : renderQueue) {
+    viewObject->Deinitialize();
+  }
+  renderQueue.clear();
+
   SafeRelease(&direct2DFactory);
   DiscardDeviceResources();
-  SafeRelease(&writeFactory);
-  SafeRelease(&fpsTextFormat);
 
   Game::instance = nullptr;
 }
@@ -106,30 +109,41 @@ HRESULT Game::Initialize()
     }
   }
 
+  //Initialize all already registered view objects
+  if (SUCCEEDED(hr)) {
+    for (auto viewObject : renderQueue) {
+      viewObject->Initialize();
+    }
+  }
+   
+  initialized = true;
+
   return hr;
+}
+
+void Game::AddObject(ViewObject& viewObject) {
+  if (renderQueue.empty()) {
+    renderQueue.push_back(&viewObject);
+  } else { //!empty
+    if (viewObject.RenderPriority() <= renderQueue.back()->RenderPriority()) {
+      renderQueue.push_back(&viewObject);
+    } else if (viewObject.RenderPriority() >= renderQueue.front()->RenderPriority()) {
+      renderQueue.push_front(&viewObject);
+    } else { //insertion + sort
+      renderQueue.push_back(&viewObject);
+      std::stable_sort(renderQueue.begin(), renderQueue.end(), [](ViewObject* v1, ViewObject* v2) { return v1->RenderPriority() > v2->RenderPriority(); });
+    }
+  }
+
+  // If initialization already took place, initialize the object upon insertion
+  if (initialized)
+    viewObject.Initialize();
 }
 
 
 HRESULT Game::CreateDeviceIndependentResources() {
   // Create a Direct2D factory.
   auto result = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &direct2DFactory);
-    
-  // Initialization for text usage
-  if (SUCCEEDED(result)) {
-    result = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**>(&writeFactory));    
-  }
-
-  if (SUCCEEDED(result)) {
-    result = writeFactory->CreateTextFormat(
-      L"Consolas",
-      NULL,
-      DWRITE_FONT_WEIGHT_REGULAR,
-      DWRITE_FONT_STYLE_NORMAL,
-      DWRITE_FONT_STRETCH_NORMAL,
-      72.0f,
-      L"en-us",
-      &fpsTextFormat);
-  }
     
   return result;
 }
@@ -167,7 +181,7 @@ ID2D1Brush* Game::GetSolidBrush(D2D1::ColorF::Enum color) {
 }
 
 void Game::ReleaseBrushes() {
-  for(auto& entry : brushMap) {
+  for (auto& entry : brushMap) {
     entry.second->Release();
   }
 
@@ -256,30 +270,62 @@ LRESULT CALLBACK Game::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
   return result;
 }
 
+class Renderer : public RenderInterface {
+public:
+  Renderer(Game& game, ID2D1HwndRenderTarget** ppRenderTarget) : game(game), ppRenderTarget(ppRenderTarget) {}
+
+  virtual ID2D1RenderTarget& RenderTarget() { return **ppRenderTarget; }
+
+  D2D1_SIZE_F Size() { return RenderTarget().GetSize(); }
+
+
+private: 
+  Game& game;
+  ID2D1HwndRenderTarget** ppRenderTarget;
+};
+
 
 HRESULT Game::OnRender()
 {
   using namespace D2D1;
   static chrono::steady_clock::time_point lastUpdate = chrono::steady_clock::now();
-  static float avgFps = 0;
-
+  static Renderer renderInterface(*this, &renderTarget);
 
   //Create device resources if not already done
   HRESULT res = CreateDeviceResources();
   if (SUCCEEDED(res)) {
-
-    //Collect time for FPS counter
+    //Get the time since the last frame
     auto now = chrono::steady_clock::now();
-    chrono::duration<double> secondsPassed = now-lastUpdate;
-    long fps = static_cast<long>(1.0 / secondsPassed.count());
-    avgFps = (0.9*avgFps) + (0.1*fps); //Take the average of ten frames
+    auto secondsPassed = chrono::duration<double>(now-lastUpdate).count();
     lastUpdate = now;
 
+
     renderTarget->BeginDraw();  //Initiate drawing
-    
     renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
     renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black)); //Set background color
     D2D1_SIZE_F rtSize = renderTarget->GetSize();
+
+
+    //Render each object of the render queue
+    for (auto viewObject : renderQueue) {
+      //First draw bounding box (Only a debugging measure)
+      //TODO make this toggleable
+      auto pos = viewObject->Pos();
+      auto size = viewObject->Size();
+      renderTarget->DrawRectangle(D2D1::RectF(pos.x, pos.y, pos.x + size.width, pos.y + size.height), GetSolidBrush(ColorF::Cyan));
+
+      //Now draw the actual object
+      viewObject->Draw(renderInterface, secondsPassed);
+    }
+
+
+    
+
+
+    
+    
+    //TODO factor out this process into own view object
+
 
     // Draw a grid background.
     int width = static_cast<int>(rtSize.width);
@@ -287,7 +333,7 @@ HRESULT Game::OnRender()
 
 
 
-    for(int x = 0; x < width; ++x) {
+    for (int x = 0; x < width; ++x) {
       const float amplitude = height/5;
       const float horizScale = 0.03;
       renderTarget->DrawLine(Point2F(x, rtSize.height/2 + sin(x*horizScale)*amplitude), Point2F(x, rtSize.height), GetSolidBrush(ColorF::ForestGreen));
@@ -302,21 +348,13 @@ HRESULT Game::OnRender()
         rtSize.height/2 + 100.0f
         );
 
-    // Draw a filled rectangle.
-    //renderTarget->FillRectangle(&rectangle1,m_pLightSlateGrayBrush);
 
     // Draw the outline of a rectangle.
     renderTarget->SetTransform(D2D1::Matrix3x2F::Rotation(45, Point2F(rtSize.width/2, rtSize.height/2))); //Rotate following rectangle by 45 degrees
     renderTarget->DrawRectangle(&rectangle2, GetSolidBrush(ColorF::CornflowerBlue));
 
-    
-    //Draw FPS counter
-    std::wstring fpsStr(L"FPS: ");
-    fpsStr += to_wstring(static_cast<int>(avgFps));
     renderTarget->SetTransform(D2D1::Matrix3x2F::Identity()); //Reset transform (rotation)
-    renderTarget->DrawText(fpsStr.c_str(), fpsStr.length(), fpsTextFormat, D2D1::RectF(0, 0, rtSize.width, rtSize.height), GetSolidBrush(ColorF::CornflowerBlue));
-
-
+    
     
     res = renderTarget->EndDraw();
     if (res == D2DERR_RECREATE_TARGET) {
