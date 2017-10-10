@@ -68,3 +68,8 @@ float Vector::Length() const {
 Vector operator*(float factor, const Vector& v) {
   return v * factor;
 }
+
+
+Vector Vector::FromSize(const D2D1_SIZE_F& size) {
+  return Vector(size.width, size.height); //TODO what about the vertical direction of the viewport? Is this relevant?
+}

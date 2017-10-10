@@ -276,7 +276,7 @@ public:
 
   virtual ID2D1RenderTarget& RenderTarget() { return **ppRenderTarget; }
 
-  D2D1_SIZE_F Size() { return RenderTarget().GetSize(); }
+  Vector Size() { return Vector::FromSize(RenderTarget().GetSize()); }
 
 
 private: 

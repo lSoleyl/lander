@@ -29,6 +29,10 @@ public:
 
   float x,y;
 
+
+  //Conversions from Direct2D types
+  static Vector FromSize(const D2D1_SIZE_F& size);
+
   //Constant vectors
   static const Vector Zero;
   static const Vector Up;

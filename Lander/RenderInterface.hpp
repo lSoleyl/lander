@@ -12,5 +12,5 @@ public:
 
   /** Returns the size of the render target.
    */
-  virtual D2D1_SIZE_F Size() = 0; //TODO use own size/point classes
+  virtual Vector Size() = 0;
 };
