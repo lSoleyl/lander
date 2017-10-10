@@ -24,6 +24,10 @@
 #include <dwrite.h>
 #include <wincodec.h>
 
+//Utility classes
+#include "Vector.hpp"
+
+
 #include "RenderInterface.hpp"
 #include "ViewObject.hpp"
 
