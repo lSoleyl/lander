@@ -6,12 +6,7 @@ using namespace std;
 
 Game* Game::instance = nullptr;
 
-Game::Game() : 
-  hWnd(NULL),
-  direct2DFactory(nullptr),
-  renderTarget(nullptr),
-  initialized(false) {
-  
+Game::Game() : hWnd(NULL), initialized(false) {
   Game::instance = this;
 }
 
@@ -27,9 +22,7 @@ Game::~Game()
   }
   renderQueue.clear();
 
-  SafeRelease(&direct2DFactory);
   DiscardDeviceResources();
-
   Game::instance = nullptr;
 }
 
@@ -181,10 +174,6 @@ ID2D1Brush* Game::GetSolidBrush(D2D1::ColorF::Enum color) {
 }
 
 void Game::ReleaseBrushes() {
-  for (auto& entry : brushMap) {
-    entry.second->Release();
-  }
-
   brushMap.clear();
 }
 
@@ -192,7 +181,7 @@ void Game::ReleaseBrushes() {
 void Game::DiscardDeviceResources()
 {
   ReleaseBrushes();  
-  SafeRelease(&renderTarget);
+  renderTarget.reset();
 }
 
 

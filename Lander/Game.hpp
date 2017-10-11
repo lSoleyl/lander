@@ -60,11 +60,11 @@ private:
     static Game* instance;
 
     HWND hWnd;
-    ID2D1Factory* direct2DFactory;
-    ID2D1HwndRenderTarget* renderTarget;
+    Resource<ID2D1Factory> direct2DFactory;
+    Resource<ID2D1HwndRenderTarget> renderTarget;
     bool initialized;
 
-    std::unordered_map<D2D1::ColorF::Enum, ID2D1Brush*> brushMap; //map of color -> brush
+    std::unordered_map<D2D1::ColorF::Enum, Resource<ID2D1Brush>> brushMap; //map of color -> brush
 
     std::deque<ViewObject*> renderQueue; //List of objects, which get rendered on each draw
 };

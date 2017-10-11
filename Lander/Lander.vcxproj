@@ -71,6 +71,7 @@
     <ClInclude Include="FPSCounter.hpp" />
     <ClInclude Include="Game.hpp" />
     <ClInclude Include="RenderInterface.hpp" />
+    <ClInclude Include="Resource.hpp" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Vector.hpp" />
     <ClInclude Include="ViewObject.hpp" />

@@ -1,11 +1,7 @@
 #include "stdafx.h"
 #include "FPSCounter.hpp"
 
-FPSCounter::FPSCounter() : writeFactory(nullptr), textFormat(nullptr), avgFps(0) {}
-
-FPSCounter::~FPSCounter() {
-  Deinitialize();
-}
+FPSCounter::FPSCounter() : avgFps(0) {}
 
 void FPSCounter::Initialize() {
   // Initialization for text usage (direct write)
@@ -41,6 +37,6 @@ void FPSCounter::Draw(RenderInterface& renderInterface, double secondsPassed) {
 }
 
 void FPSCounter::Deinitialize() {
-  SafeRelease(&writeFactory);
-  SafeRelease(&textFormat);
+  textFormat.reset();
+  writeFactory.reset();  
 }

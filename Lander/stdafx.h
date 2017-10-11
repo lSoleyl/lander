@@ -25,22 +25,12 @@
 #include <wincodec.h>
 
 //Utility classes
+#include "Resource.hpp"
 #include "Vector.hpp"
 
 
 #include "RenderInterface.hpp"
 #include "ViewObject.hpp"
-
-/** Helper function for correctly releasing COM interfaces
- */
-template<class Interface>
-inline void SafeRelease(Interface **ppInterfaceToRelease)
-{
-    if (*ppInterfaceToRelease != nullptr) {
-        (*ppInterfaceToRelease)->Release();
-        (*ppInterfaceToRelease) = nullptr;
-    }
-}
 
 #ifndef HINST_THISCOMPONENT
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;

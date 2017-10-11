@@ -3,7 +3,6 @@
 class FPSCounter : public ViewObject {
 public:
   FPSCounter();
-  ~FPSCounter();
 
   /** Creates the writeFactory and the textFormat
    */
@@ -19,7 +18,7 @@ public:
    */
   virtual void Deinitialize() override;
 private:
-  IDWriteFactory* writeFactory;   //factory, used to create text formats
-  IDWriteTextFormat* textFormat;  //text format used to draw the counter
+  Resource<IDWriteFactory> writeFactory;   //factory, used to create text formats
+  Resource<IDWriteTextFormat> textFormat;  //text format used to draw the counter
   float avgFps;
 };
