@@ -359,33 +359,6 @@ HRESULT Game::OnRender()
       // Now draw the actual object
       viewObject->Draw(*renderSurface, secondsPassed);
     }
-
-
-    
-    // Restore transform
-    renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-    
-    
-    //TODO factor out this process into own view object
-
-
-
-
-
-
-    D2D1_RECT_F rectangle2 = D2D1::RectF(
-        rtSize.width/2 - 100.0f,
-        rtSize.height/2 - 100.0f,
-        rtSize.width/2 + 100.0f,
-        rtSize.height/2 + 100.0f
-        );
-
-
-    // Draw the outline of a rectangle.
-    renderTarget->SetTransform(D2D1::Matrix3x2F::Rotation(45, Point2F(rtSize.width/2, rtSize.height/2))); //Rotate following rectangle by 45 degrees
-    renderTarget->DrawRectangle(&rectangle2, GetSolidBrush(Color::CornflowerBlue));
-
-    renderTarget->SetTransform(D2D1::Matrix3x2F::Identity()); //Reset transform (rotation)
     
     
     res = renderTarget->EndDraw();
