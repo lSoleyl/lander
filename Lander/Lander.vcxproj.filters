@@ -39,6 +39,9 @@
     <ClInclude Include="Resource.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="COMError.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

@@ -2,6 +2,7 @@
 #include "Game.hpp"
 #include "FPSCounter.hpp"
 
+using namespace Lander;
 
 /** main() for windows applications
  */

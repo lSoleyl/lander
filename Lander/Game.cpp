@@ -3,10 +3,11 @@
 #include <chrono>
 
 using namespace std;
+namespace Lander {
 
 Game* Game::instance = nullptr;
 
-Game::Game() : hWnd(NULL), initialized(false) {
+Game::Game() : hWnd(NULL), initialized(false), renderSurface(nullptr) {
   Game::instance = this;
 }
 
@@ -23,8 +24,68 @@ Game::~Game()
   renderQueue.clear();
 
   DiscardDeviceResources();
+  
+  delete renderSurface;
   Game::instance = nullptr;
 }
+
+
+/** Local implementation of the RenderInterface for this game
+ */
+class RenderSurface : public RenderInterface {
+public:
+  RenderSurface(Game& game, ID2D1HwndRenderTarget** ppRenderTarget) : game(game), ppRenderTarget(ppRenderTarget) {}
+
+  virtual ID2D1RenderTarget& RenderTarget() override { return **ppRenderTarget; }
+
+  virtual Lander::Size Size() override { return RenderTarget().GetSize(); }
+
+  
+  virtual TextFormat CreateTextFormat(const wchar_t* fontName, float fontSize) override {   
+    for(size_t i = 0; i < textFormats.size(); ++i)
+      if (textFormats[i].fontName == fontName && textFormats[i].fontSize == fontSize)
+        return static_cast<TextFormat>(i+1);
+
+
+    //if not found
+    IDWriteTextFormat* textFormat = nullptr;
+    auto result = game.writeFactory->CreateTextFormat(fontName, nullptr, DWRITE_FONT_WEIGHT_REGULAR, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, fontSize, L"en-us", &textFormat);
+    HandleCOMError(result, "TextFormat creation");
+    
+    textFormats.push_back(FONT_ENTRY());
+    textFormats.back() = FONT_ENTRY(fontName, fontSize, textFormat);
+    return static_cast<TextFormat>(textFormats.size());
+  }
+
+  virtual void DrawText(const std::wstring& text, TextFormat format, Rectangle rectangle, Color color) override {
+    assert(format > 0 && format <= textFormats.size()); //Ensure the text format is valid
+    RenderTarget().DrawText(text.c_str(), static_cast<UINT32>(text.length()), textFormats[format-1].textFormat, rectangle, game.GetSolidBrush(color));
+  }
+
+private: 
+  struct FONT_ENTRY { 
+    FONT_ENTRY() {}
+    FONT_ENTRY(const wchar_t* fontName, float fontSize, IDWriteTextFormat* format): fontName(fontName), fontSize(fontSize), textFormat(format) {}
+    FONT_ENTRY(FONT_ENTRY&& other) : fontName(std::move(fontName)), fontSize(fontSize), textFormat(std::move(textFormat)) {}
+
+    FONT_ENTRY& operator=(FONT_ENTRY&& other) {
+      fontSize = other.fontSize;
+      fontName.swap(other.fontName);      
+      textFormat = std::move(other.textFormat);
+      return *this;
+    }
+
+
+    std::wstring fontName; 
+    float fontSize; 
+    Resource<IDWriteTextFormat> textFormat; 
+  };
+
+  Game& game;
+  ID2D1HwndRenderTarget** ppRenderTarget;
+  std::vector<FONT_ENTRY> textFormats;
+};
+
 
 void Game::RunMessageLoop()
 {
@@ -62,6 +123,7 @@ HRESULT Game::Initialize()
   // Initialize device-indpendent resources, such
   // as the Direct2D factory.
   HRESULT hr = CreateDeviceIndependentResources();
+  renderSurface = new RenderSurface(*this,&renderTarget);
 
   if (SUCCEEDED(hr)) {
     // Register the window class.
@@ -102,7 +164,7 @@ HRESULT Game::Initialize()
     }
   }
 
-  //Initialize all already registered view objects
+  //Initialize all already registered view objects and create the RenderSurface
   if (SUCCEEDED(hr)) {
     for (auto viewObject : renderQueue) {
       viewObject->Initialize();
@@ -137,6 +199,9 @@ void Game::AddObject(ViewObject& viewObject) {
 HRESULT Game::CreateDeviceIndependentResources() {
   // Create a Direct2D factory.
   auto result = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &direct2DFactory);
+
+  if (SUCCEEDED(result))
+    result = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**>(&writeFactory));  
     
   return result;
 }
@@ -165,12 +230,11 @@ ID2D1Brush* Game::GetSolidBrush(D2D1::ColorF::Enum color) {
     throw std::exception("Illegal use of GetSolidBrush() with uninitialized renderTarget");
 
   ID2D1SolidColorBrush* brush = nullptr;
-  if (SUCCEEDED(renderTarget->CreateSolidColorBrush(D2D1::ColorF(color), &brush))) {
-    brushMap[color] = brush;
-    return brush;
-  }
-
-  throw std::exception("Brush creation failed!");
+  auto result = renderTarget->CreateSolidColorBrush(D2D1::ColorF(color), &brush);
+  HandleCOMError(result, "Brush creation");
+  
+  brushMap[color] = brush;
+  return brush;
 }
 
 void Game::ReleaseBrushes() {
@@ -210,7 +274,6 @@ LRESULT CALLBACK Game::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
       break;
 
     case WM_PAINT:
-      // When the game has to redraw
       game->OnRender();
       ValidateRect(hWnd, NULL);
       result = 0;
@@ -228,6 +291,7 @@ LRESULT CALLBACK Game::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
       case HTBOTTOMRIGHT:
       case HTLEFT:
       case HTRIGHT:
+      case HTTOP:
         return HTBORDER;
       }
 
@@ -259,26 +323,10 @@ LRESULT CALLBACK Game::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
   return result;
 }
 
-class Renderer : public RenderInterface {
-public:
-  Renderer(Game& game, ID2D1HwndRenderTarget** ppRenderTarget) : game(game), ppRenderTarget(ppRenderTarget) {}
-
-  virtual ID2D1RenderTarget& RenderTarget() { return **ppRenderTarget; }
-
-  Vector Size() { return Vector::FromSize(RenderTarget().GetSize()); }
-
-
-private: 
-  Game& game;
-  ID2D1HwndRenderTarget** ppRenderTarget;
-};
-
-
 HRESULT Game::OnRender()
 {
   using namespace D2D1;
   static chrono::steady_clock::time_point lastUpdate = chrono::steady_clock::now();
-  static Renderer renderInterface(*this, &renderTarget);
 
   //Create device resources if not already done
   HRESULT res = CreateDeviceResources();
@@ -287,6 +335,10 @@ HRESULT Game::OnRender()
     auto now = chrono::steady_clock::now();
     auto secondsPassed = chrono::duration<double>(now-lastUpdate).count();
     lastUpdate = now;
+
+    //Give objects time to update positions
+    for (auto viewObject : renderQueue) 
+      viewObject->Update(secondsPassed);
 
 
     renderTarget->BeginDraw();  //Initiate drawing
@@ -298,13 +350,11 @@ HRESULT Game::OnRender()
     //Render each object of the render queue
     for (auto viewObject : renderQueue) {
       //First draw bounding box (Only a debugging measure)
-      //TODO make this toggleable
-      auto pos = viewObject->Pos();
-      auto size = viewObject->Size();
-      renderTarget->DrawRectangle(D2D1::RectF(pos.x, pos.y, pos.x + size.width, pos.y + size.height), GetSolidBrush(ColorF::Cyan));
+      if (viewObject->DrawBoundingBox())
+        renderTarget->DrawRectangle(Rectangle(viewObject->pos,viewObject->size),GetSolidBrush(Color::Cyan),1.2);
 
       //Now draw the actual object
-      viewObject->Draw(renderInterface, secondsPassed);
+      viewObject->Draw(*renderSurface, secondsPassed);
     }
 
 
@@ -340,7 +390,7 @@ HRESULT Game::OnRender()
 
     // Draw the outline of a rectangle.
     renderTarget->SetTransform(D2D1::Matrix3x2F::Rotation(45, Point2F(rtSize.width/2, rtSize.height/2))); //Rotate following rectangle by 45 degrees
-    renderTarget->DrawRectangle(&rectangle2, GetSolidBrush(ColorF::CornflowerBlue));
+    renderTarget->DrawRectangle(&rectangle2, GetSolidBrush(Color::CornflowerBlue));
 
     renderTarget->SetTransform(D2D1::Matrix3x2F::Identity()); //Reset transform (rotation)
     
@@ -366,4 +416,7 @@ void Game::OnResize(UINT width, UINT height)
         // the next time EndDraw is called.
         renderTarget->Resize(D2D1::SizeU(width, height));
     }
+}
+
+
 }

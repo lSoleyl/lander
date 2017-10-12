@@ -8,10 +8,14 @@
 #include <malloc.h>
 #include <memory.h>
 #include <wchar.h>
-#include <math.h>
+
+// C++ stl headers
+#include <cmath>
+#include <cassert>
 #include <algorithm>
 
 #include <string>
+#include <sstream>
 #include <tchar.h>
 
 //STL collections
@@ -26,6 +30,7 @@
 
 //Utility classes
 #include "Resource.hpp"
+#include "COMError.hpp"
 #include "Vector.hpp"
 
 

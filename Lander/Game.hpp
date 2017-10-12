@@ -1,10 +1,15 @@
 #pragma once
 
+namespace Lander {
+
+class RenderSurface;
 class Game
 {
 public:
     Game();
     ~Game();
+
+    friend class RenderSurface;
 
     //TODO Create a larger window to have enough space for complex levels
     // This will be the size of the game window
@@ -29,10 +34,12 @@ public:
      */
     void AddObject(ViewObject& viewObject);
 
-    /** Returns a (possibly new) brush for the given color
-     */
-    ID2D1Brush* GetSolidBrush(D2D1::ColorF::Enum color);
+    
 private:
+    /** Returns a (possibly new) brush for the given color. Used by Rendersurface
+     */
+    ID2D1Brush* GetSolidBrush(Color color);
+
     // Initialize device-independent resources.
     HRESULT CreateDeviceIndependentResources();
 
@@ -62,9 +69,12 @@ private:
     HWND hWnd;
     Resource<ID2D1Factory> direct2DFactory;
     Resource<ID2D1HwndRenderTarget> renderTarget;
+    Resource<IDWriteFactory> writeFactory;
+    RenderSurface* renderSurface;
     bool initialized;
 
     std::unordered_map<D2D1::ColorF::Enum, Resource<ID2D1Brush>> brushMap; //map of color -> brush
 
     std::deque<ViewObject*> renderQueue; //List of objects, which get rendered on each draw
 };
+}

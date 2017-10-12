@@ -123,6 +123,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="COMError.hpp" />
     <ClInclude Include="FPSCounter.hpp" />
     <ClInclude Include="Game.hpp" />
     <ClInclude Include="RenderInterface.hpp" />

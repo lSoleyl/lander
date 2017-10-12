@@ -1,5 +1,7 @@
 #pragma once
 
+namespace Lander {
+
 class RenderInterface;
 
 /** Each object, which wants to be drawn must be derived from this class
@@ -11,6 +13,10 @@ public:
    */
   virtual void Initialize() {}
 
+  /** Gets called on each frame before draw. Changes in size and position of the object are reflected in the next draw call
+   */
+  virtual void Update(double secondsSinceLastFrame) {}
+
   /** This function gets called once per frame to 
    */
   virtual void Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) = 0;
@@ -20,13 +26,28 @@ public:
    */
   virtual int RenderPriority() const { return 0; }
 
-  //TODO replace this with own types
-  virtual D2D1_POINT_2F Pos() { return D2D1::Point2F(); }
-  virtual D2D1_SIZE_F Size() { return D2D1::SizeF(); }
+  /** Return true to automatically draw the object's bounding box before calling Draw() on it.
+   *  The default implementation draws the bounding box when compiling with Debug.
+   */
+  virtual bool DrawBoundingBox() { 
+#ifdef _DEBUG
+    return true;
+#else 
+    return false;
+#endif
+  }
 
 
   /** This function gets called upon the game's destruction. Dynamically allocated ViewObjects
    *  can use this call to delete themselves. They are not being referenced by the game object after this call.
    */
   virtual void Deinitialize() {}
+
+  /** State of the view object position and size can be changed in Update() to be reflected in the next Draw().
+   *  All drawing positions are relative to pos
+   */
+  vec::Vector pos;
+  vec::Size size;
 };
+
+}
