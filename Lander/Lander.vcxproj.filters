@@ -51,6 +51,9 @@
     <ClInclude Include="Terrain.hpp">
       <Filter>Headerdateien\GameElements</Filter>
     </ClInclude>
+    <ClInclude Include="Platform.hpp">
+      <Filter>Headerdateien\GameElements</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -69,6 +72,9 @@
       <Filter>Quelldateien\GameElements</Filter>
     </ClCompile>
     <ClCompile Include="Terrain.cpp">
+      <Filter>Quelldateien\GameElements</Filter>
+    </ClCompile>
+    <ClCompile Include="Platform.cpp">
       <Filter>Quelldateien\GameElements</Filter>
     </ClCompile>
   </ItemGroup>

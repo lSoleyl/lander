@@ -1,7 +1,10 @@
 #include "stdafx.h"
 #include "Game.hpp"
+
+//Game objects
 #include "FPSCounter.hpp"
 #include "Terrain.hpp"
+#include "Platform.hpp"
 
 using namespace Lander;
 
@@ -26,8 +29,15 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR /*cmdline*/, int) {
             Terrain terrain;
             app.AddObject(terrain);
 
+            Platform startPlatform(terrain, 162/*starting xPos*/);
+            app.AddObject(startPlatform);
+
+            Platform landingPlatform(terrain, 835/*target xPos*/);
+            app.AddObject(landingPlatform);
+
             if (SUCCEEDED(app.Initialize())) {
-                app.RunMessageLoop();
+
+              app.RunMessageLoop();
             }
         }
         CoUninitialize();

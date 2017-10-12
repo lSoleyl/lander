@@ -20,6 +20,15 @@ void Terrain::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) 
 
 int Terrain::RenderPriority() const { return 1000; }
 
+
+
+Vector Terrain::GetTerrainPos(float x) const {
+  Vector baseLine = Vector::Down * size.height;
+  baseLine.x = x;
+  return baseLine + (Vector::Up*GetTerrainHeight(x));
+}
+
+
 float Terrain::GetTerrainHeight(float x) const {
   const float amplitude = size.height/5.0;
   const float horizScale = 0.02;

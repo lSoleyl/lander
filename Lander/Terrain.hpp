@@ -12,6 +12,11 @@ public:
    */
   virtual int RenderPriority() const override;
 
+  /** Returns the topmost position of the terrain at the specified x position.
+   *  The position is specified relative to pos
+   */
+  virtual Vector GetTerrainPos(float x) const;
+
 private:
   /** Returns the terrain height at the given position
    */
