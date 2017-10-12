@@ -1,0 +1,4 @@
+#include "resources.h"
+
+//Resource definitions
+IDR_ROCKET_IMAGE IMAGE "assets\\rocket.png"

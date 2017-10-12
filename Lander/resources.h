@@ -1,0 +1,1 @@
+#define IDR_ROCKET_IMAGE 100

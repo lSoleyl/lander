@@ -23,10 +23,13 @@
 #include <vector>
 #include <deque>
 
+//Direct2D stuff
 #include <d2d1.h>
 #include <d2d1helper.h>
 #include <dwrite.h>
 #include <wincodec.h>
+
+#include "resources.h" //Our resources
 
 //Utility classes
 #include "Resource.hpp"
