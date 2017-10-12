@@ -10,6 +10,10 @@ public:
    */
   virtual void Draw(RenderInterface& renderInterface, double secondsPassed) override;
 
+  /** Specify low render priority to be always visible
+   */
+  virtual int RenderPriority() const override;
+
 private:
   RenderInterface::TextFormat textFormat; //The format used, to write the text
   float avgFps;
