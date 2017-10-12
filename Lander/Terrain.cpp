@@ -14,7 +14,7 @@ void Terrain::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) 
   Vector baseLine = Vector::Down * size.height;
   for(int x = 0; x < size.width; ++x) {
     baseLine.x = x;
-    renderTarget.DrawLine(baseLine, baseLine + (Vector::Up*GetTerrainHeight(x)), Color::ForestGreen);
+    renderTarget.DrawLine(baseLine, baseLine + (Vector::Up*GetTerrainHeight(x)), Color::LightSlateGray);
   }
 }
 
