@@ -4,3 +4,4 @@
 **/Release
 *.opensdf
 /ipch
+/x64
