@@ -7,7 +7,6 @@ namespace Lander {
 
 Platform::Platform(const Terrain& terrain, float xPos) : terrain(terrain), xPos(xPos) {
   size = Size(50,3);
-  Update(0);
 }
 
   
