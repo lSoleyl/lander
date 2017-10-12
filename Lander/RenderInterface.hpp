@@ -32,5 +32,10 @@ public:
   /** Draws a text into the specified area with the previously created text format (CreateTextFormat)
    */
   virtual void DrawText(const std::wstring& text, TextFormat format, Rectangle targetRect, Color color) = 0;
+
+
+  /** Draws a line between the specified two points
+   */
+  virtual void DrawLine(Vector from, Vector to, Color color, float strokeWidth = 1.0f) = 0;
 };
 }

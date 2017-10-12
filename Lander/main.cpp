@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Game.hpp"
 #include "FPSCounter.hpp"
+#include "Terrain.hpp"
 
 using namespace Lander;
 
@@ -21,6 +22,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR /*cmdline*/, int) {
             //Add Game/View objects
             FPSCounter fpsCounter;
             app.AddObject(fpsCounter);
+            
+            Terrain terrain;
+            app.AddObject(terrain);
 
             if (SUCCEEDED(app.Initialize())) {
                 app.RunMessageLoop();

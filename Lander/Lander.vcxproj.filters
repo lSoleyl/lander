@@ -16,6 +16,12 @@
     <Filter Include="Headerdateien\Interfaces">
       <UniqueIdentifier>{e905aec0-9c36-488c-ab98-c6b339cd3e31}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Headerdateien\GameElements">
+      <UniqueIdentifier>{5168fade-9d3d-4ba5-a454-b9d818c4e584}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Quelldateien\GameElements">
+      <UniqueIdentifier>{c17676fd-2cb4-4cad-9f59-c00763306e0a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -30,9 +36,6 @@
     <ClInclude Include="RenderInterface.hpp">
       <Filter>Headerdateien\Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="FPSCounter.hpp">
-      <Filter>Headerdateien</Filter>
-    </ClInclude>
     <ClInclude Include="Vector.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
@@ -41,6 +44,12 @@
     </ClInclude>
     <ClInclude Include="COMError.hpp">
       <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="FPSCounter.hpp">
+      <Filter>Headerdateien\GameElements</Filter>
+    </ClInclude>
+    <ClInclude Include="Terrain.hpp">
+      <Filter>Headerdateien\GameElements</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -53,11 +62,14 @@
     <ClCompile Include="main.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="FPSCounter.cpp">
-      <Filter>Quelldateien</Filter>
-    </ClCompile>
     <ClCompile Include="Vector.cpp">
       <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="FPSCounter.cpp">
+      <Filter>Quelldateien\GameElements</Filter>
+    </ClCompile>
+    <ClCompile Include="Terrain.cpp">
+      <Filter>Quelldateien\GameElements</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

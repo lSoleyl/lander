@@ -30,14 +30,15 @@ Game::~Game()
 }
 
 
-/** Local implementation of the RenderInterface for this game
+/** Local implementation of the RenderInterface for this game.
+ *  This class provides the implementation of all Draw calls, which are used within the game
  */
 class RenderSurface : public RenderInterface {
 public:
   RenderSurface(Game& game, ID2D1HwndRenderTarget** ppRenderTarget) : game(game), ppRenderTarget(ppRenderTarget) {}
 
-  virtual ID2D1RenderTarget& RenderTarget() override { return **ppRenderTarget; }
-
+  /** Returns the current size of the renderTarget
+   */
   virtual Lander::Size Size() override { return RenderTarget().GetSize(); }
 
   
@@ -62,7 +63,15 @@ public:
     RenderTarget().DrawText(text.c_str(), static_cast<UINT32>(text.length()), textFormats[format-1].textFormat, rectangle, game.GetSolidBrush(color));
   }
 
-private: 
+  virtual void DrawLine(Vector from, Vector to, Color color, float strokeWidth = 1.0f) override {
+    RenderTarget().DrawLine(from, to, game.GetSolidBrush(color), strokeWidth);
+  }
+
+  /** Provide access to internal renderTarget... should be removed in the future if possible
+   */
+  virtual ID2D1RenderTarget& RenderTarget() override { return **ppRenderTarget; }
+
+private:  
   struct FONT_ENTRY { 
     FONT_ENTRY() {}
     FONT_ENTRY(const wchar_t* fontName, float fontSize, IDWriteTextFormat* format): fontName(fontName), fontSize(fontSize), textFormat(format) {}
@@ -166,8 +175,11 @@ HRESULT Game::Initialize()
 
   //Initialize all already registered view objects and create the RenderSurface
   if (SUCCEEDED(hr)) {
+    RECT rcClient;
+    GetClientRect(hWnd, &rcClient);
+    auto size = Rectangle(rcClient).Size().Abs();
     for (auto viewObject : renderQueue) {
-      viewObject->Initialize();
+      viewObject->Initialize(size);
     }
   }
    
@@ -192,7 +204,7 @@ void Game::AddObject(ViewObject& viewObject) {
 
   // If initialization already took place, initialize the object upon insertion
   if (initialized)
-    viewObject.Initialize();
+    viewObject.Initialize(renderSurface->Size());
 }
 
 
@@ -256,29 +268,21 @@ LRESULT CALLBACK Game::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 
   auto game = Game::Instance();
 
-  bool wasHandled = false;
-
   if (game) {
     switch (message) {
     case WM_SIZE:
       // Handle resizing of the window
       game->OnResize(LOWORD(lParam), HIWORD(lParam));
-      result = 0;
-      wasHandled = true;
-      break;
+      return 0;
 
     case WM_DISPLAYCHANGE:
       InvalidateRect(hWnd, NULL, FALSE);
-      result = 0;
-      wasHandled = true;
-      break;
+      return 0;
 
     case WM_PAINT:
-      game->OnRender();
+      //Rendering here is unnecessary
       ValidateRect(hWnd, NULL);
-      result = 0;
-      wasHandled = true;
-      break;
+      return 0;
 
     // prevent size change by grabbing the border by returning a non resizable border
     case WM_NCHITTEST:
@@ -310,17 +314,11 @@ LRESULT CALLBACK Game::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 
     case WM_DESTROY:
       PostQuitMessage(0);
-      result = 1;
-      wasHandled = true;
-      break;
+      return 1;
     }
   }
 
-  if (!wasHandled) {
-    result = DefWindowProc(hWnd, message, wParam, lParam);
-  }
-    
-  return result;
+  return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
 HRESULT Game::OnRender()
@@ -371,17 +369,7 @@ HRESULT Game::OnRender()
     //TODO factor out this process into own view object
 
 
-    // Draw a grid background.
-    int width = static_cast<int>(rtSize.width);
-    int height = static_cast<int>(rtSize.height);
 
-
-
-    for (int x = 0; x < width; ++x) {
-      const float amplitude = height/5;
-      const float horizScale = 0.03;
-      renderTarget->DrawLine(Point2F(x, rtSize.height/2 + sin(x*horizScale)*amplitude), Point2F(x, rtSize.height), GetSolidBrush(ColorF::ForestGreen));
-    }
 
 
 

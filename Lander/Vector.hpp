@@ -32,6 +32,8 @@ public:
 
   float x, y;
 
+  //Implicit conversion to a Direct2D point
+  operator D2D1_POINT_2F() const;
 
   //Conversion from a size 
   static Vector FromSize(const Size& size);
@@ -57,6 +59,9 @@ public:
   Size(const Size& other);
   Size(const D2D1_SIZE_F& other); //conversion from Direct2D type
 
+  /** Returns a size with absolute values (no negative ones)
+   */
+  Size Abs() const;
 
   float width, height;
 };
@@ -68,11 +73,16 @@ public:
   Rectangle(); //(0,0) - (0,0)
   Rectangle(Vector topLeft, Vector bottomRight);
   Rectangle(Vector topLeft, Size size);
+  Rectangle(const RECT& winRect);
   Rectangle(const Rectangle& other);
 
   /** Implicit conversion to Direct2D type 
    */
   operator D2D1_RECT_F() const;
+
+  /** Returns the width&height of the rectangle
+   */
+  Size Size() const;
 
   Vector topLeft, bottomRight;
 };

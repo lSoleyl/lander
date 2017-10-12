@@ -10,8 +10,10 @@ class ViewObject {
 public:
   /** Gets called once on each view object before the object gets drawn and after the game has initialized to 
    *  initialize the view object's resources.
+   *
+   * @param size the renderTarget's size to which an object can adapt it's own size if necessary
    */
-  virtual void Initialize() {}
+  virtual void Initialize(Size size) {}
 
   /** Gets called on each frame before draw. Changes in size and position of the object are reflected in the next draw call
    */
