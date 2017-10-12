@@ -5,6 +5,7 @@
 #include "FPSCounter.hpp"
 #include "Terrain.hpp"
 #include "Platform.hpp"
+#include "Rocket.hpp"
 
 using namespace Lander;
 
@@ -34,6 +35,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR /*cmdline*/, int) {
 
             Platform landingPlatform(terrain, 835/*target xPos*/);
             app.AddObject(landingPlatform);
+
+            Rocket rocket(startPlatform);
+            app.AddObject(rocket);
 
             if (SUCCEEDED(app.Initialize())) {
 
