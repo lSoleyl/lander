@@ -67,6 +67,67 @@ public:
     RenderTarget().DrawLine(from, to, game.GetSolidBrush(color), strokeWidth);
   }
 
+
+  virtual void DrawImage(int resourceId, Rectangle targetRectangle) override {
+    auto pos = loadedImages.find(resourceId);
+    if (pos != loadedImages.end()) {
+      // image already converted, render it
+      RenderTarget().DrawBitmap(pos->second, targetRectangle);
+    } else {
+      // we have to load and prepare the image (boilerplate code -_-)
+      if (!imageFactory) {
+        HandleCOMError(CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&imageFactory), "image factory creation");
+      }
+
+      // Load the rescoure
+      auto resourceHandle = FindResource(NULL, MAKEINTRESOURCE(resourceId), _T("Image")/*type*/);
+      if (!resourceHandle)
+        throw std::exception("Couldn't find the image resource");
+
+      auto loadedResource = LoadResource(NULL, resourceHandle);
+      if (!loadedResource)
+        throw std::exception("Failed to load the resource");
+
+      auto resourceMemory = LockResource(loadedResource);
+      if (!resourceMemory)
+        throw std::exception("Failed to retrieve resource memory pointer");
+
+      auto resourceMemSize = SizeofResource(NULL, resourceHandle);
+      if (!resourceMemSize)
+        throw std::exception("Failed to retrieve the resource's size");
+
+      Resource<IWICStream> imageStream;
+      HandleCOMError(imageFactory->CreateStream(&imageStream), "image stream creation");
+      HandleCOMError(imageStream->InitializeFromMemory(reinterpret_cast<BYTE*>(resourceMemory),resourceMemSize), "image stream load");
+
+      Resource<IWICBitmapDecoder> streamDecoder;
+      HandleCOMError(imageFactory->CreateDecoderFromStream(imageStream, NULL, WICDecodeMetadataCacheOnLoad, &streamDecoder),"creating stream decoder");
+      
+      Resource<IWICBitmapFrameDecode> decoderFrame;
+      HandleCOMError(streamDecoder->GetFrame(0, &decoderFrame), "decoding image frame");
+
+      Resource<IWICFormatConverter> formatConverter;
+      HandleCOMError(imageFactory->CreateFormatConverter(&formatConverter), "creating format converter");
+      HandleCOMError(formatConverter->Initialize(
+        decoderFrame,                    // Input bitmap to convert
+        GUID_WICPixelFormat32bppPBGRA,   // Destination pixel format
+        WICBitmapDitherTypeNone,         // Specified dither pattern
+        NULL,                            // Specify a particular palette 
+        0.f,                             // Alpha threshold
+        WICBitmapPaletteTypeCustom       // Palette translation type
+       ), "image decoding");
+
+      Resource<ID2D1Bitmap> convertedBitmap;
+      HandleCOMError(RenderTarget().CreateBitmapFromWicBitmap(formatConverter, NULL, &convertedBitmap), "conversion to direct2d image");
+
+      // Finally insert loaded image into map of loaded images
+      loadedImages[resourceId] = std::move(convertedBitmap);
+
+      // Now that we made sure, the image is loaded, we can recall the DrawImage() method
+      DrawImage(resourceId, targetRectangle);
+    }
+  }
+
   /** Provide access to internal renderTarget... should be removed in the future if possible
    */
   virtual ID2D1RenderTarget& RenderTarget() override { return **ppRenderTarget; }
@@ -92,7 +153,9 @@ private:
 
   Game& game;
   ID2D1HwndRenderTarget** ppRenderTarget;
+  Resource<IWICImagingFactory> imageFactory;
   std::vector<FONT_ENTRY> textFormats;
+  std::unordered_map<int/*resourceId*/, Resource<ID2D1Bitmap>> loadedImages; 
 };
 
 

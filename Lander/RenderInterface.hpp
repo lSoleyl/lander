@@ -37,5 +37,9 @@ public:
   /** Draws a line between the specified two points
    */
   virtual void DrawLine(Vector from, Vector to, Color color, float strokeWidth = 1.0f) = 0;
+
+  /** Loads the image from the resources if necessary and draws it into the provided target rectangle
+   */
+  virtual void DrawImage(int resourceId, Rectangle targetRectangle) = 0;
 };
 }

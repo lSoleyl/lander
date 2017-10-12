@@ -55,6 +55,12 @@ public:
     return ptr;
   }
 
+  /** Implicit bool cast to check for nullptr
+   */
+  operator bool() const {
+    return ptr != nullptr;
+  }
+
   Interface* operator->() const {
     return ptr;
   }
