@@ -349,18 +349,23 @@ HRESULT Game::OnRender()
 
     //Render each object of the render queue
     for (auto viewObject : renderQueue) {
-      //First draw bounding box (Only a debugging measure)
-      if (viewObject->DrawBoundingBox())
-        renderTarget->DrawRectangle(Rectangle(viewObject->pos,viewObject->size),GetSolidBrush(Color::Cyan),1.2);
+      // Set the object's translation to have object relative coordinates
+      // TODO add rotation later
+      renderTarget->SetTransform(D2D1::Matrix3x2F::Translation(viewObject->pos.x, viewObject->pos.y));
 
-      //Now draw the actual object
+
+      // First draw bounding box (Only a debugging measure)
+      if (viewObject->DrawBoundingBox())
+        renderTarget->DrawRectangle(Rectangle(Vector(0,0),viewObject->size),GetSolidBrush(Color::Cyan),1.2);
+
+      // Now draw the actual object
       viewObject->Draw(*renderSurface, secondsPassed);
     }
 
 
     
-
-
+    // Restore transform
+    renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
     
     
     //TODO factor out this process into own view object
