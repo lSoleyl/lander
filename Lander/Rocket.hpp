@@ -16,6 +16,7 @@ public:
 
 private:
   const Platform& startPlatform;
+  bool thrustCheck = TRUE;
 };
 
 

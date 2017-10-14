@@ -9,9 +9,17 @@ Rocket::Rocket(const Platform& startPlatform) : startPlatform(startPlatform) {
 
 
 void Rocket::Update(double secondsSinceLastFrame) {
-  // TODO: only adapt position so long until the user adds thrust to the rocket
-  pos = startPlatform.pos + Vector::Up * size.height; //Calculate top position of rocket
-  pos += Vector::Right * (startPlatform.size.width - size.width)/2; //Center rocket on start platform
+  if (GetAsyncKeyState(VK_SPACE) & 0x80000000) {
+    thrustCheck = FALSE;  //Do not position Rocket on platform anymore
+    pos += Vector::Up;  //Rocket keeps flying up as long as the Space-Key is pressed
+  }
+
+  // Only adapt position so long until the user adds thrust to the rocket
+  if (thrustCheck == TRUE) {
+    pos = startPlatform.pos + Vector::Up * size.height; //Calculate top position of rocket
+    pos += Vector::Right * (startPlatform.size.width - size.width) / 2; //Center rocket on start platform
+  }
+
 }
 
 void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
