@@ -9,7 +9,7 @@ Rocket::Rocket(const Platform& startPlatform) : startPlatform(startPlatform) {
 
 
 void Rocket::Update(double secondsSinceLastFrame) {
-  if (GetAsyncKeyState(VK_SPACE) & (1 << 15)) {
+  if (GetKeyState(VK_SPACE) & (1 << 7)) { //Don't know why, but GetAsyncKeyState() doesn't work correctly when called to often
     thrustCheck = false;  //Do not position Rocket on platform anymore
     //FIXME: The rocket's speed is currently bound to the frame rate...
     pos += Vector::Up;  //Rocket keeps flying up as long as the Space-Key is pressed
