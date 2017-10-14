@@ -9,13 +9,14 @@ Rocket::Rocket(const Platform& startPlatform) : startPlatform(startPlatform) {
 
 
 void Rocket::Update(double secondsSinceLastFrame) {
-  if (GetAsyncKeyState(VK_SPACE) & 0x80000000) {
-    thrustCheck = FALSE;  //Do not position Rocket on platform anymore
+  if (GetAsyncKeyState(VK_SPACE) & (1 << 15)) {
+    thrustCheck = false;  //Do not position Rocket on platform anymore
+    //FIXME: The rocket's speed is currently bound to the frame rate...
     pos += Vector::Up;  //Rocket keeps flying up as long as the Space-Key is pressed
   }
 
   // Only adapt position so long until the user adds thrust to the rocket
-  if (thrustCheck == TRUE) {
+  if (thrustCheck) {
     pos = startPlatform.pos + Vector::Up * size.height; //Calculate top position of rocket
     pos += Vector::Right * (startPlatform.size.width - size.width) / 2; //Center rocket on start platform
   }

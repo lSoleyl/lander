@@ -16,7 +16,7 @@ public:
 
 private:
   const Platform& startPlatform;
-  bool thrustCheck = TRUE;
+  bool thrustCheck = true; //While this is true, the rocket will reposition itself onto the platform. This will be set to false by adding thrust.
 };
 
 
