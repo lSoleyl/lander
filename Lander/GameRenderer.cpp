@@ -15,10 +15,15 @@ RenderInterface::TextFormat GameRenderer::CreateTextFormat(const wchar_t* fontNa
     if (textFormats[i].fontName == fontName && textFormats[i].fontSize == fontSize)
       return static_cast<TextFormat>(i+1);
 
+  // if not found...
+  // create write factory if this is the first use of CreateTextFormat (throw an exception if this fails)
+  if (!writeFactory) {
+    HandleCOMError(DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**>(&writeFactory)), "write factory creation");
+  }
 
-  //if not found
-  IDWriteTextFormat* textFormat = nullptr; //TODO do not access game.writeFactory (create own writeFactory?)
-  auto result = game.writeFactory->CreateTextFormat(fontName, nullptr, DWRITE_FONT_WEIGHT_REGULAR, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, fontSize, L"en-us", &textFormat);
+  // no create the specified text format
+  IDWriteTextFormat* textFormat = nullptr;
+  auto result = writeFactory->CreateTextFormat(fontName, nullptr, DWRITE_FONT_WEIGHT_REGULAR, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, fontSize, L"en-us", &textFormat);
   HandleCOMError(result, "TextFormat creation");
     
   textFormats.push_back(FONT_ENTRY());

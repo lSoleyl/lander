@@ -143,12 +143,7 @@ void Game::AddObject(ViewObject& viewObject) {
 
 HRESULT Game::CreateDeviceIndependentResources() {
   // Create a Direct2D factory.
-  auto result = D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &direct2DFactory);
-
-  if (SUCCEEDED(result))
-    result = DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**>(&writeFactory));  
-    
-  return result;
+  return D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &direct2DFactory);
 }
 
 

@@ -69,7 +69,6 @@ private:
     HWND hWnd;
     Resource<ID2D1Factory> direct2DFactory;
     Resource<ID2D1HwndRenderTarget> renderTarget;
-    Resource<IDWriteFactory> writeFactory;
     std::unique_ptr<GameRenderer> gameRenderer;
     bool initialized;
 

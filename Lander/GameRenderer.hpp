@@ -58,6 +58,7 @@ private:
   Game& game;
   ID2D1HwndRenderTarget** ppRenderTarget; //The GameRender doesn't own the renderTarget, so it isn't wrapped inside a Resource<>
   Resource<IWICImagingFactory> imageFactory;
+  Resource<IDWriteFactory> writeFactory;
   std::vector<FONT_ENTRY> textFormats;
   std::unordered_map<int/*resourceId*/, Resource<ID2D1Bitmap>> loadedImages; 
 
