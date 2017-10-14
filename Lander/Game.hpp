@@ -1,17 +1,17 @@
 #pragma once
 
+#include "GameRenderer.hpp"
+
 namespace Lander {
 
-class RenderSurface;
 class Game
 {
 public:
+    friend class GameRenderer;
+
     Game();
     ~Game();
 
-    friend class RenderSurface;
-
-    //TODO Create a larger window to have enough space for complex levels
     // This will be the size of the game window
     static const int WINDOW_WIDTH = 1024;
     static const int WINDOW_HEIGHT = 768;
@@ -70,7 +70,7 @@ private:
     Resource<ID2D1Factory> direct2DFactory;
     Resource<ID2D1HwndRenderTarget> renderTarget;
     Resource<IDWriteFactory> writeFactory;
-    RenderSurface* renderSurface;
+    std::unique_ptr<GameRenderer> gameRenderer;
     bool initialized;
 
     std::unordered_map<D2D1::ColorF::Enum, Resource<ID2D1Brush>> brushMap; //map of color -> brush

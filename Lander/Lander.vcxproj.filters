@@ -60,6 +60,9 @@
     <ClInclude Include="resources.h">
       <Filter>Ressourcendateien</Filter>
     </ClInclude>
+    <ClInclude Include="GameRenderer.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -85,6 +88,9 @@
     </ClCompile>
     <ClCompile Include="Rocket.cpp">
       <Filter>Quelldateien\GameElements</Filter>
+    </ClCompile>
+    <ClCompile Include="GameRenderer.cpp">
+      <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -14,7 +14,7 @@ public:
   typedef int TextFormat;
 
 
-  /** This method returns the native render target, used internally if the RenderInterface doen't provide enough functionality
+  /** This method returns the native render target, used internally if the RenderInterface doesn't provide enough functionality
    *  This should not be used if not really necessary.
    */
   virtual ID2D1RenderTarget& RenderTarget() = 0;
@@ -25,20 +25,36 @@ public:
 
   /** Creates a new text format with the given arguments, or returns an already existing format, which has been created with the same parameters.
    *
+   * @param fontName the name of the font to create
+   * @param fontSize the size of the text format to create
+   *
    * @return a new TextFormat != NULL if successful
    */
   virtual TextFormat CreateTextFormat(const wchar_t* fontName, float fontSize) = 0;
 
   /** Draws a text into the specified area with the previously created text format (CreateTextFormat)
+   *
+   * @param text the text to draw
+   * @param format the text format (font,size) which has been previously created with CreateTextFormat()
+   * @param targetRect the rectangle to draw the text into
+   * @param color the color to draw the text in
    */
   virtual void DrawText(const std::wstring& text, TextFormat format, Rectangle targetRect, Color color) = 0;
 
 
-  /** Draws a line between the specified two points
+  /** Draws a line between the specified two points.
+   *
+   * @param from the start point of the line
+   * @param to the end point of the line
+   * @param color the color to draw the line with
+   * @param strokeWidth the thickness of the line
    */
   virtual void DrawLine(Vector from, Vector to, Color color, float strokeWidth = 1.0f) = 0;
 
   /** Loads the image from the resources if necessary and draws it into the provided target rectangle
+   *
+   * @param resourceId the id, with which the image gets referenced in the resource.rc
+   * @param targetRectangle the rectangle to draw the image into
    */
   virtual void DrawImage(int resourceId, Rectangle targetRectangle) = 0;
 };

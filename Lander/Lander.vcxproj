@@ -123,6 +123,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="GameRenderer.hpp" />
     <ClInclude Include="Platform.hpp" />
     <ClInclude Include="resources.h" />
     <ClInclude Include="Rocket.hpp" />
@@ -139,6 +140,7 @@
   <ItemGroup>
     <ClCompile Include="FPSCounter.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="GameRenderer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Platform.cpp" />
     <ClCompile Include="Rocket.cpp" />

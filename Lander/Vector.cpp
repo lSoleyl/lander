@@ -69,7 +69,7 @@ Vector::operator D2D1_POINT_2F() const {
 }
 
 Vector Vector::FromSize(const Size& size) {
-  return Vector(size.width, size.height); //TODO what about the vertical direction of the viewport? Is this relevant?
+  return Vector(size.width, size.height);
 }
 
 Size::Size() : width(0), height(0) {}

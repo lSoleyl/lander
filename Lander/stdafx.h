@@ -13,6 +13,7 @@
 #include <cmath>
 #include <cassert>
 #include <algorithm>
+#include <memory>
 
 #include <string>
 #include <sstream>
