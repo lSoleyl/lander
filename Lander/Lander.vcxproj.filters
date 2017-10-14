@@ -97,6 +97,9 @@
     <Image Include="Assets\rocket.png">
       <Filter>Ressourcendateien</Filter>
     </Image>
+    <Image Include="Assets\rockettrail.png">
+      <Filter>Ressourcendateien</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc">
