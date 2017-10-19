@@ -264,7 +264,8 @@ HRESULT Game::OnRender()
 
     //Give objects time to update positions
     for (auto viewObject : renderQueue) 
-      viewObject->Update(secondsPassed);
+      if (viewObject->enabled)
+        viewObject->Update(secondsPassed);
 
 
     renderTarget->BeginDraw();  //Initiate drawing
@@ -281,11 +282,15 @@ HRESULT Game::OnRender()
 
 
       // First draw bounding box (Only a debugging measure)
-      if (viewObject->DrawBoundingBox())
-        renderTarget->DrawRectangle(Rectangle(Vector(0,0),viewObject->size),GetSolidBrush(Color::Cyan),1.2);
+      if (viewObject->DrawBoundingBox()) {
+        auto color = (!viewObject->enabled) ? Color::Red : (!viewObject->visible) ? Color::Magenta : Color::Cyan;
+        renderTarget->DrawRectangle(Rectangle(Vector(0,0),viewObject->size),GetSolidBrush(color),1.2);
+      }
 
-      // Now draw the actual object
-      viewObject->Draw(*gameRenderer, secondsPassed);
+      if (viewObject->enabled && viewObject->visible) {
+        // Now draw the actual object
+        viewObject->Draw(*gameRenderer, secondsPassed);
+      }
     }
     
     
