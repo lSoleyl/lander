@@ -277,8 +277,8 @@ HRESULT Game::OnRender()
     //Render each object of the render queue
     for (auto viewObject : renderQueue) {
       // Set the object's translation to have object relative coordinates
-      // TODO add rotation later
-      renderTarget->SetTransform(D2D1::Matrix3x2F::Translation(viewObject->pos.x, viewObject->pos.y));
+      auto rotationCenter = viewObject->pos + (viewObject->size.height/2 * Vector::Down) + (viewObject->size.width/2 * Vector::Right);
+      renderTarget->SetTransform(D2D1::Matrix3x2F::Translation(viewObject->pos.x, viewObject->pos.y) * D2D1::Matrix3x2F::Rotation(viewObject->rotation, rotationCenter));
 
 
       // First draw bounding box (Only a debugging measure)

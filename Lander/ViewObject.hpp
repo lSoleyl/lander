@@ -50,6 +50,7 @@ public:
    */
   vec::Vector pos;
   vec::Size size;
+  float rotation = 0; //rightward rotation angle (degrees) around the object's center point of the view object
 
   bool enabled = true; //if set to false, the Update() and Draw() functions won't be called anymore. Drawn with a red bounding box
   bool visible = true; //if set to false the Draw() function won't be called anymore. Drawn with a magenta bounding box
