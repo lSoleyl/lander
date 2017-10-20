@@ -4,7 +4,7 @@
 
 namespace Lander {
 
-GameRenderer::GameRenderer(Game& game, ID2D1HwndRenderTarget** ppRenderTarget) : game(game), ppRenderTarget(ppRenderTarget) {}
+GameRenderer::GameRenderer(Game& game, ID2D1HwndRenderTarget** ppRenderTarget) : game(game), ppRenderTarget(ppRenderTarget), viewObject(nullptr) {}
 
 Lander::Size GameRenderer::Size() { 
   return RenderTarget().GetSize(); 
@@ -54,6 +54,18 @@ void GameRenderer::DrawImage(int resourceId, Rectangle targetRectangle) {
       // Now that we made sure, the image is loaded, we can recall the DrawImage() method
       DrawImage(resourceId, targetRectangle);
     }
+}
+
+void GameRenderer::DrawImage(int resourceId, Rectangle targetRectangle, float rotationAngle, bool rotateCenter) {
+  D2D1::Matrix3x2F originalTransform;
+  RenderTarget().GetTransform(&originalTransform);
+  auto rotationPoint = viewObject->pos + targetRectangle.topLeft;
+  if (rotateCenter)
+    rotationPoint += (targetRectangle.bottomRight - targetRectangle.topLeft) / 2; //rotation around center
+
+  RenderTarget().SetTransform(D2D1::Matrix3x2F::Translation(viewObject->pos.x, viewObject->pos.y) * D2D1::Matrix3x2F::Rotation(rotationAngle, rotationPoint) * D2D1::Matrix3x2F::Rotation(viewObject->rotation, RotationCenter()));
+  DrawImage(resourceId, targetRectangle);
+  RenderTarget().SetTransform(originalTransform); //Restore original transform
 }
 
 Resource<ID2D1Bitmap> GameRenderer::LoadImageResource(int resourceId) {
@@ -112,7 +124,28 @@ ID2D1RenderTarget& GameRenderer::RenderTarget() {
   return **ppRenderTarget;
 }
 
+void GameRenderer::DrawObject(ViewObject* currentObject, double secondsPassed) {
+  viewObject = currentObject;
 
+  // Set the object's translation to have object relative coordinates
+  RenderTarget().SetTransform(D2D1::Matrix3x2F::Translation(viewObject->pos.x, viewObject->pos.y) * D2D1::Matrix3x2F::Rotation(viewObject->rotation, RotationCenter()));
+  
+
+  // First draw bounding box (Only a debugging measure)
+  if (viewObject->DrawBoundingBox()) {
+    auto color = (!viewObject->enabled) ? Color::Red : (!viewObject->visible) ? Color::Magenta : Color::Cyan;
+    RenderTarget().DrawRectangle(Rectangle(Vector(0,0),viewObject->size), game.GetSolidBrush(color),1.2);
+  }
+
+  if (viewObject->enabled && viewObject->visible) {
+    // Now draw the actual object
+    viewObject->Draw(*this, secondsPassed);
+  }
+}
+
+Vector GameRenderer::RotationCenter() const {
+  return viewObject->pos + (viewObject->size.height/2 * Vector::Down) + (viewObject->size.width/2 * Vector::Right);
+}
 
 GameRenderer::FONT_ENTRY::FONT_ENTRY() {};
 GameRenderer::FONT_ENTRY::FONT_ENTRY(const wchar_t* fontName, float fontSize, IDWriteTextFormat* format) : fontName(fontName), fontSize(fontSize), textFormat(format) {}

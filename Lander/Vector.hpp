@@ -84,6 +84,9 @@ public:
    */
   Size Size() const;
 
+  Vector TopRight() const;
+  Vector BottomLeft() const;
+
   Vector topLeft, bottomRight;
 };
 

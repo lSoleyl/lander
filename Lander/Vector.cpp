@@ -96,4 +96,12 @@ Size Rectangle::Size() const {
   return vec::Size(bottomRight.x - topLeft.x, bottomRight.y - topLeft.y);
 }
 
+Vector Rectangle::TopRight() const {
+  return Vector(bottomRight.x, topLeft.y);
+}
+
+Vector Rectangle::BottomLeft() const {
+  return Vector(topLeft.x, bottomRight.y);
+}
+
 }

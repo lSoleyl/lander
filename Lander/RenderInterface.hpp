@@ -57,5 +57,14 @@ public:
    * @param targetRectangle the rectangle to draw the image into
    */
   virtual void DrawImage(int resourceId, Rectangle targetRectangle) = 0;
+
+  /** Draws the image with the given resource id into the target rectangle. The image is then rotated around it's top left corner or center.
+   * 
+   * @param resourceId the id, with which the image gets referecned in the resource.rc
+   * @param targetRectangle the destination to draw the image into before applying the roation
+   * @param rotationAngle the angle to rotate (rightwards) the image and target rectangle
+   * @param rotateCenter if this is set to true, then the image gets rotated around it's own center, otherwise it gets rotated around it's top left corner.
+   */
+  virtual void DrawImage(int resourceId, Rectangle targetRectangle, float rotationAngle, bool rotateCenter = false) = 0;
 };
 }

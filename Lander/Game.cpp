@@ -271,26 +271,11 @@ HRESULT Game::OnRender()
     renderTarget->BeginDraw();  //Initiate drawing
     renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
     renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black)); //Set background color
-    D2D1_SIZE_F rtSize = renderTarget->GetSize();
 
 
     //Render each object of the render queue
     for (auto viewObject : renderQueue) {
-      // Set the object's translation to have object relative coordinates
-      auto rotationCenter = viewObject->pos + (viewObject->size.height/2 * Vector::Down) + (viewObject->size.width/2 * Vector::Right);
-      renderTarget->SetTransform(D2D1::Matrix3x2F::Translation(viewObject->pos.x, viewObject->pos.y) * D2D1::Matrix3x2F::Rotation(viewObject->rotation, rotationCenter));
-
-
-      // First draw bounding box (Only a debugging measure)
-      if (viewObject->DrawBoundingBox()) {
-        auto color = (!viewObject->enabled) ? Color::Red : (!viewObject->visible) ? Color::Magenta : Color::Cyan;
-        renderTarget->DrawRectangle(Rectangle(Vector(0,0),viewObject->size),GetSolidBrush(color),1.2);
-      }
-
-      if (viewObject->enabled && viewObject->visible) {
-        // Now draw the actual object
-        viewObject->Draw(*gameRenderer, secondsPassed);
-      }
+      gameRenderer->DrawObject(viewObject, secondsPassed);
     }
     
     

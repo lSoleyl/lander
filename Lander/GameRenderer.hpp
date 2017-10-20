@@ -30,11 +30,22 @@ class GameRenderer : public RenderInterface {
 
   virtual void DrawImage(int resourceId, Rectangle targetRectangle) override;
 
+  
+  virtual void DrawImage(int resourceId, Rectangle targetRectangle, float rotationAngle, bool rotateCenter = false) override;
+
   /** Provide access to internal renderTarget... should be removed in the future if possible
    */
   virtual ID2D1RenderTarget& RenderTarget() override;
 
+  /** Sets the given object as current view object, draws the bounding box and calls Draw() upon it.
+   */
+  void DrawObject(ViewObject* viewObject, double secondsPassed);
+
 private:  
+  /** Returns the rotation center of the currently active view object.
+   */
+  Vector RotationCenter() const;
+
   /** Loads the given image from resource and converts it into a renderable image type.
    *
    * @throws std::exception if anything fails
@@ -60,7 +71,9 @@ private:
   Resource<IWICImagingFactory> imageFactory;
   Resource<IDWriteFactory> writeFactory;
   std::vector<FONT_ENTRY> textFormats;
-  std::unordered_map<int/*resourceId*/, Resource<ID2D1Bitmap>> loadedImages; 
+  std::unordered_map<int/*resourceId*/, Resource<ID2D1Bitmap>> loadedImages;
+  
+  ViewObject* viewObject; //the currently drawn view object
 
 };
 
