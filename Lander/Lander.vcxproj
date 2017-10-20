@@ -154,6 +154,7 @@
     <ClCompile Include="Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Assets\rcs_thrust.png" />
     <Image Include="Assets\rocket.png" />
     <Image Include="Assets\rockettrail.png" />
   </ItemGroup>
