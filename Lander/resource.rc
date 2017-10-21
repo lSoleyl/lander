@@ -2,3 +2,4 @@
 
 //Resource definitions
 IDR_ROCKET_IMAGE IMAGE "assets\\rocket.png"
+IDR_ROCKET_TRAIL_IMAGE IMAGE "assets\\rockettrail.png"

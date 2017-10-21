@@ -57,11 +57,11 @@
     <ClInclude Include="Rocket.hpp">
       <Filter>Headerdateien\GameElements</Filter>
     </ClInclude>
-    <ClInclude Include="resources.h">
-      <Filter>Ressourcendateien</Filter>
-    </ClInclude>
     <ClInclude Include="GameRenderer.hpp">
       <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="resources.h">
+      <Filter>Ressourcendateien</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

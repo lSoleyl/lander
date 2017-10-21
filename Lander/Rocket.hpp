@@ -16,7 +16,15 @@ public:
 
 private:
   const Platform& startPlatform;
+  Size trailSize;
+  int trailAlternateSize[2];
+  int index = 0;
+  Vector trailVector;
   bool thrustCheck = true; //While this is true, the rocket will reposition itself onto the platform. This will be set to false by adding thrust.
+
+  double secondsSinceLastUpdate = 0;
+  double secondsSinceLastAnimation = 0;
+  double rocketSpeedValue = 0.001;  //the smaller the number, the faster the Rocket will fly. However, the speed is still caped by the frame rate.
 };
 
 
