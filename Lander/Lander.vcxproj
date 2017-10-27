@@ -124,6 +124,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="GameRenderer.hpp" />
+    <ClInclude Include="PhysicsObject.hpp" />
     <ClInclude Include="Platform.hpp" />
     <ClInclude Include="resources.h" />
     <ClInclude Include="Rocket.hpp" />
@@ -142,6 +143,7 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameRenderer.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PhysicsObject.cpp" />
     <ClCompile Include="Platform.cpp" />
     <ClCompile Include="Rocket.cpp" />
     <ClCompile Include="stdafx.cpp">

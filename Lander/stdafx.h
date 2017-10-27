@@ -40,6 +40,7 @@
 
 #include "RenderInterface.hpp"
 #include "ViewObject.hpp"
+#include "PhysicsObject.hpp"
 
 #ifndef HINST_THISCOMPONENT
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;

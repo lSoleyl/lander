@@ -22,6 +22,9 @@
     <Filter Include="Quelldateien\GameElements">
       <UniqueIdentifier>{c17676fd-2cb4-4cad-9f59-c00763306e0a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Quelldateien\Interfaces">
+      <UniqueIdentifier>{7c54a29f-c845-4fc6-b1f7-29b94102eb38}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -63,6 +66,9 @@
     <ClInclude Include="resources.h">
       <Filter>Ressourcendateien</Filter>
     </ClInclude>
+    <ClInclude Include="PhysicsObject.hpp">
+      <Filter>Headerdateien\Interfaces</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -91,6 +97,9 @@
     </ClCompile>
     <ClCompile Include="GameRenderer.cpp">
       <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsObject.cpp">
+      <Filter>Quelldateien\Interfaces</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
