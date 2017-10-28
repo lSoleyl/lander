@@ -12,6 +12,12 @@ Vector::Vector() : x(0), y(0) {}
 Vector::Vector(float x, float y) : x(x), y(y) {}
 Vector::Vector(const Vector& other) : x(other.x), y(other.y) {}
 
+const Vector Vector::Rotate(float angle){  //Rotate vector according to the angle
+
+  return Vector((this->x * cos(angle*PI / 180)) - (this->y * sin(angle*PI / 180)),
+                (this->x * sin(angle*PI / 180)) + (this->y * cos(angle*PI / 180)));
+}
+
 Vector& Vector::operator=(const Vector& other) {
   x = other.x;
   y = other.y;

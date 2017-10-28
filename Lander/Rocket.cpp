@@ -9,11 +9,17 @@ Rocket::Rocket(const Platform& startPlatform) : startPlatform(startPlatform) {
 
 
 void Rocket::Update(double secondsSinceLastFrame) {
-  if (GetKeyState(VK_SPACE) & (1 << 7)) { //Don't know why, but GetAsyncKeyState() doesn't work correctly when called to often
+  if (GetKeyState(VK_SPACE) & (1 << 7) || GetKeyState(VK_UP) & (1 << 7)) { //Don't know why, but GetAsyncKeyState() doesn't work correctly when called to often
     thrustCheck = false;  //Do not position Rocket on platform anymore
-    
-    //Rocket keeps flying up as long as the Space-Key is pressed
-    pos += Vector::Up * verticalSpeed * secondsSinceLastFrame;
+    pos += Vector(0,-1).Rotate(rotation) * verticalSpeed * secondsSinceLastFrame; //Rocket keeps flying forward as long as the Space-Key is pressed
+  }
+
+  if (GetKeyState(VK_LEFT) & (1 << 7) && !(GetKeyState(VK_RIGHT) & (1 << 7))) {  //only rotate if left key is pressed and right key unpressed
+    rotation -= (1 * angularSpeed * secondsSinceLastFrame); //rotate rocket to the left side
+  } 
+  
+  if (GetKeyState(VK_RIGHT) & (1 << 7) && !(GetKeyState(VK_LEFT) & (1 << 7))) {  //only rotate if right key is pressed and left key is unpressed
+    rotation += (1 * angularSpeed * secondsSinceLastFrame); //rotate rocket to the right side
   }
 
   //Only adapt position so long until the user adds thrust to the rocket
@@ -29,8 +35,7 @@ void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
 
   static int trailHeight[] = { 75, 100 };
 
-  //FIXME: The trail should not be drawn if the user is not applying thrust
-  if (thrustCheck == false) {  //Only draw the trail if the rocket has started
+  if (GetKeyState(VK_SPACE) & (1 << 7) || GetKeyState(VK_UP) & (1 << 7)) {  //Only draw the trail if the rocket has started
 
     secondsSinceLastAnimation += secondsSinceLastFrame;
     if (secondsSinceLastAnimation >= 0.15) {
@@ -41,9 +46,17 @@ void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
     auto trailPosition = Vector::Right * (size.width / 4) + Vector::Down * size.height;
     renderTarget.DrawImage(IDR_ROCKET_TRAIL_IMAGE, Rectangle(trailPosition, Size(size.width*0.5, trailHeight[trailIndex])));
   }
-}
 
+  if (GetKeyState(VK_LEFT) & (1 << 7)) {
+    renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(Rectangle(Vector(), size).TopRight() + Vector::Down * 10 + Vector::Left * 10, Size(10, 5))); //Top right
+    renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(Rectangle(Vector(), size).BottomLeft() + Vector::Up * 10 + Vector::Left * 10, Size(10, 5)), 180, 1); //Bottom left, needs to be rotated 180 degrees
+  }
 
+  if (GetKeyState(VK_RIGHT) & (1 << 7)) {
+    renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(Vector() + Vector::Down * 10, Size(10, 5)), 180, 1); //Top left, needs to be rotated 180 degrees
+    renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(Rectangle(Vector(), size).bottomRight + Vector::Up * 10, Size(10, 5))); //Bottom right
+  }
+ }
 
 
 }
