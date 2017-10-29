@@ -26,6 +26,13 @@ void PhysicsObject::Update(double secondsSinceLastFrame) {
   angularAcceleration = 0;
 }
 
+void PhysicsObject::Stop() {
+  velocity = Vector::Zero;
+  acceleration = Vector:: Zero;
+  angularVelocity = 0;
+  angularAcceleration = 0;
+}
+
 
 void PhysicsObject::ApplyAcceleration(Vector acceleration) {
   this->acceleration += acceleration;

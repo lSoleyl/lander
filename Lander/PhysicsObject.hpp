@@ -26,6 +26,11 @@ public:
    */
   virtual void PhysicsUpdate(double secondsSinceLastFrame) {}
 
+  /** Sets all accelerations and velocities to zero and effectively stops
+   *  the object from moving.
+   */
+  void Stop();
+
   ///////
   ///  Physics functions
   ///////
