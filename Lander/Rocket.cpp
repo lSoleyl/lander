@@ -11,15 +11,15 @@ Rocket::Rocket(const Platform& startPlatform) : startPlatform(startPlatform) {
 void Rocket::Update(double secondsSinceLastFrame) {
   if (GetKeyState(VK_SPACE) & (1 << 7) || GetKeyState(VK_UP) & (1 << 7)) { //Don't know why, but GetAsyncKeyState() doesn't work correctly when called to often
     thrustCheck = false;  //Do not position Rocket on platform anymore
-    pos += Vector(0,-1).Rotate(rotation) * verticalSpeed * secondsSinceLastFrame; //Rocket keeps flying forward as long as the Space-Key is pressed
+    pos += Vector::Up.Rotate(rotation) * verticalSpeed * secondsSinceLastFrame; //Rocket keeps flying forward as long as the Space-Key is pressed
   }
 
   if (GetKeyState(VK_LEFT) & (1 << 7) && !(GetKeyState(VK_RIGHT) & (1 << 7))) {  //only rotate if left key is pressed and right key unpressed
-    rotation -= (1 * angularSpeed * secondsSinceLastFrame); //rotate rocket to the left side
+    rotation -= angularSpeed * secondsSinceLastFrame; //rotate rocket to the left side
   } 
   
   if (GetKeyState(VK_RIGHT) & (1 << 7) && !(GetKeyState(VK_LEFT) & (1 << 7))) {  //only rotate if right key is pressed and left key is unpressed
-    rotation += (1 * angularSpeed * secondsSinceLastFrame); //rotate rocket to the right side
+    rotation += angularSpeed * secondsSinceLastFrame; //rotate rocket to the right side
   }
 
   //Only adapt position so long until the user adds thrust to the rocket
@@ -31,7 +31,10 @@ void Rocket::Update(double secondsSinceLastFrame) {
 }
 
 void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
-  renderTarget.DrawImage(IDR_ROCKET_IMAGE, Rectangle(Vector(), size));
+  Rectangle rocketRect(Vector(), size);
+  Size rcsSize(10, 5);
+
+  renderTarget.DrawImage(IDR_ROCKET_IMAGE, rocketRect);
 
   static int trailHeight[] = { 75, 100 };
 
@@ -48,13 +51,13 @@ void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
   }
 
   if (GetKeyState(VK_LEFT) & (1 << 7)) {
-    renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(Rectangle(Vector(), size).TopRight() + Vector::Down * 10 + Vector::Left * 10, Size(10, 5))); //Top right
-    renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(Rectangle(Vector(), size).BottomLeft() + Vector::Up * 10 + Vector::Left * 10, Size(10, 5)), 180, 1); //Bottom left, needs to be rotated 180 degrees
+    renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(rocketRect.TopRight() + Vector::Down * 10 + Vector::Left * 10, rcsSize)); //Top right
+    renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(rocketRect.BottomLeft() + Vector::Up * 10 + Vector::Left * 10, rcsSize), 180, true); //Bottom left, needs to be rotated 180 degrees
   }
 
   if (GetKeyState(VK_RIGHT) & (1 << 7)) {
-    renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(Vector() + Vector::Down * 10, Size(10, 5)), 180, 1); //Top left, needs to be rotated 180 degrees
-    renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(Rectangle(Vector(), size).bottomRight + Vector::Up * 10, Size(10, 5))); //Bottom right
+    renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(rocketRect.topLeft + Vector::Down * 10, rcsSize), 180, true); //Top left, needs to be rotated 180 degrees
+    renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(rocketRect.bottomRight + Vector::Up * 10, rcsSize)); //Bottom right
   }
  }
 

@@ -13,7 +13,7 @@ public:
   Vector(float x, float y); //A vector (x, y)
   Vector(const Vector& other);
 
-  const Vector Rotate(float angle);
+  Vector Rotate(float angle) const;
 
   Vector& operator=(const Vector& other);
 

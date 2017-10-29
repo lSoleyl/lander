@@ -1,5 +1,9 @@
 #include "stdafx.h"
 
+namespace {
+  const float PI = 3.14159265;
+}
+
 namespace Lander {
 
 const Vector Vector::Zero(0,0);
@@ -12,10 +16,11 @@ Vector::Vector() : x(0), y(0) {}
 Vector::Vector(float x, float y) : x(x), y(y) {}
 Vector::Vector(const Vector& other) : x(other.x), y(other.y) {}
 
-const Vector Vector::Rotate(float angle){  //Rotate vector according to the angle
+Vector Vector::Rotate(float angle) const {  //Rotate vector according to the angle
 
-  return Vector((this->x * cos(angle*PI / 180)) - (this->y * sin(angle*PI / 180)),
-                (this->x * sin(angle*PI / 180)) + (this->y * cos(angle*PI / 180)));
+  float radAngle = angle*PI / 180;
+  return Vector((x * cos(radAngle)) - (y * sin(radAngle)),
+                (x * sin(radAngle)) + (y * cos(radAngle)));
 }
 
 Vector& Vector::operator=(const Vector& other) {
