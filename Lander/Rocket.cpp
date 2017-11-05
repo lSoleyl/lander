@@ -11,7 +11,7 @@ Rocket::Rocket(const Platform& startPlatform) : startPlatform(startPlatform) {
 void Rocket::PhysicsUpdate(double secondsSinceLastFrame) {
   if (GetKeyState(VK_SPACE) & (1 << 7) || GetKeyState(VK_UP) & (1 << 7)) { //Don't know why, but GetAsyncKeyState() doesn't work correctly when called to often
     thrustCheck = false;  //Do not position Rocket on platform anymore
-    ApplyAcceleration(Vector(0, -(2 * verticalAcceleration)).Rotate(rotation));  //2 pixels are 1 Meter - acceleration of 15m/s²
+    ApplyAcceleration((Vector::Up * verticalAcceleration).Rotate(rotation)); //Apply acceleration, provided by rocket's thrust
   }
 
   if (GetKeyState(VK_LEFT) & (1 << 7) && !(GetKeyState(VK_RIGHT) & (1 << 7))) {  //only rotate if left key is pressed and right key unpressed

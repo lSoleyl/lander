@@ -23,9 +23,6 @@ private:
 
   const float verticalAcceleration = 15; // m/s²
   const float angularAcceleration = 10;  // °/s²
-
-  const double verticalSpeed = 150;  //Speed of the rocket when thrusting in pixels/second
-  const double angularSpeed = 60;    //Rotation speed of the rocket when turning in degrees/second
 };
 
 

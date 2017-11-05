@@ -18,7 +18,7 @@ void PhysicsObject::Update(double secondsSinceLastFrame) {
   angularVelocity += angularAcceleration * secondsSinceLastFrame;
 
   //Apply velocity
-  pos += velocity * secondsSinceLastFrame;
+  pos += velocity * secondsSinceLastFrame * PIXEL_PER_METER;
   rotation += angularVelocity * secondsSinceLastFrame;
   
   // Reset acceleration values
@@ -28,7 +28,7 @@ void PhysicsObject::Update(double secondsSinceLastFrame) {
 
 void PhysicsObject::Stop() {
   velocity = Vector::Zero;
-  acceleration = Vector:: Zero;
+  acceleration = Vector::Zero;
   angularVelocity = 0;
   angularAcceleration = 0;
 }
@@ -48,7 +48,7 @@ void PhysicsObject::ApplyForce(Vector force) {
 }
 
 void PhysicsObject::ApplyGravity(Vector direction) {
-  this->acceleration += (direction * 9.81 * 2);
+  this->acceleration += direction * 9.81;
 }
 
 
