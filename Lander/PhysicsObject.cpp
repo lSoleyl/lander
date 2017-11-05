@@ -47,6 +47,9 @@ void PhysicsObject::ApplyForce(Vector force) {
   acceleration += force / mass; // F = m*a;  a = F/m
 }
 
+void PhysicsObject::ApplyGravity(Vector direction) {
+  this->acceleration += (direction * 9.81 * 2);
+}
 
 
 }

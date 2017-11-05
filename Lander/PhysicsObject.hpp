@@ -57,6 +57,7 @@ public:
    */
   void ApplyForce(Vector force);
 
+  void ApplyGravity(Vector direction = Vector::Down);
 
 
   /////

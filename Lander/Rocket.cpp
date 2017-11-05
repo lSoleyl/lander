@@ -8,26 +8,27 @@ Rocket::Rocket(const Platform& startPlatform) : startPlatform(startPlatform) {
 }
 
 
-void Rocket::Update(double secondsSinceLastFrame) {
+void Rocket::PhysicsUpdate(double secondsSinceLastFrame) {
   if (GetKeyState(VK_SPACE) & (1 << 7) || GetKeyState(VK_UP) & (1 << 7)) { //Don't know why, but GetAsyncKeyState() doesn't work correctly when called to often
     thrustCheck = false;  //Do not position Rocket on platform anymore
-    pos += Vector::Up.Rotate(rotation) * verticalSpeed * secondsSinceLastFrame; //Rocket keeps flying forward as long as the Space-Key is pressed
+    ApplyAcceleration(Vector(0, -(2 * verticalAcceleration)).Rotate(rotation));  //2 pixels are 1 Meter - acceleration of 15m/s²
   }
 
   if (GetKeyState(VK_LEFT) & (1 << 7) && !(GetKeyState(VK_RIGHT) & (1 << 7))) {  //only rotate if left key is pressed and right key unpressed
-    rotation -= angularSpeed * secondsSinceLastFrame; //rotate rocket to the left side
-  } 
-  
+    ApplyAngularAcceleration(-angularAcceleration);
+  }
+
   if (GetKeyState(VK_RIGHT) & (1 << 7) && !(GetKeyState(VK_LEFT) & (1 << 7))) {  //only rotate if right key is pressed and left key is unpressed
-    rotation += angularSpeed * secondsSinceLastFrame; //rotate rocket to the right side
+    ApplyAngularAcceleration(angularAcceleration);
   }
 
   //Only adapt position so long until the user adds thrust to the rocket
   if (thrustCheck) {
     pos = startPlatform.pos + Vector::Up * size.height; //Calculate top position of rocket
     pos += Vector::Right * (startPlatform.size.width - size.width) / 2; //Center rocket on start platform
+  } else {
+    ApplyGravity();  //pull rocket towards the ground with 9.81 m/s²
   }
-
 }
 
 void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
