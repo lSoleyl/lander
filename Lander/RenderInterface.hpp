@@ -51,6 +51,21 @@ public:
    */
   virtual void DrawLine(Vector from, Vector to, Color color, float strokeWidth = 1.0f) = 0;
 
+  /** Draws a rectangle (only the borders) of the specified color into the given target rectangle.
+   *
+   * @param target the rectangle to draw into
+   * @param color the color of the rectangle
+   * @param strokeWidth the thickness of the line
+   */
+  virtual void DrawRectangle(Rectangle target, Color color, float strokeWidth = 1.0f) = 0;
+
+  /** Fills the target rectangle with the specified color
+   *
+   * @param target the rectangle to fill
+   * @param color the color to fill the rectangle with
+   */
+  virtual void FillRectangle(Rectangle target, Color color) = 0;
+
   /** Loads the image from the resources if necessary and draws it into the provided target rectangle
    *
    * @param resourceId the id, with which the image gets referenced in the resource.rc

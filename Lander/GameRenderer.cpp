@@ -41,6 +41,15 @@ void GameRenderer::DrawLine(Vector from, Vector to, Color color, float strokeWid
   RenderTarget().DrawLine(from, to, game.GetSolidBrush(color), strokeWidth); //TODO move GetSolidBrush() into GameRenderer class
 }
 
+void GameRenderer::DrawRectangle(Rectangle target, Color color, float strokeWidth) {
+  RenderTarget().DrawRectangle(target, game.GetSolidBrush(color), strokeWidth);
+}
+
+
+void GameRenderer::FillRectangle(Rectangle target, Color color) {
+  RenderTarget().FillRectangle(target, game.GetSolidBrush(color));
+};
+
 
 void GameRenderer::DrawImage(int resourceId, Rectangle targetRectangle) {
   auto pos = loadedImages.find(resourceId);
@@ -134,7 +143,7 @@ void GameRenderer::DrawObject(ViewObject* currentObject, double secondsPassed) {
   // First draw bounding box (Only a debugging measure)
   if (viewObject->DrawBoundingBox()) {
     auto color = (!viewObject->enabled) ? Color::Red : (!viewObject->visible) ? Color::Magenta : Color::Cyan;
-    RenderTarget().DrawRectangle(Rectangle(Vector(0,0),viewObject->size), game.GetSolidBrush(color),1.2);
+    DrawRectangle(Rectangle(Vector(0,0),viewObject->size), color, 1.2);
   }
 
   if (viewObject->enabled && viewObject->visible) {

@@ -27,6 +27,13 @@ class GameRenderer : public RenderInterface {
    */
   virtual void DrawLine(Vector from, Vector to, Color color, float strokeWidth = 1.0f) override;
 
+  /** Draws a rectanlge in the specified color
+   */
+  virtual void DrawRectangle(Rectangle target, Color color, float strokeWidth = 1.0f) override;
+
+  /** Fills the target rectangle with the specified color
+   */
+  virtual void FillRectangle(Rectangle target, Color color) override;
 
   virtual void DrawImage(int resourceId, Rectangle targetRectangle) override;
 
