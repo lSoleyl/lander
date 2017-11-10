@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 namespace {
-  const float PI = 3.14159265;
+  const float PI = 3.14159265359f;
 }
 
 namespace Lander {
@@ -95,7 +95,7 @@ Size Size::Abs() const {
 Rectangle::Rectangle() {}
 Rectangle::Rectangle(Vector topLeft, Vector bottomRight) : topLeft(topLeft), bottomRight(bottomRight) {}
 Rectangle::Rectangle(Vector topLeft, vec::Size size) : topLeft(topLeft), bottomRight((Vector::Right * size.width) + (Vector::Down * size.height) + topLeft) {}
-Rectangle::Rectangle(const RECT& rc) : topLeft(rc.left, rc.top), bottomRight(rc.right, rc.bottom) {} 
+Rectangle::Rectangle(const RECT& rc) : topLeft(static_cast<float>(rc.left), static_cast<float>(rc.top)), bottomRight(static_cast<float>(rc.right),static_cast<float>(rc.bottom)) {}
 Rectangle::Rectangle(const Rectangle& other) : topLeft(other.topLeft), bottomRight(other.bottomRight) {}
 
 

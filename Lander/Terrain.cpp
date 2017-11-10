@@ -13,8 +13,8 @@ void Terrain::Initialize(Size size) {
 void Terrain::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
   Vector baseLine = Vector::Down * size.height;
   for(int x = 0; x < size.width; ++x) {
-    baseLine.x = x;
-    renderTarget.DrawLine(baseLine, baseLine + (Vector::Up*GetTerrainHeight(x)), Color::LightSlateGray);
+    baseLine.x = static_cast<float>(x);
+    renderTarget.DrawLine(baseLine, baseLine + (Vector::Up*GetTerrainHeight(baseLine.x)), Color::LightSlateGray);
   }
 }
 
@@ -30,9 +30,9 @@ Vector Terrain::GetTerrainPos(float x) const {
 
 
 float Terrain::GetTerrainHeight(float x) const {
-  const float amplitude = size.height/5.0;
-  const float horizScale = 0.02;
-  auto height = amplitude/2;
+  const double amplitude = size.height/7.0;
+  const double horizScale = 0.02;
+  double height = amplitude/2;
   //Generate terrain by adding some curves
   height += amplitude*sin(x*horizScale);
   height += abs(amplitude*0.75*cos(x*horizScale*1.7));
@@ -40,9 +40,9 @@ float Terrain::GetTerrainHeight(float x) const {
   height += amplitude/4*sin(x*horizScale*1.5);
   
 
-  height += x/size.width * size.height/2; //Add ascending slope
+  height += x/size.width * size.height/3; //Add ascending slope
 
-  return std::max<float>(height, 0);
+  return static_cast<float>(std::max(height, 0.0));
 }
 
 

@@ -40,7 +40,7 @@ void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
 
   renderTarget.DrawImage(IDR_ROCKET_IMAGE, rocketRect);
 
-  static int trailHeight[] = { 75, 100 };
+  static float trailHeight[] = { 75, 100 };
 
   if ((GetKeyState(VK_SPACE) & (1 << 7) || GetKeyState(VK_UP) & (1 << 7)) && !Tank.IsEmpty()) {  //Only draw the trail if the rocket has started
 
@@ -51,7 +51,7 @@ void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
     }
 
     auto trailPosition = Vector::Right * (size.width / 4) + Vector::Down * size.height;
-    renderTarget.DrawImage(IDR_ROCKET_TRAIL_IMAGE, Rectangle(trailPosition, Size(size.width*0.5, trailHeight[trailIndex])));
+    renderTarget.DrawImage(IDR_ROCKET_TRAIL_IMAGE, Rectangle(trailPosition, Size(size.width*0.5f, trailHeight[trailIndex])));
   }
 
   if (GetKeyState(VK_LEFT) & (1 << 7)) {

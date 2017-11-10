@@ -16,7 +16,7 @@ public:
 
 private:
   RenderInterface::TextFormat textFormat; //The format used, to write the text
-  float avgFps;
+  double avgFps;
 };
 
 }

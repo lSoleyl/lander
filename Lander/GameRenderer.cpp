@@ -143,7 +143,7 @@ void GameRenderer::DrawObject(ViewObject* currentObject, double secondsPassed) {
   // First draw bounding box (Only a debugging measure)
   if (viewObject->DrawBoundingBox()) {
     auto color = (!viewObject->enabled) ? Color::Red : (!viewObject->visible) ? Color::Magenta : Color::Cyan;
-    DrawRectangle(Rectangle(Vector(0,0),viewObject->size), color, 1.2);
+    DrawRectangle(Rectangle(Vector(0,0),viewObject->size), color, 1.2f);
   }
 
   if (viewObject->enabled && viewObject->visible) {
