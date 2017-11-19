@@ -1,7 +1,7 @@
 #pragma once
+#include "FuelTank.hpp"
 
 namespace Lander {
-
 class Platform;
 class Rocket : public PhysicsObject {
 public:
@@ -25,6 +25,8 @@ private:
   const float angularAcceleration = 10;  // °/s²
 
   const float baseMass = 14109.6; //kg - The rocket's base mass without the mass of the fuel tanks and the fuel itself.
+
+  FuelTank Tank;
 };
 
 

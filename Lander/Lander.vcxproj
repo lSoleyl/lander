@@ -123,6 +123,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="FuelTank.hpp" />
     <ClInclude Include="GameRenderer.hpp" />
     <ClInclude Include="PhysicsObject.hpp" />
     <ClInclude Include="Platform.hpp" />
@@ -140,6 +141,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FPSCounter.cpp" />
+    <ClCompile Include="FuelTank.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameRenderer.cpp" />
     <ClCompile Include="main.cpp" />

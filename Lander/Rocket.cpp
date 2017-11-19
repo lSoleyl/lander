@@ -3,15 +3,18 @@
 #include "Platform.hpp"
 
 namespace Lander {
-Rocket::Rocket(const Platform& startPlatform) : startPlatform(startPlatform) {
+Rocket::Rocket(const Platform& startPlatform) : startPlatform(startPlatform), Tank(556704.4) {
   size = Size(startPlatform.size.width*2/3, 100); //Rocket has smaller width than the platform it is starting from
 }
 
 
 void Rocket::PhysicsUpdate(double secondsSinceLastFrame) {
+  mass = baseMass + Tank.Mass();
   if (GetKeyState(VK_SPACE) & (1 << 7) || GetKeyState(VK_UP) & (1 << 7)) { //Don't know why, but GetAsyncKeyState() doesn't work correctly when called to often
     thrustCheck = false;  //Do not position Rocket on platform anymore
-    ApplyAcceleration((Vector::Up * verticalAcceleration).Rotate(rotation)); //Apply acceleration, provided by rocket's thrust
+    ApplyForce((Vector::Up * Tank.GetThrust(secondsSinceLastFrame)).Rotate(rotation));
+    //Tank.GetThrust(secondsSinceLastFrame);
+    //ApplyAcceleration((Vector::Up * verticalAcceleration).Rotate(rotation)); //Apply acceleration, provided by rocket's thrust
   }
 
   if (GetKeyState(VK_LEFT) & (1 << 7) && !(GetKeyState(VK_RIGHT) & (1 << 7))) {  //only rotate if left key is pressed and right key unpressed
@@ -39,7 +42,7 @@ void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
 
   static int trailHeight[] = { 75, 100 };
 
-  if (GetKeyState(VK_SPACE) & (1 << 7) || GetKeyState(VK_UP) & (1 << 7)) {  //Only draw the trail if the rocket has started
+  if ((GetKeyState(VK_SPACE) & (1 << 7) || GetKeyState(VK_UP) & (1 << 7)) && !Tank.IsEmpty()) {  //Only draw the trail if the rocket has started
 
     secondsSinceLastAnimation += secondsSinceLastFrame;
     if (secondsSinceLastAnimation >= 0.15) {

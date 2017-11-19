@@ -69,6 +69,9 @@
     <ClInclude Include="PhysicsObject.hpp">
       <Filter>Headerdateien\Interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="FuelTank.hpp">
+      <Filter>Headerdateien\GameElements</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -100,6 +103,9 @@
     </ClCompile>
     <ClCompile Include="PhysicsObject.cpp">
       <Filter>Quelldateien\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="FuelTank.cpp">
+      <Filter>Quelldateien\GameElements</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -3,6 +3,7 @@
 
 //Game objects
 #include "FPSCounter.hpp"
+#include "FuelTank.hpp"
 #include "Terrain.hpp"
 #include "Platform.hpp"
 #include "Rocket.hpp"
