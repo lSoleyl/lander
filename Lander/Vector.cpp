@@ -23,6 +23,10 @@ Vector Vector::Rotate(float angle) const {  //Rotate vector according to the ang
                 (x * sin(radAngle)) + (y * cos(radAngle)));
 }
 
+Vector Vector::Rotate(float angle, Vector rotationPoint) const {
+  return (*this - rotationPoint).Rotate(angle) + rotationPoint;
+}
+
 Vector& Vector::operator=(const Vector& other) {
   x = other.x;
   y = other.y;

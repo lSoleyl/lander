@@ -13,7 +13,13 @@ public:
   Vector(float x, float y); //A vector (x, y)
   Vector(const Vector& other);
 
+  /**  Rotates the vector around (0,0) with the given angle
+   */
   Vector Rotate(float angle) const;
+
+  /** Rotates the vector around the given rotation point
+   */
+  Vector Rotate(float angle, Vector rotationPoint) const;
 
   Vector& operator=(const Vector& other);
 
