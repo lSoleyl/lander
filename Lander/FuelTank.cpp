@@ -3,23 +3,21 @@
 
 namespace {
  const float p = 280;  //Volume of H² in kg/m³
- const float jhjjj = 280;
- const float ls = 3830;  //Amount of energy every kg of fuel burnt provides, in Newton
- const float g = 9.81;  //Gravity that applies to every single kg, in Newton
- const float Q = 3000; //Amount of fuel that is burnt every second, in kg
+ const float ls = 3830*280;  //Amount of energy every m³ of fuel burnt provides, in Newton
+ const float Q = 10.714; //Amount of fuel that is burnt every second, in m³
 
 }
 
-  FuelTank::FuelTank(float fuel) : fuelMass(fuel) {}
+FuelTank::FuelTank() : currentVolume(maxVolume) {}
 
   FuelTank::~FuelTank(){}
 
   float FuelTank::Mass() const {
-    return emptyMass + fuelMass;  //returns the FuelTanks mass in Kg
+    return emptyMass + (currentVolume*280);  //returns the FuelTanks mass in kg
   }
 
   bool FuelTank::IsEmpty() const {
-    if (fuelMass <= 0)
+    if (currentVolume <= 0)
       return true;
     else
       return false;
@@ -30,7 +28,7 @@ namespace {
     if (IsEmpty())
       return 0;
 
-    fuelMass -= Q*secondsSinceLastFrame;
+    currentVolume -= (Q*secondsSinceLastFrame);
 
-    return Q*p*ls*secondsSinceLastFrame;  //thrust per second, in Newton
+    return Q*ls;  //thrust per second, in Newton
   }

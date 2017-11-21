@@ -3,7 +3,7 @@
 #include "Platform.hpp"
 
 namespace Lander {
-Rocket::Rocket(const Platform& startPlatform) : startPlatform(startPlatform), Tank(556704.4) {
+Rocket::Rocket(const Platform& startPlatform) : startPlatform(startPlatform) {
   size = Size(startPlatform.size.width*2/3, 100); //Rocket has smaller width than the platform it is starting from
 }
 
