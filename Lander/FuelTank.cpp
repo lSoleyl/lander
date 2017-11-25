@@ -32,3 +32,7 @@ FuelTank::FuelTank() : currentVolume(maxVolume) {}
 
     return Q*p*ls;  //thrust per second, in Newton
   }
+
+  float FuelTank::PercentVolume() {
+    return (currentVolume*100/maxVolume);
+  }
