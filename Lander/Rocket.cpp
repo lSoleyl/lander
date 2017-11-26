@@ -30,7 +30,7 @@ void Rocket::PhysicsUpdate(double secondsSinceLastFrame) {
 
     //Only adapt position so long until the user adds thrust to the rocket
     if (thrustCheck) {
-      pos = startPlatform.pos + Vector::Up * size.height; //Calculate top position of rocket
+      pos = startPlatform.pos + Vector::Up * (size.height+1); //Calculate top position of rocket
       pos += Vector::Right * (startPlatform.size.width - size.width) / 2; //Center rocket on start platform
     } else {
       ApplyGravity();  //pull rocket towards the ground with 9.81 m/s²
