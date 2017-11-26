@@ -48,7 +48,6 @@ void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
   Rectangle rocketRect(Vector(), size);
   renderTarget.DrawImage(IDR_ROCKET_IMAGE, rocketRect);
 
-
   ///
   // Fuel tanks
   ///
@@ -70,37 +69,41 @@ void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
   renderTarget.FillRectangle(emptyRectRight, Color::Black);
 
 
-  ///
-  // Main thrust (animated)
-  ///
-  static float trailHeight[] = { 75, 100 };
+  // Don't draw thrust animations if we had a collision
+  if (!hasCollision) {    
 
-  if ((GetKeyState(VK_SPACE) & (1 << 7) || GetKeyState(VK_UP) & (1 << 7)) && !Tank.IsEmpty()) {  //Only draw the trail if the rocket has started
+    ///
+    // Main thrust (animated)
+    ///
+    static float trailHeight[] = { 75, 100 };
 
-    secondsSinceLastAnimation += secondsSinceLastFrame;
-    if (secondsSinceLastAnimation >= 0.15) {
-      trailIndex = (trailIndex + 1) % 2; //alternate between 0 and 1
-      secondsSinceLastAnimation -= 0.15;
+    if ((GetKeyState(VK_SPACE) & (1 << 7) || GetKeyState(VK_UP) & (1 << 7)) && !Tank.IsEmpty()) {  //Only draw the trail if the rocket has started
+
+      secondsSinceLastAnimation += secondsSinceLastFrame;
+      if (secondsSinceLastAnimation >= 0.15) {
+        trailIndex = (trailIndex + 1) % 2; //alternate between 0 and 1
+        secondsSinceLastAnimation -= 0.15;
+      }
+
+      auto trailPosition = Vector::Right * (size.width / 4) + Vector::Down * size.height;
+      renderTarget.DrawImage(IDR_ROCKET_TRAIL_IMAGE, Rectangle(trailPosition, Size(size.width*0.5f, trailHeight[trailIndex])));
     }
 
-    auto trailPosition = Vector::Right * (size.width / 4) + Vector::Down * size.height;
-    renderTarget.DrawImage(IDR_ROCKET_TRAIL_IMAGE, Rectangle(trailPosition, Size(size.width*0.5f, trailHeight[trailIndex])));
-  }
 
+    /// 
+    // RCS thrusters
+    ///
+    if (GetKeyState(VK_LEFT) & (1 << 7)) {
+      renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(rocketRect.TopRight() + Vector::Down * 10 + Vector::Left * 10, rcsSize)); //Top right
+      renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(rocketRect.BottomLeft() + Vector::Up * 10 + Vector::Left * 10, rcsSize), 180, true); //Bottom left, needs to be rotated 180 degrees
+    }
 
-  /// 
-  // RCS thrusters
-  ///
-  if (GetKeyState(VK_LEFT) & (1 << 7)) {
-    renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(rocketRect.TopRight() + Vector::Down * 10 + Vector::Left * 10, rcsSize)); //Top right
-    renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(rocketRect.BottomLeft() + Vector::Up * 10 + Vector::Left * 10, rcsSize), 180, true); //Bottom left, needs to be rotated 180 degrees
+    if (GetKeyState(VK_RIGHT) & (1 << 7)) {
+      renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(rocketRect.topLeft + Vector::Down * 10, rcsSize), 180, true); //Top left, needs to be rotated 180 degrees
+      renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(rocketRect.bottomRight + Vector::Up * 10, rcsSize)); //Bottom right
+    }
   }
-
-  if (GetKeyState(VK_RIGHT) & (1 << 7)) {
-    renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(rocketRect.topLeft + Vector::Down * 10, rcsSize), 180, true); //Top left, needs to be rotated 180 degrees
-    renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(rocketRect.bottomRight + Vector::Up * 10, rcsSize)); //Bottom right
-  }
- }
+}
 
 
 bool Rocket::CheckCollisions() {
