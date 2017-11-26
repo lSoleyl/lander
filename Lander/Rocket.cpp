@@ -13,8 +13,6 @@ void Rocket::PhysicsUpdate(double secondsSinceLastFrame) {
   if (GetKeyState(VK_SPACE) & (1 << 7) || GetKeyState(VK_UP) & (1 << 7)) { //Don't know why, but GetAsyncKeyState() doesn't work correctly when called to often
     thrustCheck = false;  //Do not position Rocket on platform anymore
     ApplyForce((Vector::Up * Tank.GetThrust(secondsSinceLastFrame)).Rotate(rotation));
-    //Tank.GetThrust(secondsSinceLastFrame);
-    //ApplyAcceleration((Vector::Up * verticalAcceleration).Rotate(rotation)); //Apply acceleration, provided by rocket's thrust
   }
 
   if (GetKeyState(VK_LEFT) & (1 << 7) && !(GetKeyState(VK_RIGHT) & (1 << 7))) {  //only rotate if left key is pressed and right key unpressed
@@ -35,34 +33,37 @@ void Rocket::PhysicsUpdate(double secondsSinceLastFrame) {
 }
 
 void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
-  Size rcsSize(10, 5);
-  Size fullFuelSize(4, -1 * (Tank.PercentVolume()*0.47));
-  Size emptyFuelSize(4, (100 - Tank.PercentVolume())*0.47);
-
+  ///
+  // Rocket
+  ///
   Rectangle rocketRect(Vector(), size);
-
-  Rectangle fuelRectLeft(Vector::Down * 82 + Vector::Right * 5, fullFuelSize);
-  Rectangle emptyRectLeft(Vector::Down * 35 + Vector::Right * 5, emptyFuelSize);
-
-  Rectangle fuelRectRight(Vector::Down * 82 + Vector::Right * 24, fullFuelSize);
-  Rectangle emptyRectRight(Vector::Down * 35 + Vector::Right * 24, emptyFuelSize);
-
   renderTarget.DrawImage(IDR_ROCKET_IMAGE, rocketRect);
 
-  renderTarget.DrawRectangle(fuelRectLeft, Color::LightGray);
-  renderTarget.FillRectangle(fuelRectLeft, Color::LightGray);
 
-  renderTarget.DrawRectangle(fuelRectRight, Color::LightGray);
+  ///
+  // Fuel tanks
+  ///
+  Size rcsSize(10, 5);
+  Size fullFuelSize(4, 47);
+  Size emptyFuelSize = fullFuelSize;
+  emptyFuelSize.height *= 1.0 - Tank.CurrentVolume();  
+
+  Rectangle fuelRectLeft(Vector::Down * 35 + Vector::Right * 5, fullFuelSize);
+  Rectangle emptyRectLeft(Vector::Down * 35 + Vector::Right * 5, emptyFuelSize);
+
+  Rectangle fuelRectRight(Vector::Down * 35 + Vector::Right * 24, fullFuelSize);
+  Rectangle emptyRectRight(Vector::Down * 35 + Vector::Right * 24, emptyFuelSize);
+
+  renderTarget.FillRectangle(fuelRectLeft, Color::LightGray);
   renderTarget.FillRectangle(fuelRectRight, Color::LightGray);
 
-  if (!thrustCheck) {
-    renderTarget.DrawRectangle(emptyRectLeft, Color::Black, 0);
-    renderTarget.FillRectangle(emptyRectLeft, Color::Black);
+  renderTarget.FillRectangle(emptyRectLeft, Color::Black);
+  renderTarget.FillRectangle(emptyRectRight, Color::Black);
 
-    renderTarget.DrawRectangle(emptyRectRight, Color::Black, 0);
-    renderTarget.FillRectangle(emptyRectRight, Color::Black);
-}
 
+  ///
+  // Main thrust (animated)
+  ///
   static float trailHeight[] = { 75, 100 };
 
   if ((GetKeyState(VK_SPACE) & (1 << 7) || GetKeyState(VK_UP) & (1 << 7)) && !Tank.IsEmpty()) {  //Only draw the trail if the rocket has started
@@ -77,6 +78,10 @@ void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
     renderTarget.DrawImage(IDR_ROCKET_TRAIL_IMAGE, Rectangle(trailPosition, Size(size.width*0.5f, trailHeight[trailIndex])));
   }
 
+
+  /// 
+  // RCS thrusters
+  ///
   if (GetKeyState(VK_LEFT) & (1 << 7)) {
     renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(rocketRect.TopRight() + Vector::Down * 10 + Vector::Left * 10, rcsSize)); //Top right
     renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(rocketRect.BottomLeft() + Vector::Up * 10 + Vector::Left * 10, rcsSize), 180, true); //Bottom left, needs to be rotated 180 degrees

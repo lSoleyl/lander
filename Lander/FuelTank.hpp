@@ -9,7 +9,10 @@
     float Mass() const;
     bool IsEmpty() const;
     float GetThrust(float secondsSinceLastFrame);
-    float PercentVolume();
+
+    /** Returns currentVolume/maxVolume (0-1)
+     */
+    float CurrentVolume();
 
    private:
     float maxVolume = 1988.23;
