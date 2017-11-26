@@ -107,6 +107,9 @@
     <ClCompile Include="FuelTank.cpp">
       <Filter>Quelldateien\GameElements</Filter>
     </ClCompile>
+    <ClCompile Include="ViewObject.cpp">
+      <Filter>Quelldateien\Interfaces</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\rocket.png">

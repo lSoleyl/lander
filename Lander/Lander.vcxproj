@@ -156,6 +156,7 @@
     </ClCompile>
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="Vector.cpp" />
+    <ClCompile Include="ViewObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\rcs_thrust.png" />
