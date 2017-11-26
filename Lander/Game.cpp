@@ -17,6 +17,9 @@ Game* Game::Instance() {
 
 Game::~Game()
 {
+  //First clear colliders, we don't want objects to access deleted objects in Deinitialize()
+  colliders.clear();
+
   //Deinitialize all view objects
   for (auto viewObject : renderQueue) {
     viewObject->Deinitialize();
@@ -121,6 +124,10 @@ HRESULT Game::Initialize()
   return hr;
 }
 
+const std::vector<Collider*>& Game::GetColliders() const {
+  return colliders;
+}
+
 void Game::AddObject(ViewObject& viewObject) {
   if (renderQueue.empty()) {
     renderQueue.push_back(&viewObject);
@@ -134,6 +141,10 @@ void Game::AddObject(ViewObject& viewObject) {
       std::stable_sort(renderQueue.begin(), renderQueue.end(), [](ViewObject* v1, ViewObject* v2) { return v1->RenderPriority() > v2->RenderPriority(); });
     }
   }
+
+  // Add to collider list if it is a collider
+  if (auto collider = dynamic_cast<Collider*>(&viewObject))
+    colliders.push_back(collider);
 
   // If initialization already took place, initialize the object upon insertion
   if (initialized)

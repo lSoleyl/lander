@@ -72,6 +72,9 @@
     <ClInclude Include="FuelTank.hpp">
       <Filter>Headerdateien\GameElements</Filter>
     </ClInclude>
+    <ClInclude Include="Collider.hpp">
+      <Filter>Headerdateien\Interfaces</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -108,6 +111,9 @@
       <Filter>Quelldateien\GameElements</Filter>
     </ClCompile>
     <ClCompile Include="ViewObject.cpp">
+      <Filter>Quelldateien\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="Collider.cpp">
       <Filter>Quelldateien\Interfaces</Filter>
     </ClCompile>
   </ItemGroup>

@@ -123,6 +123,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Collider.hpp" />
     <ClInclude Include="FuelTank.hpp" />
     <ClInclude Include="GameRenderer.hpp" />
     <ClInclude Include="PhysicsObject.hpp" />
@@ -140,6 +141,7 @@
     <ClInclude Include="ViewObject.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Collider.cpp" />
     <ClCompile Include="FPSCounter.cpp" />
     <ClCompile Include="FuelTank.cpp" />
     <ClCompile Include="Game.cpp" />

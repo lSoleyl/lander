@@ -34,6 +34,9 @@ public:
      */
     void AddObject(ViewObject& viewObject);
 
+    /** Returns the internal list of colliders for collision checks.
+     */
+    const std::vector<Collider*>& GetColliders() const;
     
 private:
     /** Returns a (possibly new) brush for the given color. Used by Rendersurface
@@ -75,5 +78,6 @@ private:
     std::unordered_map<D2D1::ColorF::Enum, Resource<ID2D1Brush>> brushMap; //map of color -> brush
 
     std::deque<ViewObject*> renderQueue; //List of objects, which get rendered on each draw
+    std::vector<Collider*> colliders; //List of colliders for faster direct access
 };
 }

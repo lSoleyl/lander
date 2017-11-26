@@ -40,6 +40,7 @@
 
 #include "RenderInterface.hpp"
 #include "ViewObject.hpp"
+#include "Collider.hpp"
 #include "PhysicsObject.hpp"
 
 #ifndef HINST_THISCOMPONENT

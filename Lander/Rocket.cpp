@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Rocket.hpp"
 #include "Platform.hpp"
+#include "Game.hpp"
 
 namespace Lander {
 Rocket::Rocket(const Platform& startPlatform) : startPlatform(startPlatform) {
@@ -10,26 +11,34 @@ Rocket::Rocket(const Platform& startPlatform) : startPlatform(startPlatform) {
 
 void Rocket::PhysicsUpdate(double secondsSinceLastFrame) {
   mass = baseMass + Tank.Mass();
-  if (GetKeyState(VK_SPACE) & (1 << 7) || GetKeyState(VK_UP) & (1 << 7)) { //Don't know why, but GetAsyncKeyState() doesn't work correctly when called to often
-    thrustCheck = false;  //Do not position Rocket on platform anymore
-    ApplyForce((Vector::Up * Tank.GetThrust(secondsSinceLastFrame)).Rotate(rotation));
-  }
 
-  if (GetKeyState(VK_LEFT) & (1 << 7) && !(GetKeyState(VK_RIGHT) & (1 << 7))) {  //only rotate if left key is pressed and right key unpressed
-    ApplyAngularAcceleration(-angularAcceleration);
-  }
+  //Collision check
+  if (!hasCollision && !CheckCollisions()) {
+    //No collisions -> regular logic
+    if (GetKeyState(VK_SPACE) & (1 << 7) || GetKeyState(VK_UP) & (1 << 7)) { //Don't know why, but GetAsyncKeyState() doesn't work correctly when called to often
+      thrustCheck = false;  //Do not position Rocket on platform anymore
+      ApplyForce((Vector::Up * Tank.GetThrust(secondsSinceLastFrame)).Rotate(rotation));
+    }
 
-  if (GetKeyState(VK_RIGHT) & (1 << 7) && !(GetKeyState(VK_LEFT) & (1 << 7))) {  //only rotate if right key is pressed and left key is unpressed
-    ApplyAngularAcceleration(angularAcceleration);
-  }
+    if (GetKeyState(VK_LEFT) & (1 << 7) && !(GetKeyState(VK_RIGHT) & (1 << 7))) {  //only rotate if left key is pressed and right key unpressed
+      ApplyAngularAcceleration(-angularAcceleration);
+    }
 
-  //Only adapt position so long until the user adds thrust to the rocket
-  if (thrustCheck) {
-    pos = startPlatform.pos + Vector::Up * size.height; //Calculate top position of rocket
-    pos += Vector::Right * (startPlatform.size.width - size.width) / 2; //Center rocket on start platform
+    if (GetKeyState(VK_RIGHT) & (1 << 7) && !(GetKeyState(VK_LEFT) & (1 << 7))) {  //only rotate if right key is pressed and left key is unpressed
+      ApplyAngularAcceleration(angularAcceleration);
+    }
+
+    //Only adapt position so long until the user adds thrust to the rocket
+    if (thrustCheck) {
+      pos = startPlatform.pos + Vector::Up * size.height; //Calculate top position of rocket
+      pos += Vector::Right * (startPlatform.size.width - size.width) / 2; //Center rocket on start platform
+    } else {
+      ApplyGravity();  //pull rocket towards the ground with 9.81 m/s²
+    }
   } else {
-    ApplyGravity();  //pull rocket towards the ground with 9.81 m/s²
-  }
+    //Collision -> stop movement
+    Stop();
+  }  
 }
 
 void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
@@ -92,6 +101,21 @@ void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
     renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(rocketRect.bottomRight + Vector::Up * 10, rcsSize)); //Bottom right
   }
  }
+
+
+bool Rocket::CheckCollisions() {
+  for(auto collider : Game::Instance()->GetColliders()) {
+    if (collider != this) { //ignore the rocket itself
+
+      //TODO check whether the object's radiuses are larger than the distance (if not no check necessary because the collision isn't possible)
+      //TODO check whether one of the eight points of the rectangle is inside the other rectangle. (if so, set hasCollision to true)
+
+      throw std::exception("Not implemented yet!");
+    }  
+  }
+
+  return hasCollision;
+}
 
 
 }

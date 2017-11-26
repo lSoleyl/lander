@@ -5,7 +5,7 @@ namespace Lander {
 /** This class implements an extended view object, which has a mass, a linear and angular velocitiy to which
  *  accelerations and forces can be applied.
  */
-class PhysicsObject : public ViewObject {
+class PhysicsObject : public Collider {
 public:
   PhysicsObject();
 

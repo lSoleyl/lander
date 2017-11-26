@@ -6,7 +6,7 @@ class Terrain;
 
 /** This class represents one of the platforms for the rocket (start/target)
  */
-class Platform : public ViewObject {
+class Platform : public Collider {
 public:
   Platform(const Terrain& terrain, float xPos);
 

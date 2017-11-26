@@ -15,9 +15,16 @@ public:
   virtual void Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) override;
 
 private:
+  /** Checks whether this object collides with any Collider of this game.
+   *
+   * @returns true if the collision check has detected a collision with an object (hasCollision is true)
+   */
+  bool CheckCollisions();
+
   const Platform& startPlatform;
   int trailIndex = 0;
   bool thrustCheck = true; //While this is true, the rocket will reposition itself onto the platform. This will be set to false by adding thrust.
+  bool hasCollision = false; //Will be set to true by CollisionCheck() if it detects a collision with another collider
 
   double secondsSinceLastAnimation = 0;
 
