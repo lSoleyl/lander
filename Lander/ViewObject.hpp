@@ -39,6 +39,25 @@ public:
 #endif
   }
 
+  /** Transforms a vector from a (0,0) position relative to the top left of the screen into a vector, where 
+   *  (0,0) is the top left of the view object (with applied rotation).
+   * 
+   * @param worldVector the vector to transform
+   */
+  Vector WorldToObject(Vector worldVector) const;
+
+  /** Transforms a vector from a (0,0) position relative to the top left of this view object into a vector, where (0,0)
+   *  is the top left of the screen.
+   * 
+   * @param objectVector the vector to transform
+   */
+  Vector ObjectToWorld(Vector objectVector) const;
+
+  /** Returns the object's center position in object coordinates, relative to the top left corner.
+   *  To the get center in world coordinates, simply add pos to it.
+   */
+  Vector Center() const;
+
 
   /** This function gets called upon the game's destruction. Dynamically allocated ViewObjects
    *  can use this call to delete themselves. They are not being referenced by the game object after this call.
