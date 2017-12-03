@@ -7,13 +7,13 @@ namespace Lander {
 bool Collider::IsPointInside(Vector worldPoint) const {
 
   Vector objectPoint = WorldToObject(worldPoint);
-  Rectangle collRec(pos, size);
+  Rectangle collRec(Vector::Zero, size);
 
   Vector topLeft = collRec.topLeft;
   Vector bottomLeft = collRec.BottomLeft();
   Vector topRight = collRec.TopRight();
 
-  if ((topLeft.x < objectPoint.x && objectPoint.x < topRight.x) && (topLeft.y < objectPoint.y && objectPoint.y < bottomLeft.y)) //Point is inside this objects unrotated-rectangle
+  if ((topLeft.x <= objectPoint.x && objectPoint.x <= topRight.x) && (topLeft.y <= objectPoint.y && objectPoint.y <= bottomLeft.y)) //Point is inside this objects unrotated-rectangle
     return true;
 
   return false;

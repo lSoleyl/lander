@@ -58,8 +58,6 @@ public:
    */
   Vector Center() const;
 
-  double VectorValue(Vector) const;
-
 
   /** This function gets called upon the game's destruction. Dynamically allocated ViewObjects
    *  can use this call to delete themselves. They are not being referenced by the game object after this call.

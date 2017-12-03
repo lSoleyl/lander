@@ -21,9 +21,13 @@ private:
    */
   bool CheckCollisions();
 
+  /** Moves the rocket to it's start position
+   */
+  void Reposition();
+
   const Platform& startPlatform;
   int trailIndex = 0;
-  bool thrustCheck = true; //While this is true, the rocket will reposition itself onto the platform. This will be set to false by adding thrust.
+  bool rocketStarted = false; //Gets set to true, once the user starts the rocket
   bool hasCollision = false; //Will be set to true by CollisionCheck() if it detects a collision with another collider
 
   double secondsSinceLastAnimation = 0;
