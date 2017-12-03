@@ -17,4 +17,10 @@ Vector ViewObject::Center() const {
   return Vector::Right * size.width/2 + Vector::Down * size.height/2;
 }
 
+double ViewObject::VectorValue(Vector v) const {
+
+  return sqrt(pow(v.y, 2) + pow(v.x, 2)); //Get Vector's value through sentence of the pythagoras
+
+}
+
 }

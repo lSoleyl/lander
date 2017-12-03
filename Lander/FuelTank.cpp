@@ -36,3 +36,7 @@ FuelTank::FuelTank() : currentVolume(maxVolume) {}
   float FuelTank::CurrentVolume() {
     return currentVolume/maxVolume;
   }
+
+  void FuelTank::Refill() {
+    currentVolume = maxVolume;
+  }

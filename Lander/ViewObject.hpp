@@ -54,9 +54,11 @@ public:
   Vector ObjectToWorld(Vector objectVector) const;
 
   /** Returns the object's center position in object coordinates, relative to the top left corner.
-   *  To the get center in world coordinates, simply add pos to it.
+   *  To get center in world coordinates, simply add pos to it.
    */
   Vector Center() const;
+
+  double VectorValue(Vector) const;
 
 
   /** This function gets called upon the game's destruction. Dynamically allocated ViewObjects

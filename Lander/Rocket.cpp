@@ -12,19 +12,26 @@ Rocket::Rocket(const Platform& startPlatform) : startPlatform(startPlatform) {
 void Rocket::PhysicsUpdate(double secondsSinceLastFrame) {
   mass = baseMass + Tank.Mass();
 
-  //Collision check
-  if (!hasCollision && !CheckCollisions()) {
+  if (GetKeyState(VK_ESCAPE) & (1 << 7)) {
+    thrustCheck = true;
+    rotation = 0;
+    Tank.Refill();
+    Stop();
+    hasCollision = false;
+  }
+  
+  if (!hasCollision && !CheckCollisions()) { //Collision check
     //No collisions -> regular logic
     if (GetKeyState(VK_SPACE) & (1 << 7) || GetKeyState(VK_UP) & (1 << 7)) { //Don't know why, but GetAsyncKeyState() doesn't work correctly when called to often
       thrustCheck = false;  //Do not position Rocket on platform anymore
       ApplyForce((Vector::Up * Tank.GetThrust(secondsSinceLastFrame)).Rotate(rotation));
     }
 
-    if (GetKeyState(VK_LEFT) & (1 << 7) && !(GetKeyState(VK_RIGHT) & (1 << 7))) {  //only rotate if left key is pressed and right key unpressed
+    if (GetKeyState(VK_LEFT) & (1 << 7) && !(GetKeyState(VK_RIGHT) & (1 << 7)) && !thrustCheck) {  //only rotate if left key is pressed and right key unpressed
       ApplyAngularAcceleration(-angularAcceleration);
     }
 
-    if (GetKeyState(VK_RIGHT) & (1 << 7) && !(GetKeyState(VK_LEFT) & (1 << 7))) {  //only rotate if right key is pressed and left key is unpressed
+    if (GetKeyState(VK_RIGHT) & (1 << 7) && !(GetKeyState(VK_LEFT) & (1 << 7)) && !thrustCheck) {  //only rotate if right key is pressed and left key is unpressed
       ApplyAngularAcceleration(angularAcceleration);
     }
 
@@ -110,10 +117,44 @@ bool Rocket::CheckCollisions() {
   for(auto collider : Game::Instance()->GetColliders()) {
     if (collider != this) { //ignore the rocket itself
 
-      //TODO check whether the object's radiuses are larger than the distance (if not no check necessary because the collision isn't possible)
-      //TODO check whether one of the eight points of the rectangle is inside the other rectangle. (if so, set hasCollision to true)
+      Vector Distance = ObjectToWorld(this->Center()) - ObjectToWorld(collider->Center()); //Vector connecting both objects center
+      double DistanceValue = VectorValue(Distance);
+      double ValueRocket = VectorValue(Center()); //Rockets radius-value
+      double ValueCollider = VectorValue(collider->Center()); //Colliders radius-value
 
-      throw std::exception("Not implemented yet!");
+      if ((ValueRocket + ValueCollider) > DistanceValue) { //if distance is smaller than the object's radiuses: collision is possible
+        
+        //check whether one of the eight points of the rectangle is inside the other rectangle. (if so, set hasCollision to true)
+
+        Rectangle rocketRec(pos, Size(size.width, size.height*2));
+
+        Vector topLeftCorner = pos.Rotate(-rotation, Center());
+        Vector bottomLeftCorner = topLeftCorner + (Vector::Down * size.height * 2).Rotate(-rotation);//rocketRec.BottomLeft().Rotate(-rotation, Center());
+        Vector topRightCorner = rocketRec.TopRight().Rotate(-rotation, Center());
+        Vector bottomRightCorner = rocketRec.bottomRight.Rotate(-rotation, Center());
+
+        Vector leftCenter = topLeftCorner + (Vector::Down*size.height).Rotate(-rotation);
+        Vector topCenter = topLeftCorner + (Vector::Right * size.width).Rotate(-rotation);
+        Vector rightCenter = topLeftCorner + (Vector::Down * size.height).Rotate(-rotation) + (Vector::Right * size.width).Rotate(-rotation);
+        Vector bottomCenter = topLeftCorner + (Vector::Right * size.width).Rotate(-rotation) + ((Vector::Down * size.height).Rotate(-rotation) * 2);
+
+        if (collider->IsPointInside(ObjectToWorld(topLeftCorner)))
+          hasCollision = true;
+        if (collider->IsPointInside(ObjectToWorld(bottomRightCorner)))
+          hasCollision = true;
+        if (collider->IsPointInside(ObjectToWorld(bottomLeftCorner)))
+          hasCollision = true;
+        if (collider->IsPointInside(ObjectToWorld(topRightCorner)))
+          hasCollision = true;
+        if (collider->IsPointInside(ObjectToWorld(leftCenter)))
+          hasCollision = true;
+        if (collider->IsPointInside(ObjectToWorld(topCenter)))
+          hasCollision = true;
+        if (collider->IsPointInside(ObjectToWorld(rightCenter)))
+          hasCollision = true;
+        if (collider->IsPointInside(ObjectToWorld(bottomCenter)))
+          hasCollision = true;
+      }
     }  
   }
 

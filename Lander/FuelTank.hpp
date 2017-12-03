@@ -13,6 +13,7 @@
     /** Returns currentVolume/maxVolume (0-1)
      */
     float CurrentVolume();
+    void Refill();
 
    private:
     float maxVolume = 1988.23;
