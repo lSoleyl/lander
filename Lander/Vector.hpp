@@ -94,6 +94,12 @@ public:
 
   Vector TopRight() const;
   Vector BottomLeft() const;
+  Vector Center() const;
+
+  Vector TopCenter() const;
+  Vector RightCenter() const;
+  Vector BottomCenter() const;
+  Vector LeftCenter() const;
 
   Vector topLeft, bottomRight;
 };

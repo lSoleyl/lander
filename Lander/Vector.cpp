@@ -119,4 +119,26 @@ Vector Rectangle::BottomLeft() const {
   return Vector(topLeft.x, bottomRight.y);
 }
 
+Vector Rectangle::Center() const {
+  return Vector((bottomRight.x + topLeft.x) / 2, (topLeft.y + bottomRight.y) / 2);
+}
+
+Vector Rectangle::TopCenter() const {
+  return Vector(Center().x, topLeft.y);
+}
+
+
+
+Vector Rectangle::RightCenter() const {
+  return Vector(bottomRight.x, Center().y);
+}
+ 
+Vector Rectangle::BottomCenter() const {
+  return Vector(Center().x, bottomRight.y);
+}
+  
+Vector Rectangle::LeftCenter() const {
+  return Vector(topLeft.x, Center().y);
+}
+
 }
