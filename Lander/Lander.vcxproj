@@ -126,6 +126,7 @@
     <ClInclude Include="Collider.hpp" />
     <ClInclude Include="FuelTank.hpp" />
     <ClInclude Include="GameRenderer.hpp" />
+    <ClInclude Include="Hilfsfunktionen.hpp" />
     <ClInclude Include="PhysicsObject.hpp" />
     <ClInclude Include="Platform.hpp" />
     <ClInclude Include="resources.h" />
@@ -161,6 +162,7 @@
     <ClCompile Include="ViewObject.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Assets\explosion.png" />
     <Image Include="Assets\rcs_thrust.png" />
     <Image Include="Assets\rocket.png" />
     <Image Include="Assets\rockettrail.png" />

@@ -19,7 +19,7 @@ private:
    *
    * @returns true if the collision check has detected a collision with an object (hasCollision is true)
    */
-  bool CheckCollisions();
+  void CheckCollisions();
 
   /** Moves the rocket to it's start position
    */
@@ -27,8 +27,6 @@ private:
 
   const Platform& startPlatform;
   int trailIndex = 0;
-  bool rocketStarted = false; //Gets set to true, once the user starts the rocket
-  bool hasCollision = false; //Will be set to true by CollisionCheck() if it detects a collision with another collider
 
   double secondsSinceLastAnimation = 0;
 
@@ -38,6 +36,9 @@ private:
   const float baseMass = 14109.6f; //kg - The rocket's base mass without the mass of the fuel tanks and the fuel itself.
 
   FuelTank Tank;
+
+  enum STATE {LANDED, STARTED, CRASHED};
+  STATE state = STATE::LANDED;
 };
 
 

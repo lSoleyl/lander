@@ -2,6 +2,7 @@
 #include "Rocket.hpp"
 #include "Platform.hpp"
 #include "Game.hpp"
+#include "Hilfsfunktionen.hpp"
 
 #include <array>
 
@@ -17,8 +18,7 @@ void Rocket::Reposition() {
   
   rotation = 0;
 
-  rocketStarted = false;
-  hasCollision = false;
+  state = STATE::LANDED;
 
   Stop();
 }
@@ -26,36 +26,41 @@ void Rocket::Reposition() {
 void Rocket::PhysicsUpdate(double secondsSinceLastFrame) {
   mass = baseMass + Tank.Mass();
 
-  if (GetKeyState(VK_ESCAPE) & (1 << 7)) {
+  if (KeyPressed(VK_ESCAPE)) {
     Reposition();    
     Tank.Refill();
   }
-  
-  if (!hasCollision && !CheckCollisions()) { //Collision check
-    //No collisions -> regular logic
-    if (GetKeyState(VK_SPACE) & (1 << 7) || GetKeyState(VK_UP) & (1 << 7)) { //Don't know why, but GetAsyncKeyState() doesn't work correctly when called to often
-      rocketStarted = true;  //Do not position Rocket on platform anymore
-      ApplyForce((Vector::Up * Tank.GetThrust(secondsSinceLastFrame)).Rotate(rotation));
-    }
 
-    if (GetKeyState(VK_LEFT) & (1 << 7) && !(GetKeyState(VK_RIGHT) & (1 << 7)) && rocketStarted) {  //only rotate if left key is pressed and right key unpressed
-      ApplyAngularAcceleration(-angularAcceleration);
-    }
+  CheckCollisions();
 
-    if (GetKeyState(VK_RIGHT) & (1 << 7) && !(GetKeyState(VK_LEFT) & (1 << 7)) && rocketStarted) {  //only rotate if right key is pressed and left key is unpressed
-      ApplyAngularAcceleration(angularAcceleration);
-    }
+  switch (state) {
 
-    //Only adapt position so long until the user adds thrust to the rocket
-    if (!rocketStarted) {
-      Reposition();
-    } else {
+    case STATE::LANDED:
+
+      Reposition(); //Adapt position until the user adds thrust to the rocket
+      if (KeyPressed(VK_SPACE) || KeyPressed(VK_UP))
+        state = STATE::STARTED;  //Do not position Rocket on platform anymore
+      break;
+
+    case STATE::STARTED:
+
+      if (KeyPressed(VK_SPACE) || KeyPressed(VK_UP))
+        ApplyForce((Vector::Up * Tank.GetThrust(secondsSinceLastFrame)).Rotate(rotation));
+
+      if (KeyPressed(VK_LEFT) && !(KeyPressed(VK_RIGHT)))
+        ApplyAngularAcceleration(-angularAcceleration);
+
+      if (KeyPressed(VK_RIGHT) && !(KeyPressed(VK_LEFT)))
+        ApplyAngularAcceleration(angularAcceleration);
+
       ApplyGravity();  //pull rocket towards the ground with 9.81 m/s²
-    }
-  } else {
-    //Collision -> stop movement
-    Stop();
-  }  
+      break;
+
+    case STATE::CRASHED:
+      Stop();
+      break;
+  }
+
 }
 
 void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
@@ -64,6 +69,8 @@ void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
   ///
   Rectangle rocketRect(Vector(), size);
   renderTarget.DrawImage(IDR_ROCKET_IMAGE, rocketRect);
+
+  Rectangle explosionRect((Vector() + Vector::Left * 341 + Vector::Up * 310), Size(717, 720));
 
   ///
   // Fuel tanks
@@ -87,14 +94,14 @@ void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
 
 
   // Don't draw thrust animations if we had a collision
-  if (!hasCollision) {    
+  if (!(state == CRASHED)) {    
 
     ///
     // Main thrust (animated)
     ///
     static float trailHeight[] = { 75, 100 };
 
-    if ((GetKeyState(VK_SPACE) & (1 << 7) || GetKeyState(VK_UP) & (1 << 7)) && !Tank.IsEmpty()) {  //Only draw the trail if the rocket has started
+    if (KeyPressed(VK_SPACE) || KeyPressed(VK_UP) && !Tank.IsEmpty()) {  //Only draw the trail if the rocket has started
 
       secondsSinceLastAnimation += secondsSinceLastFrame;
       if (secondsSinceLastAnimation >= 0.15) {
@@ -110,20 +117,23 @@ void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
     /// 
     // RCS thrusters
     ///
-    if (GetKeyState(VK_LEFT) & (1 << 7)) {
+    if (KeyPressed(VK_LEFT)) {
       renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(rocketRect.TopRight() + Vector::Down * 10 + Vector::Left * 10, rcsSize)); //Top right
       renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(rocketRect.BottomLeft() + Vector::Up * 10 + Vector::Left * 10, rcsSize), 180, true); //Bottom left, needs to be rotated 180 degrees
     }
 
-    if (GetKeyState(VK_RIGHT) & (1 << 7)) {
+    if (KeyPressed(VK_RIGHT)) {
       renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(rocketRect.topLeft + Vector::Down * 10, rcsSize), 180, true); //Top left, needs to be rotated 180 degrees
       renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(rocketRect.bottomRight + Vector::Up * 10, rcsSize)); //Bottom right
     }
   }
+  else {
+    renderTarget.DrawImage(IDR_EXPLOSION_IMAGE, explosionRect);
+  }
 }
 
 
-bool Rocket::CheckCollisions() {
+void Rocket::CheckCollisions() {
   Rectangle rocketRect(Vector::Zero, size);
 
   std::array<Vector, 8> collisionPoints;
@@ -147,17 +157,15 @@ bool Rocket::CheckCollisions() {
 
       if ((ValueRocket + ValueCollider) > DistanceValue) { //if distance is smaller than the object's radiuses: collision is possible
         
-        //check whether one of the eight points of the rectangle is inside the other rectangle. (if so, set hasCollision to true)
+        //check whether one of the eight points of the rectangle is inside the other rectangle. (if so, set sate to CRASHED)
         if (std::any_of(collisionPoints.begin(), collisionPoints.end(), [collider](const Vector& point) { 
           return collider->IsPointInside(point);
         })) {
-          hasCollision = true;
+          state = STATE::CRASHED;
         }
       }
     }  
   }
-
-  return hasCollision;
 }
 
 

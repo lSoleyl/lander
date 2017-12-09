@@ -75,6 +75,9 @@
     <ClInclude Include="Collider.hpp">
       <Filter>Headerdateien\Interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="Hilfsfunktionen.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -125,6 +128,9 @@
       <Filter>Ressourcendateien</Filter>
     </Image>
     <Image Include="Assets\rcs_thrust.png">
+      <Filter>Ressourcendateien</Filter>
+    </Image>
+    <Image Include="Assets\explosion.png">
       <Filter>Ressourcendateien</Filter>
     </Image>
   </ItemGroup>
