@@ -2,7 +2,7 @@
 
 namespace Lander {
 
-class Terrain : public ViewObject {
+class Terrain : public Collider {
 public:
   virtual void Initialize(Size size) override;
 
@@ -16,6 +16,8 @@ public:
    *  The position is specified relative to pos
    */
   virtual Vector GetTerrainPos(float x) const;
+
+  virtual bool IsPointInside(Vector point) const override;
 
 private:
   /** Returns the terrain height at the given position

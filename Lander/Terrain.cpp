@@ -28,6 +28,14 @@ Vector Terrain::GetTerrainPos(float x) const {
   return baseLine + (Vector::Up*GetTerrainHeight(x));
 }
 
+bool Terrain::IsPointInside(Vector worldPoint) const {
+  float terrainHeight = (WINDOW_HEIGHT - GetTerrainHeight(worldPoint.x) - 30); //need to subtract 30 for the windows borders
+
+  if (terrainHeight < worldPoint.y)
+    return true;
+  return false;
+}
+
 
 float Terrain::GetTerrainHeight(float x) const {
   const double amplitude = size.height/7.0;
