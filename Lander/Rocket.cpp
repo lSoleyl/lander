@@ -2,7 +2,7 @@
 #include "Rocket.hpp"
 #include "Platform.hpp"
 #include "Game.hpp"
-#include "Hilfsfunktionen.hpp"
+#include "Helper.hpp"
 
 #include <array>
 
@@ -94,7 +94,7 @@ void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
 
 
   // Don't draw thrust animations if we had a collision
-  if (!(state == CRASHED)) {    
+  if (state != STATE::CRASHED) {    
 
     ///
     // Main thrust (animated)

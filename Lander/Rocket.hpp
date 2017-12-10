@@ -37,7 +37,7 @@ private:
 
   FuelTank Tank;
 
-  enum STATE {LANDED, STARTED, CRASHED};
+  enum class STATE {LANDED, STARTED, CRASHED};
   STATE state = STATE::LANDED;
 };
 

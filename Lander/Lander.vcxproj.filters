@@ -75,7 +75,7 @@
     <ClInclude Include="Collider.hpp">
       <Filter>Headerdateien\Interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="Hilfsfunktionen.hpp">
+    <ClInclude Include="Helper.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

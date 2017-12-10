@@ -126,7 +126,7 @@
     <ClInclude Include="Collider.hpp" />
     <ClInclude Include="FuelTank.hpp" />
     <ClInclude Include="GameRenderer.hpp" />
-    <ClInclude Include="Hilfsfunktionen.hpp" />
+    <ClInclude Include="Helper.hpp" />
     <ClInclude Include="PhysicsObject.hpp" />
     <ClInclude Include="Platform.hpp" />
     <ClInclude Include="resources.h" />

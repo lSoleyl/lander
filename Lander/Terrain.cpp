@@ -29,11 +29,9 @@ Vector Terrain::GetTerrainPos(float x) const {
 }
 
 bool Terrain::IsPointInside(Vector worldPoint) const {
-  float terrainHeight = (WINDOW_HEIGHT - GetTerrainHeight(worldPoint.x) - 30); //need to subtract 30 for the windows borders
+  float terrainHeight = size.height - GetTerrainHeight(worldPoint.x);
 
-  if (terrainHeight < worldPoint.y)
-    return true;
-  return false;
+  return (terrainHeight < worldPoint.y);
 }
 
 
