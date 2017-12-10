@@ -1,10 +1,7 @@
 #include "stdafx.h"
 #include "Rocket.hpp"
 #include "Platform.hpp"
-#include "Game.hpp"
 #include "Helper.hpp"
-
-#include <array>
 
 namespace Lander {
 Rocket::Rocket(const Platform& startPlatform) : startPlatform(startPlatform) {
@@ -132,40 +129,12 @@ void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
   }
 }
 
+void Rocket::OnCollision(Collider& collider) {
+  state = STATE::CRASHED;
 
-void Rocket::CheckCollisions() {
-  Rectangle rocketRect(Vector::Zero, size);
-
-  std::array<Vector, 8> collisionPoints;
-
-  collisionPoints[0] = ObjectToWorld(rocketRect.topLeft);
-  collisionPoints[1] = ObjectToWorld(rocketRect.TopCenter());
-  collisionPoints[2] = ObjectToWorld(rocketRect.TopRight());
-  collisionPoints[3] = ObjectToWorld(rocketRect.LeftCenter());
-  collisionPoints[4] = ObjectToWorld(rocketRect.RightCenter());
-  collisionPoints[5] = ObjectToWorld(rocketRect.BottomLeft());
-  collisionPoints[6] = ObjectToWorld(rocketRect.BottomCenter());
-  collisionPoints[7] = ObjectToWorld(rocketRect.bottomRight);
-
-  for(auto collider : Game::Instance()->GetColliders()) {
-    if (collider != this) { //ignore the rocket itself
-
-      Vector Distance = ObjectToWorld(this->Center()) - ObjectToWorld(collider->Center()); //Vector connecting both objects center
-      float DistanceValue = Distance.Length();
-      float ValueRocket = Center().Length(); //Rockets radius-value
-      float ValueCollider = collider->Center().Length(); //Colliders radius-value
-
-      if ((ValueRocket + ValueCollider) > DistanceValue) { //if distance is smaller than the object's radiuses: collision is possible
-        
-        //check whether one of the eight points of the rectangle is inside the other rectangle. (if so, set sate to CRASHED)
-        if (std::any_of(collisionPoints.begin(), collisionPoints.end(), [collider](const Vector& point) { 
-          return collider->IsPointInside(point);
-        })) {
-          state = STATE::CRASHED;
-        }
-      }
-    }  
-  }
+  //TODO if collider == startPlatform && speed < 1m/s && rotation +-(3°) --> state = landed && slowly refill rocket (~ 5% / sec)
+  //TODO if collider == targetPlatform && speed < 1m/s && rotation +-(3°) --> state = finished && display SUCCESS 
+  //TODO else state = crashed
 }
 
 

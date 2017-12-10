@@ -15,11 +15,9 @@ public:
   virtual void Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) override;
 
 private:
-  /** Checks whether this object collides with any Collider of this game.
-   *
-   * @returns true if the collision check has detected a collision with an object (hasCollision is true)
+  /** Handle collisions
    */
-  void CheckCollisions();
+  virtual void OnCollision(Collider& collider) override;
 
   /** Moves the rocket to it's start position
    */
