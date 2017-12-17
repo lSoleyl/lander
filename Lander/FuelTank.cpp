@@ -40,3 +40,11 @@ FuelTank::FuelTank() : currentVolume(maxVolume) {}
   void FuelTank::Refill() {
     currentVolume = maxVolume;
   }
+
+  void FuelTank::Fill(float percent) {
+    if (currentVolume >= maxVolume) {
+      Refill();
+      return;
+    }
+    currentVolume = currentVolume + (maxVolume / 100 * percent);
+  }

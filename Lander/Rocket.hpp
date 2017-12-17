@@ -1,11 +1,12 @@
 #pragma once
 #include "FuelTank.hpp"
+#include "ScreenText.hpp"
 
 namespace Lander {
 class Platform;
 class Rocket : public PhysicsObject {
 public:
-  Rocket(const Platform& startPlatform);
+  Rocket(const Platform& startPlatform, const Platform& landingPlatform, ScreenText& screenText);
 
   /** Update method used to adapt own position to the platforms's position if it changes.
    *  This is only necessary until the rocket receives it's first user input (thrust)
@@ -24,6 +25,8 @@ private:
   void Reposition();
 
   const Platform& startPlatform;
+  const Platform& landingPlatform;
+  ScreenText& screenText;
   int trailIndex = 0;
 
   double secondsSinceLastAnimation = 0;
@@ -35,8 +38,8 @@ private:
 
   FuelTank Tank;
 
-  enum class STATE {LANDED, STARTED, CRASHED};
-  STATE state = STATE::LANDED;
+  enum class STATE {UNSTARTED, STARTED, CRASHED, LANDED, SUCCESS};
+  STATE state = STATE::UNSTARTED;
 };
 
 

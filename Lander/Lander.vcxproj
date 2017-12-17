@@ -131,6 +131,7 @@
     <ClInclude Include="Platform.hpp" />
     <ClInclude Include="resources.h" />
     <ClInclude Include="Rocket.hpp" />
+    <ClInclude Include="ScreenText.hpp" />
     <ClInclude Include="Terrain.hpp" />
     <ClInclude Include="COMError.hpp" />
     <ClInclude Include="FPSCounter.hpp" />
@@ -151,6 +152,7 @@
     <ClCompile Include="PhysicsObject.cpp" />
     <ClCompile Include="Platform.cpp" />
     <ClCompile Include="Rocket.cpp" />
+    <ClCompile Include="ScreenText.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

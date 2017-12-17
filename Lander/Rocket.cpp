@@ -4,7 +4,7 @@
 #include "Helper.hpp"
 
 namespace Lander {
-Rocket::Rocket(const Platform& startPlatform) : startPlatform(startPlatform) {
+Rocket::Rocket(const Platform& startPlatform, const Platform& landingPlatform, ScreenText& screenText) : startPlatform(startPlatform), landingPlatform(landingPlatform), screenText(screenText) {
   size = Size(startPlatform.size.width*2/3, 100); //Rocket has smaller width than the platform it is starting from
 }
 
@@ -12,27 +12,37 @@ Rocket::Rocket(const Platform& startPlatform) : startPlatform(startPlatform) {
 void Rocket::Reposition() {
   pos = startPlatform.pos + Vector::Up * (size.height+1); //Calculate top position of rocket
   pos += Vector::Right * (startPlatform.size.width - size.width) / 2; //Center rocket on start platform
-  
+
   rotation = 0;
-
-  state = STATE::LANDED;
-
   Stop();
+  screenText.SetRunning();
 }
 
 void Rocket::PhysicsUpdate(double secondsSinceLastFrame) {
   mass = baseMass + Tank.Mass();
 
   if (KeyPressed(VK_ESCAPE)) {
-    Reposition();    
+    Reposition();
+    state = STATE::UNSTARTED;
     Tank.Refill();
   }
 
-  CheckCollisions();
-
   switch (state) {
 
+    case STATE::CRASHED:
+      Stop();
+      screenText.SetGameOver();
+      break;
+
+    case STATE::SUCCESS:
+      Stop();
+      screenText.SetVictory();
+      break;
+
     case STATE::LANDED:
+      Tank.Fill(2*secondsSinceLastAnimation);
+
+    case STATE::UNSTARTED:
 
       Reposition(); //Adapt position until the user adds thrust to the rocket
       if (KeyPressed(VK_SPACE) || KeyPressed(VK_UP))
@@ -41,6 +51,7 @@ void Rocket::PhysicsUpdate(double secondsSinceLastFrame) {
 
     case STATE::STARTED:
 
+      CheckCollisions();
       if (KeyPressed(VK_SPACE) || KeyPressed(VK_UP))
         ApplyForce((Vector::Up * Tank.GetThrust(secondsSinceLastFrame)).Rotate(rotation));
 
@@ -53,9 +64,6 @@ void Rocket::PhysicsUpdate(double secondsSinceLastFrame) {
       ApplyGravity();  //pull rocket towards the ground with 9.81 m/s²
       break;
 
-    case STATE::CRASHED:
-      Stop();
-      break;
   }
 
 }
@@ -130,11 +138,25 @@ void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
 }
 
 void Rocket::OnCollision(Collider& collider) {
-  state = STATE::CRASHED;
+  float rotationValue = rotation;
 
-  //TODO if collider == startPlatform && speed < 1m/s && rotation +-(3°) --> state = landed && slowly refill rocket (~ 5% / sec)
-  //TODO if collider == targetPlatform && speed < 1m/s && rotation +-(3°) --> state = finished && display SUCCESS 
-  //TODO else state = crashed
+  while (rotationValue >= 357) //Adjust rotationValue
+    rotationValue -= 360;
+  while (rotationValue <= -357)
+    rotationValue += 360;
+
+  //8 m/s seems achievable, 1 m/s does not    //Rotation has to be between 3° and -3°
+  if ((velocity.Length() < 8) && (rotationValue <= 3 && rotationValue >= -3) && (&collider == &startPlatform)) {
+    state = STATE::LANDED;
+    return;
+  }
+
+  if ((velocity.Length() < 8) && (rotationValue <= 3 && rotationValue >= -3) && (&collider == &landingPlatform)) {
+    state = STATE::SUCCESS;
+    return;
+  }
+
+  state = STATE::CRASHED;
 }
 
 

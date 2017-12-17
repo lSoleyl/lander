@@ -7,6 +7,7 @@
 #include "Terrain.hpp"
 #include "Platform.hpp"
 #include "Rocket.hpp"
+#include "ScreenText.hpp"
 
 using namespace Lander;
 
@@ -36,8 +37,11 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR /*cmdline*/, int) {
 
             Platform landingPlatform(terrain, 835/*target xPos*/);
             app.AddObject(landingPlatform);
+            
+            ScreenText screenText;
+            app.AddObject(screenText);
 
-            Rocket rocket(startPlatform);
+            Rocket rocket(startPlatform, landingPlatform, screenText);
             app.AddObject(rocket);
 
             if (SUCCEEDED(app.Initialize())) {

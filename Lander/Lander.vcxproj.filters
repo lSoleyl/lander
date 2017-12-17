@@ -78,6 +78,9 @@
     <ClInclude Include="Helper.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="ScreenText.hpp">
+      <Filter>Headerdateien\GameElements</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -118,6 +121,9 @@
     </ClCompile>
     <ClCompile Include="Collider.cpp">
       <Filter>Quelldateien\Interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="ScreenText.cpp">
+      <Filter>Quelldateien\GameElements</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

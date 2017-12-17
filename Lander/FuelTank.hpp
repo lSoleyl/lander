@@ -13,7 +13,8 @@
     /** Returns currentVolume/maxVolume (0-1)
      */
     float CurrentVolume();
-    void Refill();
+    void Refill(); //completely refills the tank
+    void Fill(float percent); //refills the tank by a percentage value
 
    private:
     float maxVolume = 1988.23;
