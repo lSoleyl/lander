@@ -26,8 +26,7 @@ RenderInterface::TextFormat GameRenderer::CreateTextFormat(const wchar_t* fontNa
   auto result = writeFactory->CreateTextFormat(fontName, nullptr, DWRITE_FONT_WEIGHT_REGULAR, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, fontSize, L"en-us", &textFormat);
   HandleCOMError(result, "TextFormat creation");
     
-  textFormats.push_back(FONT_ENTRY());
-  textFormats.back() = FONT_ENTRY(fontName, fontSize, textFormat);
+  textFormats.push_back(FONT_ENTRY(fontName, fontSize, textFormat));
   return static_cast<TextFormat>(textFormats.size());
 }
 
@@ -158,7 +157,7 @@ Vector GameRenderer::RotationCenter() const {
 
 GameRenderer::FONT_ENTRY::FONT_ENTRY() {};
 GameRenderer::FONT_ENTRY::FONT_ENTRY(const wchar_t* fontName, float fontSize, IDWriteTextFormat* format) : fontName(fontName), fontSize(fontSize), textFormat(format) {}
-GameRenderer::FONT_ENTRY::FONT_ENTRY(FONT_ENTRY&& other) : fontName(std::move(fontName)), fontSize(fontSize), textFormat(std::move(textFormat)) {}
+GameRenderer::FONT_ENTRY::FONT_ENTRY(FONT_ENTRY&& other) : fontName(std::move(other.fontName)), fontSize(other.fontSize), textFormat(std::move(other.textFormat)) {}
 
 GameRenderer::FONT_ENTRY& GameRenderer::FONT_ENTRY::operator=(FONT_ENTRY&& other) {
   fontSize = other.fontSize;
