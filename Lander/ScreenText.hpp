@@ -14,6 +14,8 @@ namespace Lander {
 
     virtual void Draw(RenderInterface& renderInterface, double secondsPassed) override;
 
+    virtual bool DrawBoundingBox() override { return false; }
+
   private:
 
     RenderInterface::TextFormat textFormat; //The format used, to write the text
