@@ -8,6 +8,7 @@
 #include "Platform.hpp"
 #include "Rocket.hpp"
 #include "ScreenText.hpp"
+#include "Time.hpp"
 
 using namespace Lander;
 
@@ -41,7 +42,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR /*cmdline*/, int) {
             ScreenText screenText;
             app.AddObject(screenText);
 
-            Rocket rocket(startPlatform, landingPlatform, screenText);
+            TimeCounter timeCounter;
+            app.AddObject(timeCounter);
+
+            Rocket rocket(startPlatform, landingPlatform, screenText, timeCounter);
             app.AddObject(rocket);
 
             if (SUCCEEDED(app.Initialize())) {

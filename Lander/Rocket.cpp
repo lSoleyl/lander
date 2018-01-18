@@ -4,7 +4,7 @@
 #include "Helper.hpp"
 
 namespace Lander {
-Rocket::Rocket(const Platform& startPlatform, const Platform& landingPlatform, ScreenText& screenText) : startPlatform(startPlatform), landingPlatform(landingPlatform), screenText(screenText) {
+Rocket::Rocket(const Platform& startPlatform, const Platform& landingPlatform, ScreenText& screenText, TimeCounter& timeCounter) : startPlatform(startPlatform), landingPlatform(landingPlatform), screenText(screenText), timeCounter(timeCounter) {
   size = Size(startPlatform.size.width*2/3, 100); //Rocket has smaller width than the platform it is starting from
 }
 
@@ -25,6 +25,7 @@ void Rocket::PhysicsUpdate(double secondsSinceLastFrame) {
     Reposition();
     state = STATE::UNSTARTED;
     Tank.Refill();
+    timeCounter.ResetCount();
   }
 
   switch (state) {
@@ -32,11 +33,13 @@ void Rocket::PhysicsUpdate(double secondsSinceLastFrame) {
     case STATE::CRASHED:
       Stop();
       screenText.SetGameOver();
+      timeCounter.StopCount();
       break;
 
     case STATE::SUCCESS:
       Stop();
       screenText.SetVictory();
+      timeCounter.StopCount();
       break;
 
     case STATE::LANDED:
@@ -45,8 +48,10 @@ void Rocket::PhysicsUpdate(double secondsSinceLastFrame) {
     case STATE::UNSTARTED:
 
       Reposition(); //Adapt position until the user adds thrust to the rocket
-      if (KeyPressed(VK_SPACE) || KeyPressed(VK_UP))
+      if (KeyPressed(VK_SPACE) || KeyPressed(VK_UP)) {
         state = STATE::STARTED;  //Do not position Rocket on platform anymore
+        timeCounter.StartCount();
+      }
       break;
 
     case STATE::STARTED:
@@ -99,7 +104,7 @@ void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
 
 
   // Don't draw thrust animations if we had a collision
-  if (state != STATE::CRASHED) {    
+  if (state != STATE::CRASHED && state != STATE::SUCCESS) {    
 
     ///
     // Main thrust (animated)

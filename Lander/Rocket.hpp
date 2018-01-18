@@ -1,12 +1,13 @@
 #pragma once
 #include "FuelTank.hpp"
 #include "ScreenText.hpp"
+#include "Time.hpp"
 
 namespace Lander {
 class Platform;
 class Rocket : public PhysicsObject {
 public:
-  Rocket(const Platform& startPlatform, const Platform& landingPlatform, ScreenText& screenText);
+  Rocket(const Platform& startPlatform, const Platform& landingPlatform, ScreenText& screenText, TimeCounter& timeCounter);
 
   /** Update method used to adapt own position to the platforms's position if it changes.
    *  This is only necessary until the rocket receives it's first user input (thrust)
@@ -27,6 +28,7 @@ private:
   const Platform& startPlatform;
   const Platform& landingPlatform;
   ScreenText& screenText;
+  TimeCounter& timeCounter;
   int trailIndex = 0;
 
   double secondsSinceLastAnimation = 0;

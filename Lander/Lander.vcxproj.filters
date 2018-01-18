@@ -81,6 +81,9 @@
     <ClInclude Include="ScreenText.hpp">
       <Filter>Headerdateien\GameElements</Filter>
     </ClInclude>
+    <ClInclude Include="Time.hpp">
+      <Filter>Headerdateien\GameElements</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -123,6 +126,9 @@
       <Filter>Quelldateien\Interfaces</Filter>
     </ClCompile>
     <ClCompile Include="ScreenText.cpp">
+      <Filter>Quelldateien\GameElements</Filter>
+    </ClCompile>
+    <ClCompile Include="Time.cpp">
       <Filter>Quelldateien\GameElements</Filter>
     </ClCompile>
   </ItemGroup>

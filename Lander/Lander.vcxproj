@@ -139,6 +139,7 @@
     <ClInclude Include="RenderInterface.hpp" />
     <ClInclude Include="Resource.hpp" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Time.hpp" />
     <ClInclude Include="Vector.hpp" />
     <ClInclude Include="ViewObject.hpp" />
   </ItemGroup>
@@ -160,6 +161,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Terrain.cpp" />
+    <ClCompile Include="Time.cpp" />
     <ClCompile Include="Vector.cpp" />
     <ClCompile Include="ViewObject.cpp" />
   </ItemGroup>
