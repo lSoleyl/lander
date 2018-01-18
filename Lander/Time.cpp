@@ -5,7 +5,7 @@
 namespace Lander {
 
   TimeCounter::TimeCounter() : textFormat(NULL) {
-    size = Size(215, 30);
+    size = Size(280, 30);
   }
 
   int TimeCounter::RenderPriority() const { return -99; }

@@ -104,14 +104,14 @@ void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
 
 
   // Don't draw thrust animations if we had a collision
-  if (state != STATE::CRASHED && state != STATE::SUCCESS) {    
+  if (state != STATE::CRASHED) {    
 
     ///
     // Main thrust (animated)
     ///
     static float trailHeight[] = { 75, 100 };
 
-    if (KeyPressed(VK_SPACE) || KeyPressed(VK_UP) && !Tank.IsEmpty()) {  //Only draw the trail if the rocket has started
+    if (KeyPressed(VK_SPACE) || KeyPressed(VK_UP) && !Tank.IsEmpty() && (state != STATE::SUCCESS)) {  //Only draw the trail if the rocket has started
 
       secondsSinceLastAnimation += secondsSinceLastFrame;
       if (secondsSinceLastAnimation >= 0.15) {
