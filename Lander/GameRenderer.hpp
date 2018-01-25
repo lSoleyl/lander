@@ -3,6 +3,7 @@
 namespace Lander {
 
 class Game;
+class FontLoader;
 
 /** This class implements the RenderInterface interface for the Game class and draws onto the 
  *  Game's renderTarget.
@@ -10,6 +11,7 @@ class Game;
 class GameRenderer : public RenderInterface {
   public:
   GameRenderer(Game& game, ID2D1HwndRenderTarget** ppRenderTarget);
+  ~GameRenderer();
 
   /** Returns the current size of the renderTarget
    */
@@ -18,6 +20,10 @@ class GameRenderer : public RenderInterface {
   /** Creates a text format, which can be used with DrawText
    */
   virtual TextFormat CreateTextFormat(const wchar_t* fontName, float fontSize) override;
+
+  /** Creates a text format from a font resource, which can be used with DrawText
+   */
+  virtual TextFormat CreateTextFormat(int resourceId, float fontSize) override;
 
   /** Draws the given text, using the previously created text format
    */
@@ -49,6 +55,11 @@ class GameRenderer : public RenderInterface {
   void DrawObject(ViewObject* viewObject, double secondsPassed);
 
 private:  
+
+  /** Loads a binary resource into memory and returns a pointer to it
+   */
+  Data LoadBinaryResource(int resourceId);
+
   /** Returns the rotation center of the currently active view object.
    */
   Vector RotationCenter() const;
@@ -62,6 +73,7 @@ private:
 
   struct FONT_ENTRY { 
     FONT_ENTRY();
+    FONT_ENTRY(int resourceId, float fontSize, IDWriteTextFormat* format);
     FONT_ENTRY(const wchar_t* fontName, float fontSize, IDWriteTextFormat* format);
     FONT_ENTRY(FONT_ENTRY&& other);
 
@@ -69,6 +81,7 @@ private:
 
 
     std::wstring fontName; 
+    int resourceId;
     float fontSize; 
     Resource<IDWriteTextFormat> textFormat; 
   };
@@ -77,6 +90,7 @@ private:
   ID2D1HwndRenderTarget** ppRenderTarget; //The GameRender doesn't own the renderTarget, so it isn't wrapped inside a Resource<>
   Resource<IWICImagingFactory> imageFactory;
   Resource<IDWriteFactory> writeFactory;
+  Resource<FontLoader> fontLoader;
   std::vector<FONT_ENTRY> textFormats;
   std::unordered_map<int/*resourceId*/, Resource<ID2D1Bitmap>> loadedImages;
   

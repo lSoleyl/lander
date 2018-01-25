@@ -6,3 +6,7 @@ IDR_ROCKET_TRAIL_IMAGE IMAGE "assets\\rockettrail.png"
 IDR_ROCKET_THRUST_IMAGE IMAGE "assets\\rcs_thrust.png"
 IDR_EXPLOSION_IMAGE IMAGE "assets\\explosion.png"
 IDR_ARROW_IMAGE IMAGE "assets\\arrow.jpg"
+
+
+//Used fonts
+IDR_NI7SEG_FONT IMAGE "Assets\\Fonts\\NI7SEG.TTF"

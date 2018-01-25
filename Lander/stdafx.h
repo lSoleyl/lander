@@ -35,8 +35,9 @@
 //Utility classes
 #include "Resource.hpp"
 #include "COMError.hpp"
+#include "COMBase.hpp"
 #include "Vector.hpp"
-
+#include "Data.hpp"
 
 #include "RenderInterface.hpp"
 #include "ViewObject.hpp"

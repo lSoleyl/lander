@@ -1,13 +1,50 @@
 #include "stdafx.h"
 #include "Game.hpp"
 #include "GameRenderer.hpp"
+#include "FontLoader.hpp"
 
 namespace Lander {
 
 GameRenderer::GameRenderer(Game& game, ID2D1HwndRenderTarget** ppRenderTarget) : game(game), ppRenderTarget(ppRenderTarget), viewObject(nullptr) {}
 
+GameRenderer::~GameRenderer() {
+  // cleanup
+  if (fontLoader) {
+    writeFactory->UnregisterFontCollectionLoader(fontLoader);
+  }
+}
+
 Lander::Size GameRenderer::Size() { 
   return RenderTarget().GetSize(); 
+}
+
+RenderInterface::TextFormat GameRenderer::CreateTextFormat(int resourceId, float fontSize) {
+  for(size_t i = 0; i < textFormats.size(); ++i)
+    if (textFormats[i].resourceId == resourceId && textFormats[i].fontSize == fontSize)
+      return static_cast<TextFormat>(i+1);
+   
+  // if not found
+  // create write factory if this is the first use of CreateTextFormat (throw an exception if this fails)
+  if (!writeFactory) {
+    HandleCOMError(DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**>(&writeFactory)), "write factory creation");
+  }
+
+  if (!fontLoader) {
+    fontLoader = FontLoader::Instance();
+    HandleCOMError(writeFactory->RegisterFontCollectionLoader(fontLoader), "Failed to register FontCollectionLoader");
+  }
+
+  auto resource = LoadBinaryResource(resourceId);
+
+  IDWriteFontCollection* myCollection = nullptr;
+  HandleCOMError(writeFactory->CreateCustomFontCollection(fontLoader, &resource, sizeof(resource), &myCollection), "Failed to create custom font collection");
+
+  IDWriteTextFormat* textFormat = nullptr;     //TODO we must still pass the font name as argument
+  auto result = writeFactory->CreateTextFormat(L"NI7SEG", myCollection, DWRITE_FONT_WEIGHT_REGULAR, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, fontSize, L"en-us", &textFormat);
+  HandleCOMError(result, "TextFormat creation");
+
+  textFormats.push_back(FONT_ENTRY(resourceId, fontSize, textFormat));
+  return static_cast<TextFormat>(textFormats.size());
 }
 
 RenderInterface::TextFormat GameRenderer::CreateTextFormat(const wchar_t* fontName, float fontSize) {
@@ -83,25 +120,12 @@ Resource<ID2D1Bitmap> GameRenderer::LoadImageResource(int resourceId) {
   }
 
   // Load the rescoure
-  auto resourceHandle = FindResource(NULL, MAKEINTRESOURCE(resourceId), _T("Image")/*type*/);
-  if (!resourceHandle)
-    throw std::exception("Couldn't find the image resource");
-
-  auto loadedResource = LoadResource(NULL, resourceHandle);
-  if (!loadedResource)
-    throw std::exception("Failed to load the resource");
-
-  auto resourceMemory = LockResource(loadedResource);
-  if (!resourceMemory)
-    throw std::exception("Failed to retrieve resource memory pointer");
-
-  auto resourceMemSize = SizeofResource(NULL, resourceHandle);
-  if (!resourceMemSize)
-    throw std::exception("Failed to retrieve the resource's size");
+  auto resource = LoadBinaryResource(resourceId);
+  
 
   Resource<IWICStream> imageStream;
   HandleCOMError(imageFactory->CreateStream(&imageStream), "image stream creation");
-  HandleCOMError(imageStream->InitializeFromMemory(reinterpret_cast<BYTE*>(resourceMemory),resourceMemSize), "image stream load");
+  HandleCOMError(imageStream->InitializeFromMemory(static_cast<BYTE*>(resource.data), static_cast<DWORD>(resource.size)), "image stream load");
 
   Resource<IWICBitmapDecoder> streamDecoder;
   HandleCOMError(imageFactory->CreateDecoderFromStream(imageStream, NULL, WICDecodeMetadataCacheOnLoad, &streamDecoder),"creating stream decoder");
@@ -124,6 +148,29 @@ Resource<ID2D1Bitmap> GameRenderer::LoadImageResource(int resourceId) {
   HandleCOMError(RenderTarget().CreateBitmapFromWicBitmap(formatConverter, NULL, &convertedBitmap), "conversion to direct2d image");
 
   return std::move(convertedBitmap);
+}
+
+Data GameRenderer::LoadBinaryResource(int resourceId) {
+  // Load the rescoure
+  auto resourceHandle = FindResource(NULL, MAKEINTRESOURCE(resourceId), _T("Image")/*type*/);
+  if (!resourceHandle)
+    throw std::exception("Couldn't find the image resource");
+
+  auto loadedResource = LoadResource(NULL, resourceHandle);
+  if (!loadedResource)
+    throw std::exception("Failed to load the resource");
+
+  Data resource = {0};
+
+  resource.data = static_cast<BYTE*>(LockResource(loadedResource));
+  if (!resource.data)
+    throw std::exception("Failed to retrieve resource memory pointer");
+
+  resource.size = SizeofResource(NULL, resourceHandle);
+  if (!resource.size)
+    throw std::exception("Failed to retrieve the resource's size");
+
+  return resource;
 }
 
 /** Provide access to internal renderTarget... should be removed in the future if possible
@@ -156,11 +203,13 @@ Vector GameRenderer::RotationCenter() const {
 }
 
 GameRenderer::FONT_ENTRY::FONT_ENTRY() {};
-GameRenderer::FONT_ENTRY::FONT_ENTRY(const wchar_t* fontName, float fontSize, IDWriteTextFormat* format) : fontName(fontName), fontSize(fontSize), textFormat(format) {}
-GameRenderer::FONT_ENTRY::FONT_ENTRY(FONT_ENTRY&& other) : fontName(std::move(other.fontName)), fontSize(other.fontSize), textFormat(std::move(other.textFormat)) {}
+GameRenderer::FONT_ENTRY::FONT_ENTRY(int resourceId, float fontSize, IDWriteTextFormat* format) : resourceId(resourceId), fontSize(fontSize), textFormat(format) {}
+GameRenderer::FONT_ENTRY::FONT_ENTRY(const wchar_t* fontName, float fontSize, IDWriteTextFormat* format) : fontName(fontName), fontSize(fontSize), textFormat(format), resourceId(-1) {}
+GameRenderer::FONT_ENTRY::FONT_ENTRY(FONT_ENTRY&& other) : fontName(std::move(other.fontName)), fontSize(other.fontSize), textFormat(std::move(other.textFormat)), resourceId(other.resourceId) {}
 
 GameRenderer::FONT_ENTRY& GameRenderer::FONT_ENTRY::operator=(FONT_ENTRY&& other) {
   fontSize = other.fontSize;
+  resourceId = other.resourceId;
   fontName.swap(other.fontName);      
   textFormat = std::move(other.textFormat);
   return *this;

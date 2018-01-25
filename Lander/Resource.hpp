@@ -49,6 +49,9 @@ public:
     ptr = iPtr;
   }
 
+  template<typename TargetInterface>
+  TargetInterface as() { return dynamic_cast<TargetInterface>(ptr); }
+
   /** Implicit cast to the internally held interface pointer
    */
   operator Interface*() const {

@@ -32,6 +32,15 @@ public:
    */
   virtual TextFormat CreateTextFormat(const wchar_t* fontName, float fontSize) = 0;
 
+  /** Creates a new text format with the given arguments, or returns an already existing format, which has been created with the same parameters.
+   *
+   * @param resourceId the resource to load the font from (a .ttf file)
+   * @param fontSize the size of the text format to create
+   *
+   * @return a new TextFormat != NULL if successful
+   */
+  virtual TextFormat CreateTextFormat(int resourceId, float fontSize) = 0;
+
   /** Draws a text into the specified area with the previously created text format (CreateTextFormat)
    *
    * @param text the text to draw
