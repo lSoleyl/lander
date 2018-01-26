@@ -21,9 +21,9 @@ class GameRenderer : public RenderInterface {
    */
   virtual TextFormat CreateTextFormat(const wchar_t* fontName, float fontSize) override;
 
-  /** Creates a text format from a font resource, which can be used with DrawText
+  /** Creates a text format by loading the font with the given name and size form the given font resource file.
    */
-  virtual TextFormat CreateTextFormat(int resourceId, float fontSize) override;
+  virtual TextFormat CreateTextFormat(const wchar_t* fontName, float fontSize, int resourceId) override;
 
   /** Draws the given text, using the previously created text format
    */
@@ -73,7 +73,6 @@ private:
 
   struct FONT_ENTRY { 
     FONT_ENTRY();
-    FONT_ENTRY(int resourceId, float fontSize, IDWriteTextFormat* format);
     FONT_ENTRY(const wchar_t* fontName, float fontSize, IDWriteTextFormat* format);
     FONT_ENTRY(FONT_ENTRY&& other);
 
@@ -81,7 +80,6 @@ private:
 
 
     std::wstring fontName; 
-    int resourceId;
     float fontSize; 
     Resource<IDWriteTextFormat> textFormat; 
   };

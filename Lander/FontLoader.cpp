@@ -1,12 +1,7 @@
 #include "stdafx.h"
 #include "FontLoader.hpp"
 
-#include <iomanip>
-#include <chrono>
-
 namespace Lander {
-
-
 
 
 
@@ -36,6 +31,8 @@ public:
       file->AddRef();
       *fontFile = file;
     }
+
+    return S_OK;
   }
 
 private:
@@ -61,15 +58,9 @@ public:
     if (!lastWriteTime)
       return E_POINTER;
 
-    //This method is acutally used to determine which font suits better, so we have to return a recent timepoint (now)
-    //lastwritetime is the number of 100ns since 01.01.1601
-    std::tm tm = {};
-    std::istringstream ss("01.01.1601 00:00:01");
-    ss >> std::get_time(&tm,"%d.%m.%Y %H:%M:%S");
-    auto t0 = std::chrono::system_clock::from_time_t(std::mktime(&tm));
-    auto now = std::chrono::system_clock::now();
-
-    *lastWriteTime = std::chrono::duration_cast<std::chrono::microseconds>(now - t0).count() * 10;
+    // Since the system font collection isn't considered during font lookup if we provide our own, 
+    // we don't have to calculate the number of 100ns since 01.01.1600
+    *lastWriteTime = 0;
     return S_OK;
   }
 

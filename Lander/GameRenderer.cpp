@@ -18,9 +18,9 @@ Lander::Size GameRenderer::Size() {
   return RenderTarget().GetSize(); 
 }
 
-RenderInterface::TextFormat GameRenderer::CreateTextFormat(int resourceId, float fontSize) {
+RenderInterface::TextFormat GameRenderer::CreateTextFormat(const wchar_t* fontName, float fontSize, int resourceId) {
   for(size_t i = 0; i < textFormats.size(); ++i)
-    if (textFormats[i].resourceId == resourceId && textFormats[i].fontSize == fontSize)
+    if (textFormats[i].fontName == fontName && textFormats[i].fontSize == fontSize)
       return static_cast<TextFormat>(i+1);
    
   // if not found
@@ -39,11 +39,11 @@ RenderInterface::TextFormat GameRenderer::CreateTextFormat(int resourceId, float
   IDWriteFontCollection* myCollection = nullptr;
   HandleCOMError(writeFactory->CreateCustomFontCollection(fontLoader, &resource, sizeof(resource), &myCollection), "Failed to create custom font collection");
 
-  IDWriteTextFormat* textFormat = nullptr;     //TODO we must still pass the font name as argument
-  auto result = writeFactory->CreateTextFormat(L"NI7SEG", myCollection, DWRITE_FONT_WEIGHT_REGULAR, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, fontSize, L"en-us", &textFormat);
+  IDWriteTextFormat* textFormat = nullptr;
+  auto result = writeFactory->CreateTextFormat(fontName, myCollection, DWRITE_FONT_WEIGHT_REGULAR, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, fontSize, L"en-us", &textFormat);
   HandleCOMError(result, "TextFormat creation");
 
-  textFormats.push_back(FONT_ENTRY(resourceId, fontSize, textFormat));
+  textFormats.push_back(FONT_ENTRY(fontName, fontSize, textFormat));
   return static_cast<TextFormat>(textFormats.size());
 }
 
@@ -203,13 +203,11 @@ Vector GameRenderer::RotationCenter() const {
 }
 
 GameRenderer::FONT_ENTRY::FONT_ENTRY() {};
-GameRenderer::FONT_ENTRY::FONT_ENTRY(int resourceId, float fontSize, IDWriteTextFormat* format) : resourceId(resourceId), fontSize(fontSize), textFormat(format) {}
-GameRenderer::FONT_ENTRY::FONT_ENTRY(const wchar_t* fontName, float fontSize, IDWriteTextFormat* format) : fontName(fontName), fontSize(fontSize), textFormat(format), resourceId(-1) {}
-GameRenderer::FONT_ENTRY::FONT_ENTRY(FONT_ENTRY&& other) : fontName(std::move(other.fontName)), fontSize(other.fontSize), textFormat(std::move(other.textFormat)), resourceId(other.resourceId) {}
+GameRenderer::FONT_ENTRY::FONT_ENTRY(const wchar_t* fontName, float fontSize, IDWriteTextFormat* format) : fontName(fontName), fontSize(fontSize), textFormat(format) {}
+GameRenderer::FONT_ENTRY::FONT_ENTRY(FONT_ENTRY&& other) : fontName(std::move(other.fontName)), fontSize(other.fontSize), textFormat(std::move(other.textFormat)) {}
 
 GameRenderer::FONT_ENTRY& GameRenderer::FONT_ENTRY::operator=(FONT_ENTRY&& other) {
   fontSize = other.fontSize;
-  resourceId = other.resourceId;
   fontName.swap(other.fontName);      
   textFormat = std::move(other.textFormat);
   return *this;

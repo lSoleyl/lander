@@ -6,6 +6,7 @@ template<typename Interface>
 class COMBase : public Interface {
 public:
   COMBase() : refCount(1) {}
+  virtual ~COMBase() {} // to call destructor of derived class.
   //IUnknown implementation
   STDMETHOD(QueryInterface)(REFIID riid, void** ppvObject) override {
     if (!ppvObject)
