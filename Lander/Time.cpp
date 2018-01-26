@@ -58,7 +58,7 @@ namespace Lander {
 
     // Create text format upon first use
     if (!textFormat)
-      textFormat = renderInterface.CreateTextFormat(L"NI7SEG", 20);
+      textFormat = renderInterface.CreateTextFormat(L"NI7SEG", 20, IDR_NI7SEG_FONT);
 
     renderInterface.DrawText(textString, textFormat, Rectangle(Vector(), size), Color::LightGoldenrodYellow);
   }

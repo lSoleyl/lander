@@ -19,8 +19,7 @@ void FPSCounter::Draw(RenderInterface& renderInterface, double secondsPassed) {
   
   // Create text format upon first use
   if (!textFormat)
-    textFormat = renderInterface.CreateTextFormat(IDR_NI7SEG_FONT, 20);
-    //textFormat = renderInterface.CreateTextFormat(L"NI7SEG", 20);
+    textFormat = renderInterface.CreateTextFormat(L"NI7SEG", 20, IDR_NI7SEG_FONT);
 
   renderInterface.DrawText(fpsText, textFormat, Rectangle(Vector(), size), Color::LightGoldenrodYellow);
 }
