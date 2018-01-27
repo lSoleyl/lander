@@ -126,6 +126,18 @@ FontLoader::~FontLoader() {
 
 }
 
+void FontLoader::RegisterFontResource(const wchar_t* fontName, int resourceId) {
+  fontResources[fontName] = resourceId;
+}
+
+int FontLoader::GetFontResource(const wchar_t* fontName) {
+  auto pos = fontResources.find(fontName);
+  if (pos != fontResources.end())
+    return pos->second;
+
+  return FontLoader::NO_RESOURCE;
+}
+
 
 STDMETHODIMP FontLoader::CreateEnumeratorFromKey(IDWriteFactory* factory, const void* key, UINT32 keySize, IDWriteFontFileEnumerator** fontFileEnumerator) {
   if (!fontFileEnumerator || !factory)

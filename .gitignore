@@ -1,3 +1,4 @@
+*.vcxproj.user
 *.sdf
 *.v12.suo
 **/Debug

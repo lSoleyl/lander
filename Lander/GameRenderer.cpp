@@ -18,7 +18,7 @@ Lander::Size GameRenderer::Size() {
   return RenderTarget().GetSize(); 
 }
 
-RenderInterface::TextFormat GameRenderer::CreateTextFormat(const wchar_t* fontName, float fontSize, int resourceId) {
+RenderInterface::TextFormat GameRenderer::CreateTextFormat(const wchar_t* fontName, float fontSize) {
   for(size_t i = 0; i < textFormats.size(); ++i)
     if (textFormats[i].fontName == fontName && textFormats[i].fontSize == fontSize)
       return static_cast<TextFormat>(i+1);
@@ -34,35 +34,20 @@ RenderInterface::TextFormat GameRenderer::CreateTextFormat(const wchar_t* fontNa
     HandleCOMError(writeFactory->RegisterFontCollectionLoader(fontLoader), "Failed to register FontCollectionLoader");
   }
 
-  auto resource = LoadBinaryResource(resourceId);
+  Resource<IDWriteFontCollection> fontCollection; //null is the system font collection
 
-  IDWriteFontCollection* myCollection = nullptr;
-  HandleCOMError(writeFactory->CreateCustomFontCollection(fontLoader, &resource, sizeof(resource), &myCollection), "Failed to create custom font collection");
-
-  IDWriteTextFormat* textFormat = nullptr;
-  auto result = writeFactory->CreateTextFormat(fontName, myCollection, DWRITE_FONT_WEIGHT_REGULAR, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, fontSize, L"en-us", &textFormat);
-  HandleCOMError(result, "TextFormat creation");
-
-  textFormats.push_back(FONT_ENTRY(fontName, fontSize, textFormat));
-  return static_cast<TextFormat>(textFormats.size());
-}
-
-RenderInterface::TextFormat GameRenderer::CreateTextFormat(const wchar_t* fontName, float fontSize) {
-  for(size_t i = 0; i < textFormats.size(); ++i)
-    if (textFormats[i].fontName == fontName && textFormats[i].fontSize == fontSize)
-      return static_cast<TextFormat>(i+1);
-
-  // if not found...
-  // create write factory if this is the first use of CreateTextFormat (throw an exception if this fails)
-  if (!writeFactory) {
-    HandleCOMError(DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**>(&writeFactory)), "write factory creation");
+  auto resourceId = fontLoader->GetFontResource(fontName);
+  if (resourceId != FontLoader::NO_RESOURCE) {
+    // we should load the font from the given resource
+    auto resource = LoadBinaryResource(resourceId);
+    HandleCOMError(writeFactory->CreateCustomFontCollection(fontLoader, &resource, sizeof(resource), &fontCollection), "Failed to create custom font collection");  
   }
+  
 
-  // no create the specified text format
   IDWriteTextFormat* textFormat = nullptr;
-  auto result = writeFactory->CreateTextFormat(fontName, nullptr, DWRITE_FONT_WEIGHT_REGULAR, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, fontSize, L"en-us", &textFormat);
+  auto result = writeFactory->CreateTextFormat(fontName, fontCollection, DWRITE_FONT_WEIGHT_REGULAR, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, fontSize, L"en-us", &textFormat);
   HandleCOMError(result, "TextFormat creation");
-    
+
   textFormats.push_back(FONT_ENTRY(fontName, fontSize, textFormat));
   return static_cast<TextFormat>(textFormats.size());
 }

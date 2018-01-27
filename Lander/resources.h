@@ -1,10 +1,15 @@
+#include "resourceMacros.h"
+
 //images (start at 100)
-#define IDR_ROCKET_IMAGE 100
-#define IDR_ROCKET_TRAIL_IMAGE 101
-#define IDR_ROCKET_THRUST_IMAGE 102
-#define IDR_EXPLOSION_IMAGE 103
-#define IDR_GAME_OVER_IMAGE 104
-#define IDR_ARROW_IMAGE 105
+START_IMAGES
+  DEFINE_IMAGE(ROCKET, 100, "assets\\rocket.png")
+  DEFINE_IMAGE(ROCKET_TRAIL, 101, "assets\\rockettrail.png")
+  DEFINE_IMAGE(ROCKET_THRUST, 102, "assets\\rcs_thrust.png")
+  DEFINE_IMAGE(EXPLOSION, 103, "assets\\explosion.png")
+  DEFINE_IMAGE(ARROW, 104, "assets\\arrow.jpg")
+END_IMAGES
 
 //fonts (start at 200)
-#define IDR_NI7SEG_FONT 200
+START_FONTS
+  DEFINE_FONT("NI7SEG", 200, "Assets\\Fonts\\NI7SEG.TTF")
+END_FONTS

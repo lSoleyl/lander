@@ -96,6 +96,9 @@
     <ClInclude Include="Data.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="resourceMacros.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -149,6 +152,9 @@
     <ClCompile Include="FontLoader.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="resources.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\rocket.png">
@@ -165,8 +171,8 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="resource.rc">
+    <ResourcePreCompile Include="resource.rc">
       <Filter>Ressourcendateien</Filter>
-    </ResourceCompile>
+    </ResourcePreCompile>
   </ItemGroup>
 </Project>

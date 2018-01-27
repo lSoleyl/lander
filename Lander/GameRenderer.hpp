@@ -17,13 +17,9 @@ class GameRenderer : public RenderInterface {
    */
   virtual Lander::Size Size() override;
 
-  /** Creates a text format, which can be used with DrawText
+  /** Creates a text format, which can be used with DrawText.
    */
   virtual TextFormat CreateTextFormat(const wchar_t* fontName, float fontSize) override;
-
-  /** Creates a text format by loading the font with the given name and size form the given font resource file.
-   */
-  virtual TextFormat CreateTextFormat(const wchar_t* fontName, float fontSize, int resourceId) override;
 
   /** Draws the given text, using the previously created text format
    */
