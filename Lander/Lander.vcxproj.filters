@@ -81,7 +81,10 @@
     <ClInclude Include="ScreenText.hpp">
       <Filter>Headerdateien\GameElements</Filter>
     </ClInclude>
-    <ClInclude Include="Time.hpp">
+    <ClInclude Include="TimeCounter.hpp">
+      <Filter>Headerdateien\GameElements</Filter>
+    </ClInclude>
+    <ClInclude Include="VelocityInfo.hpp">
       <Filter>Headerdateien\GameElements</Filter>
     </ClInclude>
   </ItemGroup>
@@ -128,7 +131,10 @@
     <ClCompile Include="ScreenText.cpp">
       <Filter>Quelldateien\GameElements</Filter>
     </ClCompile>
-    <ClCompile Include="Time.cpp">
+    <ClCompile Include="TimeCounter.cpp">
+      <Filter>Quelldateien\GameElements</Filter>
+    </ClCompile>
+    <ClCompile Include="VelocityInfo.cpp">
       <Filter>Quelldateien\GameElements</Filter>
     </ClCompile>
   </ItemGroup>

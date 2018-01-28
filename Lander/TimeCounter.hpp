@@ -25,7 +25,8 @@ namespace Lander {
 
     std::chrono::system_clock::time_point startTime;
     std::chrono::system_clock::duration passedTime;
-    float passedSeconds = 0;
+    int passedMilliSeconds = 0;
+    int passedSeconds = 0;
     int passedMinutes = 0;
 
     RenderInterface::TextFormat textFormat; //The format used, to write the text

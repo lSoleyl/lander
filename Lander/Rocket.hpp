@@ -1,7 +1,7 @@
 #pragma once
 #include "FuelTank.hpp"
 #include "ScreenText.hpp"
-#include "Time.hpp"
+#include "TimeCounter.hpp"
 
 namespace Lander {
 class Platform;

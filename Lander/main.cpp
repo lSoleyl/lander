@@ -8,7 +8,8 @@
 #include "Platform.hpp"
 #include "Rocket.hpp"
 #include "ScreenText.hpp"
-#include "Time.hpp"
+#include "TimeCounter.hpp"
+#include "VelocityInfo.hpp"
 
 using namespace Lander;
 
@@ -47,6 +48,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR /*cmdline*/, int) {
 
             Rocket rocket(startPlatform, landingPlatform, screenText, timeCounter);
             app.AddObject(rocket);
+
+            VelocityInfo velo(rocket);
+            app.AddObject(velo);
 
             if (SUCCEEDED(app.Initialize())) {
 
