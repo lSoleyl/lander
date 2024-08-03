@@ -19,7 +19,7 @@ namespace Lander {
     Size windowSize;
     Rocket& rocket;
 
-    Size arrowSize;
+    const Size arrowSize;
 
     RenderInterface::TextFormat textFormat; //The format used, to write the text
   };

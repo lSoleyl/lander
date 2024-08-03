@@ -14,6 +14,7 @@ public:
   Vector(const Vector& other);
 
   /** Rotates the vector around (0,0) with the given angle (in degrees)
+   *  positive angles correspond to a clockwise rotation
    */
   Vector Rotate(float angle) const;
 
@@ -21,8 +22,25 @@ public:
    */
   Vector Rotate(float angle, Vector rotationPoint) const;
 
-  /** Returns the smallest angle (in degrees) between the two vectors
+  /** Rotates the vector by 90° clockwise 
+   */
+  Vector Rotate90CW() const;
+
+  /** Rotates the vector by 90° counter clockwise
+   */
+  Vector Rotate90CCW() const;
+
+  /** Rotates the vector by 180°
+   */
+  Vector Rotate180() const;
+
+  /** Returns the smallest angle (in degrees) between the two vectors, which will always be positive
    *  None of them must be the Zero vector
+   */
+  float AngleBetween(Vector other) const;
+
+  /** Returns the angle in degrees, this vector needs to be rotated (positive = clockwise, negative = counterclockwise)
+   *  for it to point into the same direction as other.
    */
   float AngleTo(Vector other) const;
 

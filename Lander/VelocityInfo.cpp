@@ -27,7 +27,7 @@ std::wostream& operator<<(std::wostream& out, FormattedNumber number) {
 
 namespace Lander {
 
-VelocityInfo::VelocityInfo(Rocket& _rocket) : textFormat(NULL), rocket(_rocket), arrowSize(100, 30) {
+VelocityInfo::VelocityInfo(Rocket& _rocket) : textFormat(NULL), rocket(_rocket), arrowSize(30, 100) {
   size = Size(200, 40);
 }
 
@@ -68,10 +68,18 @@ void VelocityInfo::Draw(RenderInterface& renderInterface, double secondsPassed) 
 
   // TODO: Draw indicator for current orientation and angular velocity
 
-  // TODO: scale arrow size with velocity
   auto arrowPosition = Vector::Down * 80 + Vector::Right * 50;
   float arrowRotation = Vector::Up.AngleTo(rocket.velocity);
-  renderInterface.DrawImage(IDR_ARROW_IMAGE, Rectangle(arrowPosition, arrowSize), (-90 + arrowRotation), true); // needs to be rotated 90 degrees
+
+  // Scale the arrow size with the current velocity (reaching full size at 100m/s)
+  auto scaledArrowSize = arrowSize;
+  scaledArrowSize.height *= std::min(velocity / 100.f, 1.0f);
+  
+  // Move the arrow down by half the removed size. Otherwise the arrow seems to move 
+  // up and down when growing and shrinking.
+  arrowPosition += Vector::Down * (arrowSize.height - scaledArrowSize.height) / 2;
+
+  renderInterface.DrawImage(IDR_ARROW_IMAGE, Rectangle(arrowPosition, scaledArrowSize), arrowRotation, true);
 }
 
 }

@@ -16,7 +16,7 @@ Vector::Vector() : x(0), y(0) {}
 Vector::Vector(float x, float y) : x(x), y(y) {}
 Vector::Vector(const Vector& other) : x(other.x), y(other.y) {}
 
-Vector Vector::Rotate(float angle) const {  //Rotate vector according to the angle
+Vector Vector::Rotate(float angle) const {  // Rotate vector according to the angle
 
   float radAngle = angle*PI / 180;
   return Vector((x * cos(radAngle)) - (y * sin(radAngle)),
@@ -27,8 +27,29 @@ Vector Vector::Rotate(float angle, Vector rotationPoint) const {
   return (*this - rotationPoint).Rotate(angle) + rotationPoint;
 }
 
-float Vector::AngleTo(Vector other) const {
+Vector Vector::Rotate90CW() const {
+  return Vector(-y, x);
+}
+
+Vector Vector::Rotate90CCW() const {
+  return Vector(y, -x);
+}
+
+Vector Vector::Rotate180() const {
+  return Vector(-x, -y);
+}
+
+
+float Vector::AngleBetween(Vector other) const {
   return acosf(*this * other / (Length() * other.Length())) / PI * 180;
+}
+
+
+float Vector::AngleTo(Vector other) const {
+  // We project other onto this vector rotate 90° clockwise and check wether
+  // the scalar product is positive or negative to determine whether other is right or
+  // left of this vector and thus whether to return a positive or negative angle
+  return ((Rotate90CW() * other > 0) ? 1 : -1) * AngleBetween(other);
 }
 
 
