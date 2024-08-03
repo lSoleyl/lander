@@ -33,8 +33,8 @@ private:
 
   double secondsSinceLastAnimation = 0;
 
-  const float verticalAcceleration = 15; // m/s�
-  const float angularAcceleration = 10;  // �/s�
+  const float verticalAcceleration = 15; // m/s²
+  const float angularAcceleration = 10;  // °/s²
 
   const float baseMass = 14109.6f; //kg - The rocket's base mass without the mass of the fuel tanks and the fuel itself.
 

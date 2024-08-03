@@ -132,7 +132,7 @@ Resource<ID2D1Bitmap> GameRenderer::LoadImageResource(int resourceId) {
   Resource<ID2D1Bitmap> convertedBitmap;
   HandleCOMError(RenderTarget().CreateBitmapFromWicBitmap(formatConverter, NULL, &convertedBitmap), "conversion to direct2d image");
 
-  return std::move(convertedBitmap);
+  return convertedBitmap;
 }
 
 Data GameRenderer::LoadBinaryResource(int resourceId) {

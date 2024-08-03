@@ -21,14 +21,14 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{368BD4BE-6968-4261-9D75-62536E192E6C}</ProjectGuid>
     <RootNamespace>Lander</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
   </PropertyGroup>
@@ -36,7 +36,6 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
-
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -48,7 +47,6 @@
     <OutDir>$(SolutionDir)out\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)int\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
-
   <!-- Tool default settings -->
   <ItemDefinitionGroup>
     <ClCompile>
@@ -56,32 +54,33 @@
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <Optimization>Disabled</Optimization>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdcpp20</LanguageStandard>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdcpp20</LanguageStandard>
+      <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ConformanceMode>
+      <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ConformanceMode>
     </ClCompile>
-
     <ClCompile Condition="'$(Configuration)'=='Release'">
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdcpp20</LanguageStandard>
+      <LanguageStandard Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdcpp20</LanguageStandard>
+      <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ConformanceMode>
+      <ConformanceMode Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ConformanceMode>
     </ClCompile>
-
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>d2d1.lib;Dwrite.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
-
     <Link Condition="'$(Configuration)'=='Release'">
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
-
     <ResourcePrecompile>
       <PrecompilePath>$(IntDir)%(Filename).processed%(Extension)</PrecompilePath>
       <ObjectPath>$(IntDir)%(Filename).obj</ObjectPath>
     </ResourcePrecompile>
-
   </ItemDefinitionGroup>
-
-
   <ItemGroup>
     <ClInclude Include="Collider.hpp" />
     <ClInclude Include="COMBase.hpp" />
@@ -143,26 +142,16 @@
     <ResourcePreCompile Include="resource.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <Target Name="ResourcePrecompile" 
-    Inputs="@(ResourcePreCompile)" 
-    Outputs="@(ResourcePrecompile->Metadata('ObjectPath'))"
-    BeforeTargets="Link">
-
-    <!-- Use the CL precompiler to create a preprocessed resource file -->    
-    <CL PreprocessSuppressLineNumbers="true" PreprocessToFile="true" PreprocessOutputPath="@(ResourcePrecompile->Metadata('PrecompilePath'))" 
-      PreprocessorDefinitions="RC_INVOKED" Sources="@(ResourcePrecompile->'%(identity)')"/>
-
+  <Target Name="ResourcePrecompile" Inputs="@(ResourcePreCompile)" Outputs="@(ResourcePrecompile-&gt;Metadata('ObjectPath'))" BeforeTargets="Link">
+    <!-- Use the CL precompiler to create a preprocessed resource file -->
+    <CL PreprocessSuppressLineNumbers="true" PreprocessToFile="true" PreprocessOutputPath="@(ResourcePrecompile-&gt;Metadata('PrecompilePath'))" PreprocessorDefinitions="RC_INVOKED" Sources="@(ResourcePrecompile->'%(identity)')" />
     <!-- Compile the preprocessed resource file to an .obj file -->
-    <RC ResourceOutputFileName="@(ResourcePrecompile->Metadata('ObjectPath'))" Source="@(ResourcePrecompile->Metadata('PrecompilePath'))"/>
-    
+    <RC ResourceOutputFileName="@(ResourcePrecompile-&gt;Metadata('ObjectPath'))" Source="@(ResourcePrecompile-&gt;Metadata('PrecompilePath'))" />
     <!-- Add the compiled resource file to the linke inputs -->
     <ItemGroup>
-      <Link Include="@(ResourcePrecompile->Metadata('ObjectPath'))" />
+      <Link Include="@(ResourcePrecompile-&gt;Metadata('ObjectPath'))" />
     </ItemGroup>
   </Target>
-
-
-
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>

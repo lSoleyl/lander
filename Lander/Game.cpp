@@ -92,7 +92,7 @@ HRESULT Game::Initialize()
 
     // The factory returns the current system DPI. This is also the value it will use
     // to create its own windows.
-    direct2DFactory->GetDesktopDpi(&dpiX, &dpiY);
+    dpiX = dpiY = GetDpiForSystem();    
 
 
     // Create the window.

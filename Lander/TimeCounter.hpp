@@ -23,8 +23,8 @@ namespace Lander {
     bool started = false;
     Size windowSize;
 
-    std::chrono::system_clock::time_point startTime;
-    std::chrono::system_clock::duration passedTime;
+    std::chrono::high_resolution_clock::time_point startTime;
+    std::chrono::high_resolution_clock::duration passedTime;
     int passedMilliSeconds = 0;
     int passedSeconds = 0;
     int passedMinutes = 0;

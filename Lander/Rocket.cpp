@@ -88,7 +88,7 @@ void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
   Size rcsSize(10, 5);
   Size fullFuelSize(4, 47);
   Size emptyFuelSize = fullFuelSize;
-  emptyFuelSize.height *= 1.0 - Tank.CurrentVolume();  
+  emptyFuelSize.height *= 1.0f - Tank.CurrentVolume();  
 
   Rectangle fuelRectLeft(Vector::Down * 35 + Vector::Right * 5, fullFuelSize);
   Rectangle emptyRectLeft(Vector::Down * 35 + Vector::Right * 5, emptyFuelSize);
