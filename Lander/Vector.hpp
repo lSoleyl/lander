@@ -13,7 +13,7 @@ public:
   Vector(float x, float y); //A vector (x, y)
   Vector(const Vector& other);
 
-  /**  Rotates the vector around (0,0) with the given angle
+  /** Rotates the vector around (0,0) with the given angle (in degrees)
    */
   Vector Rotate(float angle) const;
 
@@ -21,9 +21,14 @@ public:
    */
   Vector Rotate(float angle, Vector rotationPoint) const;
 
+  /** Returns the smallest angle (in degrees) between the two vectors
+   *  None of them must be the Zero vector
+   */
+  float AngleTo(Vector other) const;
+
   Vector& operator=(const Vector& other);
 
-  //Mathematical operations
+  // Mathematical operations
   Vector& operator+=(const Vector& other);
   Vector& operator-=(const Vector& other);
   Vector& operator*=(float factor);
@@ -34,16 +39,19 @@ public:
   Vector operator*(float factor) const;
   Vector operator/(float divisor) const;
 
+  /** Scalar product */
+  float operator*(const Vector& other) const;
 
-  //Vector length
+
+  // Vector length
   float Length() const;
 
   float x, y;
 
-  //Implicit conversion to a Direct2D point
+  // Implicit conversion to a Direct2D point
   operator D2D1_POINT_2F() const;
 
-  //Conversion from a size 
+  // Conversion from a size 
   static Vector FromSize(const Size& size);
 
   //Constant vectors

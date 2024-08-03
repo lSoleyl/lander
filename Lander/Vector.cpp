@@ -7,7 +7,7 @@ namespace {
 namespace Lander {
 
 const Vector Vector::Zero(0,0);
-const Vector Vector::Up(0,-1); //Viewport's vertical axis is reversed
+const Vector Vector::Up(0,-1); // Viewport's vertical axis is reversed
 const Vector Vector::Down(0,1);
 const Vector Vector::Left(-1,0);
 const Vector Vector::Right(1,0);
@@ -26,6 +26,11 @@ Vector Vector::Rotate(float angle) const {  //Rotate vector according to the ang
 Vector Vector::Rotate(float angle, Vector rotationPoint) const {
   return (*this - rotationPoint).Rotate(angle) + rotationPoint;
 }
+
+float Vector::AngleTo(Vector other) const {
+  return acosf(*this * other / (Length() * other.Length())) / PI * 180;
+}
+
 
 Vector& Vector::operator=(const Vector& other) {
   x = other.x;
@@ -69,6 +74,10 @@ Vector Vector::operator*(float factor) const {
 
 Vector Vector::operator/(float divisor) const {
   return *this * (1/divisor);
+}
+
+float Vector::operator*(const Vector& other) const {
+  return x * other.x + y * other.y;
 }
 
 float Vector::Length() const {

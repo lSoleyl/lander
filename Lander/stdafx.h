@@ -1,8 +1,5 @@
 #pragma once
 
-// Windows Header Files:
-#include <windows.h>
-
 // C RunTime Header Files:
 #include <stdlib.h>
 #include <malloc.h>
@@ -23,6 +20,9 @@
 #include <unordered_map>
 #include <vector>
 #include <deque>
+
+// Windows Header Files:
+#include <windows.h>
 
 //Direct2D stuff
 #include <d2d1.h>

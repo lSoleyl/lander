@@ -19,19 +19,21 @@ Lander::Size GameRenderer::Size() {
 }
 
 RenderInterface::TextFormat GameRenderer::CreateTextFormat(const wchar_t* fontName, float fontSize) {
-  for(size_t i = 0; i < textFormats.size(); ++i)
-    if (textFormats[i].fontName == fontName && textFormats[i].fontSize == fontSize)
+  for(size_t i = 0; i < textFormats.size(); ++i) {
+    if (textFormats[i].fontName == fontName && textFormats[i].fontSize == fontSize) {
       return static_cast<TextFormat>(i+1);
+    }
+  }
    
   // if not found
   // create write factory if this is the first use of CreateTextFormat (throw an exception if this fails)
   if (!writeFactory) {
-    HandleCOMError(DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**>(&writeFactory)), "write factory creation");
+    HandleCOMError(DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**>(&writeFactory)), L"write factory creation");
   }
 
   if (!fontLoader) {
     fontLoader = FontLoader::Instance();
-    HandleCOMError(writeFactory->RegisterFontCollectionLoader(fontLoader), "Failed to register FontCollectionLoader");
+    HandleCOMError(writeFactory->RegisterFontCollectionLoader(fontLoader), L"Failed to register FontCollectionLoader");
   }
 
   Resource<IDWriteFontCollection> fontCollection; //null is the system font collection
@@ -40,13 +42,13 @@ RenderInterface::TextFormat GameRenderer::CreateTextFormat(const wchar_t* fontNa
   if (resourceId != FontLoader::NO_RESOURCE) {
     // we should load the font from the given resource
     auto resource = LoadBinaryResource(resourceId);
-    HandleCOMError(writeFactory->CreateCustomFontCollection(fontLoader, &resource, sizeof(resource), &fontCollection), "Failed to create custom font collection");  
+    HandleCOMError(writeFactory->CreateCustomFontCollection(fontLoader, &resource, sizeof(resource), &fontCollection), L"Failed to create custom font collection");  
   }
   
 
   IDWriteTextFormat* textFormat = nullptr;
   auto result = writeFactory->CreateTextFormat(fontName, fontCollection, DWRITE_FONT_WEIGHT_REGULAR, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, fontSize, L"en-us", &textFormat);
-  HandleCOMError(result, "TextFormat creation");
+  HandleCOMError(result, L"TextFormat creation");
 
   textFormats.push_back(FONT_ENTRY(fontName, fontSize, textFormat));
   return static_cast<TextFormat>(textFormats.size());
@@ -54,7 +56,7 @@ RenderInterface::TextFormat GameRenderer::CreateTextFormat(const wchar_t* fontNa
 
 void GameRenderer::DrawText(const std::wstring& text, TextFormat format, Rectangle rectangle, Color color) {
   assert(format > 0 && format <= textFormats.size()); //Ensure the text format is valid
-  RenderTarget().DrawText(text.c_str(), static_cast<UINT32>(text.length()), textFormats[format-1].textFormat, rectangle, game.GetSolidBrush(color));
+  RenderTarget().DrawTextW(text.c_str(), static_cast<UINT32>(text.length()), textFormats[format-1].textFormat, rectangle, game.GetSolidBrush(color));
 }
 
 
@@ -90,8 +92,9 @@ void GameRenderer::DrawImage(int resourceId, Rectangle targetRectangle, float ro
   D2D1::Matrix3x2F originalTransform;
   RenderTarget().GetTransform(&originalTransform);
   auto rotationPoint = viewObject->pos + targetRectangle.topLeft;
-  if (rotateCenter)
+  if (rotateCenter) {
     rotationPoint += (targetRectangle.bottomRight - targetRectangle.topLeft) / 2; //rotation around center
+  }
 
   RenderTarget().SetTransform(D2D1::Matrix3x2F::Translation(viewObject->pos.x, viewObject->pos.y) * D2D1::Matrix3x2F::Rotation(rotationAngle, rotationPoint) * D2D1::Matrix3x2F::Rotation(viewObject->rotation, RotationCenter()));
   DrawImage(resourceId, targetRectangle);
@@ -101,7 +104,7 @@ void GameRenderer::DrawImage(int resourceId, Rectangle targetRectangle, float ro
 Resource<ID2D1Bitmap> GameRenderer::LoadImageResource(int resourceId) {
   // we have to load and prepare the image (boilerplate code -_-)
   if (!imageFactory) {
-    HandleCOMError(CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&imageFactory), "image factory creation");
+    HandleCOMError(CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_IWICImagingFactory, (LPVOID*)&imageFactory), L"image factory creation");
   }
 
   // Load the rescoure
@@ -109,17 +112,17 @@ Resource<ID2D1Bitmap> GameRenderer::LoadImageResource(int resourceId) {
   
 
   Resource<IWICStream> imageStream;
-  HandleCOMError(imageFactory->CreateStream(&imageStream), "image stream creation");
-  HandleCOMError(imageStream->InitializeFromMemory(static_cast<BYTE*>(resource.data), static_cast<DWORD>(resource.size)), "image stream load");
+  HandleCOMError(imageFactory->CreateStream(&imageStream), L"image stream creation");
+  HandleCOMError(imageStream->InitializeFromMemory(static_cast<BYTE*>(resource.data), static_cast<DWORD>(resource.size)), L"image stream load");
 
   Resource<IWICBitmapDecoder> streamDecoder;
-  HandleCOMError(imageFactory->CreateDecoderFromStream(imageStream, NULL, WICDecodeMetadataCacheOnLoad, &streamDecoder),"creating stream decoder");
+  HandleCOMError(imageFactory->CreateDecoderFromStream(imageStream, NULL, WICDecodeMetadataCacheOnLoad, &streamDecoder), L"creating stream decoder");
       
   Resource<IWICBitmapFrameDecode> decoderFrame;
-  HandleCOMError(streamDecoder->GetFrame(0, &decoderFrame), "decoding image frame");
+  HandleCOMError(streamDecoder->GetFrame(0, &decoderFrame), L"decoding image frame");
 
   Resource<IWICFormatConverter> formatConverter;
-  HandleCOMError(imageFactory->CreateFormatConverter(&formatConverter), "creating format converter");
+  HandleCOMError(imageFactory->CreateFormatConverter(&formatConverter), L"creating format converter");
   HandleCOMError(formatConverter->Initialize(
     decoderFrame,                    // Input bitmap to convert
     GUID_WICPixelFormat32bppPBGRA,   // Destination pixel format
@@ -127,10 +130,10 @@ Resource<ID2D1Bitmap> GameRenderer::LoadImageResource(int resourceId) {
     NULL,                            // Specify a particular palette 
     0.f,                             // Alpha threshold
     WICBitmapPaletteTypeCustom       // Palette translation type
-    ), "image decoding");
+    ), L"image decoding");
 
   Resource<ID2D1Bitmap> convertedBitmap;
-  HandleCOMError(RenderTarget().CreateBitmapFromWicBitmap(formatConverter, NULL, &convertedBitmap), "conversion to direct2d image");
+  HandleCOMError(RenderTarget().CreateBitmapFromWicBitmap(formatConverter, NULL, &convertedBitmap), L"conversion to direct2d image");
 
   return convertedBitmap;
 }
@@ -138,22 +141,26 @@ Resource<ID2D1Bitmap> GameRenderer::LoadImageResource(int resourceId) {
 Data GameRenderer::LoadBinaryResource(int resourceId) {
   // Load the rescoure
   auto resourceHandle = FindResource(NULL, MAKEINTRESOURCE(resourceId), _T("Image")/*type*/);
-  if (!resourceHandle)
+  if (!resourceHandle) {
     throw std::exception("Couldn't find the image resource");
+  }
 
   auto loadedResource = LoadResource(NULL, resourceHandle);
-  if (!loadedResource)
+  if (!loadedResource) {
     throw std::exception("Failed to load the resource");
+  }
 
   Data resource = {0};
 
   resource.data = static_cast<BYTE*>(LockResource(loadedResource));
-  if (!resource.data)
+  if (!resource.data) {
     throw std::exception("Failed to retrieve resource memory pointer");
+  }
 
   resource.size = SizeofResource(NULL, resourceHandle);
-  if (!resource.size)
+  if (!resource.size) {
     throw std::exception("Failed to retrieve the resource's size");
+  }
 
   return resource;
 }
@@ -187,16 +194,7 @@ Vector GameRenderer::RotationCenter() const {
   return viewObject->pos + (viewObject->size.height/2 * Vector::Down) + (viewObject->size.width/2 * Vector::Right);
 }
 
-GameRenderer::FONT_ENTRY::FONT_ENTRY() {};
 GameRenderer::FONT_ENTRY::FONT_ENTRY(const wchar_t* fontName, float fontSize, IDWriteTextFormat* format) : fontName(fontName), fontSize(fontSize), textFormat(format) {}
-GameRenderer::FONT_ENTRY::FONT_ENTRY(FONT_ENTRY&& other) : fontName(std::move(other.fontName)), fontSize(other.fontSize), textFormat(std::move(other.textFormat)) {}
-
-GameRenderer::FONT_ENTRY& GameRenderer::FONT_ENTRY::operator=(FONT_ENTRY&& other) {
-  fontSize = other.fontSize;
-  fontName.swap(other.fontName);      
-  textFormat = std::move(other.textFormat);
-  return *this;
-}
 
 
 

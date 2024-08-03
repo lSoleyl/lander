@@ -155,6 +155,9 @@
     <ClCompile Include="resources.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="COMError.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\rocket.png">

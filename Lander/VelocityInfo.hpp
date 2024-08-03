@@ -12,18 +12,12 @@ namespace Lander {
     virtual void Draw(RenderInterface& renderInterface, double secondsPassed) override;
 
     /** Specify low render priority to be always visible
-    */
+     */
     virtual int RenderPriority() const override;
 
   private:
     Size windowSize;
     Rocket& rocket;
-
-    int milliVelocity;
-    int velocity;
-
-    int milliRotation = 0;
-    int rotation = 0;
 
     Size arrowSize;
 

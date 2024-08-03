@@ -9,17 +9,17 @@ class Resource {
 public:
   Resource() : ptr(nullptr) {}
   Resource(Interface* iPtr) : ptr(iPtr) {}
-  Resource(Resource<Interface>&& other) : ptr(nullptr) {
-    std::swap(ptr, other.ptr);
+  Resource(Resource<Interface>&& other) noexcept : ptr(other.ptr) {
+    other.ptr = nullptr;
   }
 
   /** Move assign a new interface pointer. Any currently held interface pointer
    *  gets released before this operation.
    */
-  Resource<Interface>& operator=(Resource<Interface>&& other) {
-    if (ptr != other.ptr) { //protect against self assignment
-      reset();
-      std::swap(ptr, other.ptr);
+  Resource<Interface>& operator=(Resource<Interface>&& other) noexcept {
+    if (ptr != other.ptr) { // protect against self assignment
+      reset(other.ptr);
+      other.ptr = nullptr;
     }
     return *this;
   }
@@ -43,14 +43,16 @@ public:
    */
   void reset(Interface* iPtr = nullptr) {
     if (ptr && ptr != iPtr) {
-        ptr->Release();
+      ptr->Release();
     }    
 
     ptr = iPtr;
   }
 
   template<typename TargetInterface>
-  TargetInterface as() { return dynamic_cast<TargetInterface>(ptr); }
+  TargetInterface as() { 
+    return dynamic_cast<TargetInterface>(ptr); 
+  }
 
   /** Implicit cast to the internally held interface pointer
    */
@@ -60,7 +62,7 @@ public:
 
   /** Implicit bool cast to check for nullptr
    */
-  operator bool() const {
+  explicit operator bool() const {
     return ptr != nullptr;
   }
 

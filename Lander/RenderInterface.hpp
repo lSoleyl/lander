@@ -1,5 +1,8 @@
 #pragma once
 
+// undef winapi macro to be able to jump to the correct definition for DrawText()
+#undef DrawText
+
 namespace Lander {
 
 /** Typedef for simpler access to colors
@@ -79,7 +82,7 @@ public:
    * 
    * @param resourceId the id, with which the image gets referecned in the resource.rc
    * @param targetRectangle the destination to draw the image into before applying the roation
-   * @param rotationAngle the angle to rotate (rightwards) the image and target rectangle
+   * @param rotationAngle the angle (in degrees) to rotate (rightwards) the image and target rectangle
    * @param rotateCenter if this is set to true, then the image gets rotated around it's own center, otherwise it gets rotated around it's top left corner.
    */
   virtual void DrawImage(int resourceId, Rectangle targetRectangle, float rotationAngle, bool rotateCenter = false) = 0;

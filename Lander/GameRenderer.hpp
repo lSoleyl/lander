@@ -68,11 +68,11 @@ private:
 
 
   struct FONT_ENTRY { 
-    FONT_ENTRY();
+    FONT_ENTRY() = default;
     FONT_ENTRY(const wchar_t* fontName, float fontSize, IDWriteTextFormat* format);
-    FONT_ENTRY(FONT_ENTRY&& other);
+    FONT_ENTRY(FONT_ENTRY&& other) = default;
 
-    FONT_ENTRY& operator=(FONT_ENTRY&& other);
+    FONT_ENTRY& operator=(FONT_ENTRY&& other) = default;
 
 
     std::wstring fontName; 

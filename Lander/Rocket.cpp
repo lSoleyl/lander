@@ -10,8 +10,8 @@ Rocket::Rocket(const Platform& startPlatform, const Platform& landingPlatform, S
 
 
 void Rocket::Reposition() {
-  pos = startPlatform.pos + Vector::Up * (size.height+1); //Calculate top position of rocket
-  pos += Vector::Right * (startPlatform.size.width - size.width) / 2; //Center rocket on start platform
+  pos = startPlatform.pos + Vector::Up * (size.height+1); // Calculate top position of rocket
+  pos += Vector::Right * (startPlatform.size.width - size.width) / 2; // Center rocket on start platform
 
   rotation = 0;
   Stop();
@@ -43,13 +43,14 @@ void Rocket::PhysicsUpdate(double secondsSinceLastFrame) {
       break;
 
     case STATE::LANDED:
-      Tank.Fill(2*secondsSinceLastAnimation);
+      Tank.Fill(static_cast<float>(2*secondsSinceLastAnimation));
+      [[fallthrough]];
 
     case STATE::UNSTARTED:
 
-      Reposition(); //Adapt position until the user adds thrust to the rocket
+      Reposition(); // Adapt position until the user adds thrust to the rocket
       if (KeyPressed(VK_SPACE) || KeyPressed(VK_UP)) {
-        state = STATE::STARTED;  //Do not position Rocket on platform anymore
+        state = STATE::STARTED;  // Do not position Rocket on platform anymore
         timeCounter.StartCount();
       }
       break;
@@ -57,14 +58,17 @@ void Rocket::PhysicsUpdate(double secondsSinceLastFrame) {
     case STATE::STARTED:
 
       CheckCollisions();
-      if (KeyPressed(VK_SPACE) || KeyPressed(VK_UP))
-        ApplyForce((Vector::Up * Tank.GetThrust(secondsSinceLastFrame)).Rotate(rotation));
+      if (KeyPressed(VK_SPACE) || KeyPressed(VK_UP)) {
+        ApplyForce((Vector::Up * Tank.GetThrust(static_cast<float>(secondsSinceLastFrame))).Rotate(rotation));
+      }
 
-      if (KeyPressed(VK_LEFT) && !(KeyPressed(VK_RIGHT)))
+      if (KeyPressed(VK_LEFT) && !(KeyPressed(VK_RIGHT))) {
         ApplyAngularAcceleration(-angularAcceleration);
+      }
 
-      if (KeyPressed(VK_RIGHT) && !(KeyPressed(VK_LEFT)))
+      if (KeyPressed(VK_RIGHT) && !(KeyPressed(VK_LEFT))) {
         ApplyAngularAcceleration(angularAcceleration);
+      }
 
       ApplyGravity();  //pull rocket towards the ground with 9.81 m/s²
       break;
@@ -80,7 +84,7 @@ void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
   Rectangle rocketRect(Vector(), size);
   renderTarget.DrawImage(IDR_ROCKET_IMAGE, rocketRect);
 
-  Rectangle explosionRect((Vector() + Vector::Left * 341 + Vector::Up * 310), Size(717, 720));
+  Rectangle explosionRect((Vector::Left * 341 + Vector::Up * 310), Size(717, 720));
 
   ///
   // Fuel tanks
@@ -111,7 +115,7 @@ void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
     ///
     static float trailHeight[] = { 75, 100 };
 
-    if (KeyPressed(VK_SPACE) || KeyPressed(VK_UP) && !Tank.IsEmpty() && (state != STATE::SUCCESS)) {  //Only draw the trail if the rocket has started
+    if (KeyPressed(VK_SPACE) || KeyPressed(VK_UP) && !Tank.IsEmpty() && (state != STATE::SUCCESS)) { // Only draw the trail if the rocket has started
 
       secondsSinceLastAnimation += secondsSinceLastFrame;
       if (secondsSinceLastAnimation >= 0.15) {
@@ -136,8 +140,7 @@ void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
       renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(rocketRect.topLeft + Vector::Down * 10, rcsSize), 180, true); //Top left, needs to be rotated 180 degrees
       renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(rocketRect.bottomRight + Vector::Up * 10, rcsSize)); //Bottom right
     }
-  }
-  else {
+  } else {
     renderTarget.DrawImage(IDR_EXPLOSION_IMAGE, explosionRect);
   }
 }
@@ -145,12 +148,16 @@ void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
 void Rocket::OnCollision(Collider& collider) {
   float rotationValue = rotation;
 
-  while (rotationValue >= 357) //Adjust rotationValue
+  while (rotationValue >= 357) {
+    // Adjust rotationValue
     rotationValue -= 360;
-  while (rotationValue <= -357)
+  }
+  while (rotationValue <= -357) {
     rotationValue += 360;
+  }
 
-  //8 m/s seems achievable, 1 m/s does not    //Rotation has to be between 3° and -3°
+  // 8 m/s seems achievable, 1 m/s does not    
+  // Rotation has to be between 3° and -3°
   if ((velocity.Length() < 8) && (rotationValue <= 3 && rotationValue >= -3) && (&collider == &startPlatform)) {
     state = STATE::LANDED;
     return;

@@ -43,8 +43,9 @@ void Game::RunMessageLoop()
 	{
     MSG msg;
     if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
-      if(msg.message == WM_QUIT) //Program quitted
+      if (msg.message == WM_QUIT) { //Program quitted
         break;
+      }
       
       TranslateMessage(&msg);
       DispatchMessage(&msg);
@@ -53,8 +54,9 @@ void Game::RunMessageLoop()
       auto currentTime = chrono::high_resolution_clock::now();
       msElapsed = (chrono::duration_cast<chrono::microseconds>(currentTime - lastFrame).count() / 1000.0);
       
-      if(msElapsed < 10) //Max framerate = 100 fps
+      if (msElapsed < 10) { //Max framerate = 100 fps
         continue;
+      }
 
       lastFrame = currentTime;
       OnRender(); //Render frame
@@ -81,25 +83,22 @@ HRESULT Game::Initialize()
     wcex.hbrBackground = NULL;
     wcex.lpszMenuName  = NULL;
     wcex.hCursor       = LoadCursor(NULL, IDI_APPLICATION);
-    wcex.lpszClassName = "Lander Game Window";
+    wcex.lpszClassName = _T("Lander Game Window");
 
     RegisterClassEx(&wcex);
 
 
     // Because the CreateWindow function takes its size in pixels,
     // obtain the system DPI and use it to scale the window size.
-    FLOAT dpiX, dpiY;
-
-    // The factory returns the current system DPI. This is also the value it will use
+    // The function returns the current system DPI. This is also the value it will use
     // to create its own windows.
-    dpiX = dpiY = GetDpiForSystem();    
-
+    uint32_t dpi = GetDpiForSystem();
 
     // Create the window.
-    hWnd = CreateWindow("Lander Game Window", "Lander Game", WS_OVERLAPPEDWINDOW,
+    hWnd = CreateWindow(_T("Lander Game Window"), _T("Lander Game"), WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, CW_USEDEFAULT,
-        static_cast<UINT>(ceil(WINDOW_WIDTH * dpiX / 96.f)),
-        static_cast<UINT>(ceil(WINDOW_HEIGHT * dpiY / 96.f)),
+        static_cast<UINT>(ceil(WINDOW_WIDTH * dpi / 96.f)),
+        static_cast<UINT>(ceil(WINDOW_HEIGHT * dpi / 96.f)),
         NULL, NULL, HINST_THISCOMPONENT, this);
 
     hr = hWnd ? S_OK : E_FAIL;
@@ -143,12 +142,14 @@ void Game::AddObject(ViewObject& viewObject) {
   }
 
   // Add to collider list if it is a collider
-  if (auto collider = dynamic_cast<Collider*>(&viewObject))
+  if (auto collider = dynamic_cast<Collider*>(&viewObject)) {
     colliders.push_back(collider);
+  }
 
   // If initialization already took place, initialize the object upon insertion
-  if (initialized)
+  if (initialized) {
     viewObject.Initialize(gameRenderer->Size());
+  }
 }
 
 
@@ -159,8 +160,9 @@ HRESULT Game::CreateDeviceIndependentResources() {
 
 
 HRESULT Game::CreateDeviceResources() {
-  if (renderTarget)
+  if (renderTarget) {
     return S_OK;
+  }
 
 
   RECT rc;
@@ -173,16 +175,18 @@ HRESULT Game::CreateDeviceResources() {
 
 ID2D1Brush* Game::GetSolidBrush(D2D1::ColorF::Enum color) {
   auto pos = brushMap.find(color);
-  if (pos != brushMap.end())
+  if (pos != brushMap.end()) {
     return pos->second;
+  }
 
   //Brush not yet created, we have to create it
-  if (!renderTarget)
+  if (!renderTarget) {
     throw std::exception("Illegal use of GetSolidBrush() with uninitialized renderTarget");
+  }
 
   ID2D1SolidColorBrush* brush = nullptr;
   auto result = renderTarget->CreateSolidColorBrush(D2D1::ColorF(color), &brush);
-  HandleCOMError(result, "Brush creation");
+  HandleCOMError(result, L"Brush creation");
   
   brushMap[color] = brush;
   return brush;
@@ -193,8 +197,7 @@ void Game::ReleaseBrushes() {
 }
 
 
-void Game::DiscardDeviceResources()
-{
+void Game::DiscardDeviceResources() {
   ReleaseBrushes();  
   renderTarget.reset();
 }
@@ -274,9 +277,11 @@ HRESULT Game::OnRender()
     lastUpdate = now;
 
     //Give objects time to update positions
-    for (auto viewObject : renderQueue) 
-      if (viewObject->enabled)
+    for (auto viewObject : renderQueue) {
+      if (viewObject->enabled) {
         viewObject->Update(secondsPassed);
+      }
+    }
 
 
     renderTarget->BeginDraw();  //Initiate drawing
@@ -302,16 +307,13 @@ HRESULT Game::OnRender()
 }
 
 
-void Game::OnResize(UINT width, UINT height)
-{
-    if (renderTarget)
-    {
-        // Note: This method can fail, but it's okay to ignore the
-        // error here, because the error will be returned again
-        // the next time EndDraw is called.
-        renderTarget->Resize(D2D1::SizeU(width, height));
-    }
+void Game::OnResize(UINT width, UINT height) {
+  if (renderTarget) {
+    // Note: This method can fail, but it's okay to ignore the
+    // error here, because the error will be returned again
+    // the next time EndDraw is called.
+    renderTarget->Resize(D2D1::SizeU(width, height));
+  }
 }
-
 
 }

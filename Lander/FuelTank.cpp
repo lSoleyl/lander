@@ -2,9 +2,9 @@
 #include "FuelTank.hpp"
 
 namespace {
- const float p = 280;  //Volume of H² in kg/m³
- const float ls = 3830;  //Amount of energy every kg of fuel burn provides, in Newton for a second
- const float Q = 10.714; //Amount of fuel that is burnt every second, in m³
+ const float p = 280.f;   // Volume of H² in kg/m³
+ const float ls = 3830.f; // Amount of energy every kg of fuel burn provides, in Newton for a second
+ const float Q = 10.714f; // Amount of fuel that is burnt every second, in m³
 
 }
 
@@ -17,20 +17,22 @@ FuelTank::FuelTank() : currentVolume(maxVolume) {}
   }
 
   bool FuelTank::IsEmpty() const {
-    if (currentVolume <= 0)
+    if (currentVolume <= 0) {
       return true;
-    else
+    } else {
       return false;
+    }
   }
 
   float FuelTank::GetThrust(float secondsSinceLastFrame) {
 
-    if (IsEmpty())
+    if (IsEmpty()) {
       return 0;
+    }
 
     currentVolume -= (Q*secondsSinceLastFrame);
 
-    return Q*p*ls;  //thrust per second, in Newton
+    return Q*p*ls;  // thrust per second, in Newton
   }
 
   float FuelTank::CurrentVolume() {

@@ -24,7 +24,6 @@ namespace Lander {
     Size windowSize;
 
     std::chrono::high_resolution_clock::time_point startTime;
-    std::chrono::high_resolution_clock::duration passedTime;
     int passedMilliSeconds = 0;
     int passedSeconds = 0;
     int passedMinutes = 0;

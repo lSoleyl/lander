@@ -17,7 +17,7 @@
     void Fill(float percent); //refills the tank by a percentage value
 
    private:
-    float maxVolume = 1988.23;
+    float maxVolume = 1988.23f;
     float currentVolume;
-    float emptyMass = 94064;  //empty mass in kg
+    float emptyMass = 94064.f;  //empty mass in kg
  };

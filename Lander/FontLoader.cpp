@@ -95,11 +95,12 @@ public:
 
   //IDWriteFontFileLoader interface
   STDMETHOD(CreateStreamFromKey)(const void* key, UINT32 keySize, IDWriteFontFileStream** fontFileStream) override {
-    if (!fontFileStream)
+    if (!fontFileStream) {
       return E_POINTER;
+    }
 
     Data data = *static_cast<const Data*>(key);
-    *fontFileStream = new MemoryFileStream(data.data, data.size);
+    *fontFileStream = new MemoryFileStream(data.data, static_cast<uint32_t>(data.size));
     return S_OK;
   }
 
