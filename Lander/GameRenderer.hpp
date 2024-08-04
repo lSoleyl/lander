@@ -42,8 +42,11 @@ class GameRenderer : public RenderInterface {
   
   virtual void DrawImage(int resourceId, Rectangle targetRectangle, float rotationAngle, bool rotateCenter = false) override;
 
-  //TODO: make function virtual and describe in base class
+  
   virtual void DrawArc(Vector startPoint, Vector center, float angle, Color color, float strokeWidth = 1.0f) override;
+
+
+  virtual void DrawEllipse(Vector center, float radiusX, float radiusY, Color color, float strokeWidth = 1.0f) override;
 
 
   /** Provide access to internal renderTarget... should be removed in the future if possible

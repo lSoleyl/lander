@@ -97,5 +97,10 @@ public:
    * @param strokeWidth the stroke width
    */
   virtual void DrawArc(Vector startPoint, Vector center, float angle, Color color, float strokeWidth = 1.0f) = 0;
+
+
+  /** Draws an ellipse around the specified center point with the given x radius and y radius.
+   */
+  virtual void DrawEllipse(Vector center, float radiusX, float radiusY, Color color, float strokeWidth = 1.0f) = 0;
 };
 }

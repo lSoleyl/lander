@@ -134,6 +134,18 @@ void GameRenderer::DrawArc(Vector startPoint, Vector center, float angle, Color 
   RenderTarget().DrawGeometry(arcGeometry, game.GetSolidBrush(color), strokeWidth);
 }
 
+
+void GameRenderer::DrawEllipse(Vector center, float radiusX, float radiusY, Color color, float strokeWidth) {
+  D2D1_ELLIPSE ellipse;
+  ellipse.point = center;
+  ellipse.radiusX = radiusX;
+  ellipse.radiusY = radiusY;
+
+  RenderTarget().DrawEllipse(ellipse, game.GetSolidBrush(color), strokeWidth);
+}
+
+
+
 Resource<ID2D1Bitmap> GameRenderer::LoadImageResource(int resourceId) {
   // we have to load and prepare the image (boilerplate code -_-)
   if (!imageFactory) {

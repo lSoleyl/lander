@@ -84,7 +84,7 @@
     <ClInclude Include="TimeCounter.hpp">
       <Filter>Headerdateien\GameElements</Filter>
     </ClInclude>
-    <ClInclude Include="VelocityInfo.hpp">
+    <ClInclude Include="InstrumentPanel.hpp">
       <Filter>Headerdateien\GameElements</Filter>
     </ClInclude>
     <ClInclude Include="FontLoader.hpp">
@@ -146,7 +146,7 @@
     <ClCompile Include="TimeCounter.cpp">
       <Filter>Quelldateien\GameElements</Filter>
     </ClCompile>
-    <ClCompile Include="VelocityInfo.cpp">
+    <ClCompile Include="InstrumentPanel.cpp">
       <Filter>Quelldateien\GameElements</Filter>
     </ClCompile>
     <ClCompile Include="FontLoader.cpp">

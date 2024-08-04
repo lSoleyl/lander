@@ -108,7 +108,7 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TimeCounter.hpp" />
     <ClInclude Include="Vector.hpp" />
-    <ClInclude Include="VelocityInfo.hpp" />
+    <ClInclude Include="InstrumentPanel.hpp" />
     <ClInclude Include="ViewObject.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -134,7 +134,7 @@
     <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="TimeCounter.cpp" />
     <ClCompile Include="Vector.cpp" />
-    <ClCompile Include="VelocityInfo.cpp" />
+    <ClCompile Include="InstrumentPanel.cpp" />
     <ClCompile Include="ViewObject.cpp" />
   </ItemGroup>
   <ItemGroup>

@@ -9,7 +9,7 @@
 #include "Rocket.hpp"
 #include "ScreenText.hpp"
 #include "TimeCounter.hpp"
-#include "VelocityInfo.hpp"
+#include "InstrumentPanel.hpp"
 
 #include "resources.h"
 
@@ -54,8 +54,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR /*cmdline*/, int) {
       Rocket rocket(startPlatform, landingPlatform, screenText, timeCounter);
       app.AddObject(rocket);
 
-      VelocityInfo velo(rocket);
-      app.AddObject(velo);
+      InstrumentPanel panel(rocket);
+      app.AddObject(panel);
 
       if (SUCCEEDED(app.Initialize())) {
         app.RunMessageLoop();
