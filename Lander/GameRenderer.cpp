@@ -3,6 +3,8 @@
 #include "GameRenderer.hpp"
 #include "FontLoader.hpp"
 
+#include <cmath>
+
 namespace Lander {
 
 GameRenderer::GameRenderer(Game& game, ID2D1HwndRenderTarget** ppRenderTarget) : game(game), ppRenderTarget(ppRenderTarget), viewObject(nullptr) {}
@@ -99,6 +101,37 @@ void GameRenderer::DrawImage(int resourceId, Rectangle targetRectangle, float ro
   RenderTarget().SetTransform(D2D1::Matrix3x2F::Translation(viewObject->pos.x, viewObject->pos.y) * D2D1::Matrix3x2F::Rotation(rotationAngle, rotationPoint) * D2D1::Matrix3x2F::Rotation(viewObject->rotation, RotationCenter()));
   DrawImage(resourceId, targetRectangle);
   RenderTarget().SetTransform(originalTransform); //Restore original transform
+}
+
+void GameRenderer::DrawArc(Vector startPoint, Vector center, float angle, Color color, float strokeWidth) {
+  angle = std::clamp(angle, -359.f, 359.f);
+
+  // Do we really have to create a geometry object in each draw call for this?
+  Resource<ID2D1PathGeometry> arcGeometry;
+  Resource<ID2D1GeometrySink> geometrySink;
+  HandleCOMError(game.direct2DFactory->CreatePathGeometry(&arcGeometry), L"createPathGeometry");
+  HandleCOMError(arcGeometry->Open(&geometrySink), L"pathGeometry->Open()");
+
+  // The vector from center to the start point, which will be rotated
+  auto armVector = startPoint - center;
+  float arcRadius = armVector.Length();
+
+  D2D1_ARC_SEGMENT arc;
+  // Calculate the arc's end point by rotating the arm vector by the specified angle and drawing the arg
+  arc.point = armVector.Rotate(angle) + center;
+  arc.size = { arcRadius, arcRadius };
+  // This is not the arc angle, this is the rotation angle of the elipsis, which is used to draw the arc and is specified by the x and y radius
+  arc.rotationAngle = 0;
+  arc.sweepDirection = (angle >= 0) ? D2D1_SWEEP_DIRECTION::D2D1_SWEEP_DIRECTION_CLOCKWISE : D2D1_SWEEP_DIRECTION::D2D1_SWEEP_DIRECTION_COUNTER_CLOCKWISE;
+  arc.arcSize = (std::abs(angle) <= 180) ? D2D1_ARC_SIZE::D2D1_ARC_SIZE_SMALL : D2D1_ARC_SIZE::D2D1_ARC_SIZE_LARGE;
+
+  geometrySink->BeginFigure(startPoint, D2D1_FIGURE_BEGIN::D2D1_FIGURE_BEGIN_HOLLOW);
+  geometrySink->AddArc(arc);
+  geometrySink->EndFigure(D2D1_FIGURE_END::D2D1_FIGURE_END_OPEN);
+  HandleCOMError(geometrySink->Close(), L"geometrySink->Close()");
+
+  // Since we don't use any transforms for drawing the arc, we can rely on the object's transforms being already correctly applied
+  RenderTarget().DrawGeometry(arcGeometry, game.GetSolidBrush(color), strokeWidth);
 }
 
 Resource<ID2D1Bitmap> GameRenderer::LoadImageResource(int resourceId) {

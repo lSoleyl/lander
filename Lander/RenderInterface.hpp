@@ -86,5 +86,16 @@ public:
    * @param rotateCenter if this is set to true, then the image gets rotated around it's own center, otherwise it gets rotated around it's top left corner.
    */
   virtual void DrawImage(int resourceId, Rectangle targetRectangle, float rotationAngle, bool rotateCenter = false) = 0;
+
+
+  /** Draws an arc line from a given start point for a specified angle around the given center point.
+   * 
+   * @param startPoint the point where to start drawing the arc
+   * @param center the arc's center point (of the imagined circle we draw on)
+   * @param angle the angle to draw on the arc (can be negative to draw counter clockwise)
+   * @param color the stroke color
+   * @param strokeWidth the stroke width
+   */
+  virtual void DrawArc(Vector startPoint, Vector center, float angle, Color color, float strokeWidth = 1.0f) = 0;
 };
 }

@@ -65,9 +65,6 @@ void VelocityInfo::Draw(RenderInterface& renderInterface, double secondsPassed) 
   ///
   // Arrow indicating direction
   ///
-
-  // TODO: Draw indicator for current orientation and angular velocity
-
   auto arrowPosition = Vector::Down * 80 + Vector::Right * 50;
   float arrowRotation = Vector::Up.AngleTo(rocket.velocity);
 
@@ -77,9 +74,28 @@ void VelocityInfo::Draw(RenderInterface& renderInterface, double secondsPassed) 
   
   // Move the arrow down by half the removed size. Otherwise the arrow seems to move 
   // up and down when growing and shrinking.
-  arrowPosition += Vector::Down * (arrowSize.height - scaledArrowSize.height) / 2;
+  auto adjustedArrowPosition = arrowPosition + Vector::Down * (arrowSize.height - scaledArrowSize.height) / 2;
 
-  renderInterface.DrawImage(IDR_ARROW_IMAGE, Rectangle(arrowPosition, scaledArrowSize), arrowRotation, true);
+  renderInterface.DrawImage(IDR_ARROW_IMAGE, Rectangle(adjustedArrowPosition, scaledArrowSize), arrowRotation, true);
+
+
+
+  ///
+  // Arc indicating rotation speed
+  ///
+  Vector indicatorTopCenter = arrowPosition + Vector::Right * (arrowSize.width / 2);
+  Vector indicatorCenter = indicatorTopCenter + Vector::Down * (arrowSize.height / 2);
+
+  renderInterface.DrawArc(indicatorTopCenter, indicatorCenter, rocket.angularVelocity * 10, Lander::Color::Orange, 5.f);
+
+
+  ///
+  // Line indicating current orientation
+  ///
+  Vector rotationArm = (indicatorTopCenter - indicatorCenter).Rotate(rocket.rotation);
+  renderInterface.DrawLine(indicatorCenter - rotationArm, indicatorCenter + rotationArm, Lander::Color::LightGreen, 2.f);
+
+
 }
 
 }
