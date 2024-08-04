@@ -138,7 +138,6 @@
     <ClCompile Include="ViewObject.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Assets\arrow.jpg" />
     <Image Include="Assets\explosion.png" />
     <Image Include="Assets\rcs_thrust.png" />
     <Image Include="Assets\rocket.png" />

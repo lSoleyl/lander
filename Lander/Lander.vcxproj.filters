@@ -172,9 +172,6 @@
     <Image Include="Assets\explosion.png">
       <Filter>Ressourcendateien</Filter>
     </Image>
-    <Image Include="Assets\arrow.jpg">
-      <Filter>Ressourcendateien</Filter>
-    </Image>
   </ItemGroup>
   <ItemGroup>
     <ResourcePreCompile Include="resource.rc">

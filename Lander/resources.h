@@ -6,7 +6,6 @@ START_IMAGES
   DEFINE_IMAGE(ROCKET_TRAIL, 101, "assets\\rockettrail.png")
   DEFINE_IMAGE(ROCKET_THRUST, 102, "assets\\rcs_thrust.png")
   DEFINE_IMAGE(EXPLOSION, 103, "assets\\explosion.png")
-  DEFINE_IMAGE(ARROW, 104, "assets\\arrow.jpg")
 END_IMAGES
 
 //fonts (start at 200)

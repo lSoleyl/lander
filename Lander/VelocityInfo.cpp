@@ -27,7 +27,7 @@ std::wostream& operator<<(std::wostream& out, FormattedNumber number) {
 
 namespace Lander {
 
-VelocityInfo::VelocityInfo(Rocket& _rocket) : textFormat(NULL), rocket(_rocket), arrowSize(30, 100) {
+VelocityInfo::VelocityInfo(Rocket& _rocket) : textFormat(NULL), rocket(_rocket), indicatorSize(100, 100) {
   size = Size(200, 40);
 }
 
@@ -62,29 +62,15 @@ void VelocityInfo::Draw(RenderInterface& renderInterface, double secondsPassed) 
 
   renderInterface.DrawText(textStream.str(), textFormat, Rectangle(Vector::Zero, size), Color::LightGoldenrodYellow);
 
-  ///
-  // Arrow indicating direction
-  ///
-  auto arrowPosition = Vector::Down * 80 + Vector::Right * 50;
   float arrowRotation = Vector::Up.AngleTo(rocket.velocity);
-
-  // Scale the arrow size with the current velocity (reaching full size at 100m/s)
-  auto scaledArrowSize = arrowSize;
-  scaledArrowSize.height *= std::min(velocity / 100.f, 1.0f);
-  
-  // Move the arrow down by half the removed size. Otherwise the arrow seems to move 
-  // up and down when growing and shrinking.
-  auto adjustedArrowPosition = arrowPosition + Vector::Down * (arrowSize.height - scaledArrowSize.height) / 2;
-
-  renderInterface.DrawImage(IDR_ARROW_IMAGE, Rectangle(adjustedArrowPosition, scaledArrowSize), arrowRotation, true);
-
 
 
   ///
   // Arc indicating rotation speed
   ///
-  Vector indicatorTopCenter = arrowPosition + Vector::Right * (arrowSize.width / 2);
-  Vector indicatorCenter = indicatorTopCenter + Vector::Down * (arrowSize.height / 2);
+  Vector indicatorTopCenter = Vector::Down * 80 + Vector::Right * 100;
+  Vector indicatorCenter = indicatorTopCenter + Vector::Down * (indicatorSize.height / 2);
+  const Vector indicatorArm = indicatorTopCenter - indicatorCenter;
 
   renderInterface.DrawArc(indicatorTopCenter, indicatorCenter, rocket.angularVelocity * 10, Lander::Color::Orange, 5.f);
 
@@ -92,8 +78,16 @@ void VelocityInfo::Draw(RenderInterface& renderInterface, double secondsPassed) 
   ///
   // Line indicating current orientation
   ///
-  Vector rotationArm = (indicatorTopCenter - indicatorCenter).Rotate(rocket.rotation);
+  Vector rotationArm = indicatorArm.Rotate(rocket.rotation);
   renderInterface.DrawLine(indicatorCenter - rotationArm, indicatorCenter + rotationArm, Lander::Color::LightGreen, 2.f);
+
+
+
+  /// 
+  // Line indicating velocity vector
+  ///
+  Vector scaledVelocityVector = indicatorArm.Rotate(arrowRotation) * std::min(velocity / 100.f, 1.0f);
+  renderInterface.DrawLine(indicatorCenter, indicatorCenter + scaledVelocityVector, Lander::Color::Yellow, 5.f);
 
 
 }
