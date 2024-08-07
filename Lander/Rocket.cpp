@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Rocket.hpp"
 #include "Platform.hpp"
-#include "Helper.hpp"
+#include "Game.hpp"
 
 namespace Lander {
 Rocket::Rocket(const Platform& startPlatform, const Platform& landingPlatform, ScreenText& screenText, TimeCounter& timeCounter) : startPlatform(startPlatform), landingPlatform(landingPlatform), screenText(screenText), timeCounter(timeCounter) {
@@ -21,7 +21,9 @@ void Rocket::Reposition() {
 void Rocket::PhysicsUpdate(double secondsSinceLastFrame) {
   mass = baseMass + Tank.Mass();
 
-  if (KeyPressed(VK_ESCAPE)) {
+  auto& input = Game::Instance()->GetInput();
+
+  if (input.IsActive(Input::Reset)) {
     Reposition();
     state = STATE::UNSTARTED;
     Tank.Refill();
@@ -49,7 +51,7 @@ void Rocket::PhysicsUpdate(double secondsSinceLastFrame) {
     case STATE::UNSTARTED:
 
       Reposition(); // Adapt position until the user adds thrust to the rocket
-      if (KeyPressed(VK_SPACE) || KeyPressed(VK_UP)) {
+      if (input.IsActive(Input::Thrust)) {
         state = STATE::STARTED;  // Do not position Rocket on platform anymore
         timeCounter.StartCount();
       }
@@ -58,15 +60,15 @@ void Rocket::PhysicsUpdate(double secondsSinceLastFrame) {
     case STATE::STARTED:
 
       CheckCollisions();
-      if (KeyPressed(VK_SPACE) || KeyPressed(VK_UP)) {
+      if (input.IsActive(Input::Thrust)) {
         ApplyForce((Vector::Up * Tank.GetThrust(static_cast<float>(secondsSinceLastFrame))).Rotate(rotation));
       }
 
-      if (KeyPressed(VK_LEFT) && !(KeyPressed(VK_RIGHT))) {
+      if (input.IsActive(Input::RollLeft)) {
         ApplyAngularAcceleration(-angularAcceleration);
       }
 
-      if (KeyPressed(VK_RIGHT) && !(KeyPressed(VK_LEFT))) {
+      if (input.IsActive(Input::RollRight)) {
         ApplyAngularAcceleration(angularAcceleration);
       }
 
@@ -110,12 +112,14 @@ void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
   // Don't draw thrust animations if we had a collision
   if (state != STATE::CRASHED) {    
 
+    auto& input = Game::Instance()->GetInput();
+
     ///
     // Main thrust (animated)
     ///
     static float trailHeight[] = { 75, 100 };
 
-    if (KeyPressed(VK_SPACE) || KeyPressed(VK_UP) && !Tank.IsEmpty() && (state != STATE::SUCCESS)) { // Only draw the trail if the rocket has started
+    if (input.IsActive(Input::Thrust) && !Tank.IsEmpty() && state != STATE::SUCCESS) { // Only draw the trail if the rocket has started
 
       secondsSinceLastAnimation += secondsSinceLastFrame;
       if (secondsSinceLastAnimation >= 0.15) {
@@ -131,12 +135,12 @@ void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
     /// 
     // RCS thrusters
     ///
-    if (KeyPressed(VK_LEFT)) {
+    if (input.IsActive(Input::RollLeft)) {
       renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(rocketRect.TopRight() + Vector::Down * 10 + Vector::Left * 10, rcsSize)); //Top right
       renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(rocketRect.BottomLeft() + Vector::Up * 10 + Vector::Left * 10, rcsSize), 180, true); //Bottom left, needs to be rotated 180 degrees
     }
 
-    if (KeyPressed(VK_RIGHT)) {
+    if (input.IsActive(Input::RollRight)) {
       renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(rocketRect.topLeft + Vector::Down * 10, rcsSize), 180, true); //Top left, needs to be rotated 180 degrees
       renderTarget.DrawImage(IDR_ROCKET_THRUST_IMAGE, Rectangle(rocketRect.bottomRight + Vector::Up * 10, rcsSize)); //Bottom right
     }

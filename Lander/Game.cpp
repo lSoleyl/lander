@@ -1,5 +1,8 @@
 #include "stdafx.h"
+
+#include "KeyboardInput.hpp"
 #include "Game.hpp"
+
 #include <chrono>
 
 using namespace std;
@@ -7,7 +10,7 @@ namespace Lander {
 
 Game* Game::instance = nullptr;
 
-Game::Game() : hWnd(NULL), initialized(false) {
+Game::Game() : hWnd(NULL), initialized(false), input(new KeyboardInput) {
   Game::instance = this;
 }
 
@@ -126,6 +129,11 @@ HRESULT Game::Initialize()
 const std::vector<Collider*>& Game::GetColliders() const {
   return colliders;
 }
+
+const Input& Game::GetInput() const {
+  return *input;
+}
+
 
 void Game::AddObject(ViewObject& viewObject) {
   if (renderQueue.empty()) {

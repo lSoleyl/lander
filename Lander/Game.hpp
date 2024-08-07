@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Input.hpp"
 #include "GameRenderer.hpp"
 
 namespace Lander {
@@ -37,6 +38,10 @@ public:
     /** Returns the internal list of colliders for collision checks.
      */
     const std::vector<Collider*>& GetColliders() const;
+
+    /** Returns a reference to the currently active input instance
+     */
+    const Input& GetInput() const;
     
 private:
     /** Returns a (possibly new) brush for the given color. Used by Rendersurface
@@ -74,6 +79,9 @@ private:
     Resource<ID2D1HwndRenderTarget> renderTarget;
     std::unique_ptr<GameRenderer> gameRenderer;
     bool initialized;
+
+    // The currently active input instance
+    std::unique_ptr<Input> input;
 
     std::unordered_map<D2D1::ColorF::Enum, Resource<ID2D1Brush>> brushMap; //map of color -> brush
 

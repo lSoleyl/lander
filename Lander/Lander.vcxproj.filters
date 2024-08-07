@@ -99,6 +99,12 @@
     <ClInclude Include="resourceMacros.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Input.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyboardInput.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -156,6 +162,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="COMError.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="KeyboardInput.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

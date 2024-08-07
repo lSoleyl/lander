@@ -93,6 +93,8 @@
     <ClInclude Include="FuelTank.hpp" />
     <ClInclude Include="GameRenderer.hpp" />
     <ClInclude Include="Helper.hpp" />
+    <ClInclude Include="Input.hpp" />
+    <ClInclude Include="KeyboardInput.hpp" />
     <ClInclude Include="PhysicsObject.hpp" />
     <ClInclude Include="Platform.hpp" />
     <ClInclude Include="resourceMacros.h" />
@@ -119,6 +121,7 @@
     <ClCompile Include="FuelTank.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameRenderer.cpp" />
+    <ClCompile Include="KeyboardInput.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PhysicsObject.cpp" />
     <ClCompile Include="Platform.cpp" />
