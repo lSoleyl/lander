@@ -86,6 +86,7 @@
     </ResourcePrecompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.hpp" />
     <ClInclude Include="Collider.hpp" />
     <ClInclude Include="COMBase.hpp" />
     <ClInclude Include="Data.hpp" />
@@ -95,6 +96,7 @@
     <ClInclude Include="Helper.hpp" />
     <ClInclude Include="Input.hpp" />
     <ClInclude Include="KeyboardInput.hpp" />
+    <ClInclude Include="OverlayObject.hpp" />
     <ClInclude Include="PhysicsObject.hpp" />
     <ClInclude Include="Platform.hpp" />
     <ClInclude Include="resourceMacros.h" />
@@ -114,6 +116,7 @@
     <ClInclude Include="ViewObject.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="COMError.cpp" />
     <ClCompile Include="FontLoader.cpp" />

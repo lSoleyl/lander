@@ -25,7 +25,7 @@ namespace Lander {
     position = Vector::Up * 50;
   }
 
-  void ScreenText::Draw(RenderInterface& renderInterface, double secondsPassed) {
+  void ScreenText::Draw(RenderInterface& renderInterface, const Rectangle& visibleRect, double secondsPassed) {
 
     if (!textFormat) {
       textFormat = renderInterface.CreateTextFormat(L"Consolas", 200);

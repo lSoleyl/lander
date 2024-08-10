@@ -171,4 +171,26 @@ Vector Rectangle::LeftCenter() const {
   return Vector(topLeft.x, Center().y);
 }
 
+void Rectangle::operator+=(Vector offset) {
+  topLeft += offset;
+  bottomRight += offset;
+}
+
+bool Rectangle::Contains(Vector pos) const {
+  // Our check is based on the following assumption about the coordinate system
+  assert(Vector::Up.y == -1 && Vector::Right.x == 1);
+  return pos.x >= topLeft.x && pos.x <= bottomRight.x && pos.y >= topLeft.y && pos.y <= bottomRight.y;
+}
+
+bool Rectangle::Contains(const Rectangle& other) const {
+  return Contains(other.topLeft) && Contains(other.bottomRight) && Contains(other.TopRight()) && Contains(other.BottomLeft());
+}
+
+bool Rectangle::Intersects(const Rectangle& other) const {
+  return Contains(other.topLeft)
+      || Contains(other.bottomRight)
+      || Contains(other.TopRight())
+      || Contains(other.BottomLeft());
+}
+
 }

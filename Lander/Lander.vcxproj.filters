@@ -105,6 +105,12 @@
     <ClInclude Include="KeyboardInput.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="Camera.hpp">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="OverlayObject.hpp">
+      <Filter>Headerdateien\Interfaces</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -165,6 +171,9 @@
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="KeyboardInput.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>

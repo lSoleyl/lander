@@ -42,7 +42,10 @@ public:
     /** Returns a reference to the currently active input instance
      */
     const Input& GetInput() const;
-    
+
+    /** Enables camera tracking for the given view object
+     */
+    void TrackObject(ViewObject& viewObject);
 private:
     /** Returns a (possibly new) brush for the given color. Used by Rendersurface
      */
@@ -78,6 +81,7 @@ private:
     Resource<ID2D1Factory> direct2DFactory;
     Resource<ID2D1HwndRenderTarget> renderTarget;
     std::unique_ptr<GameRenderer> gameRenderer;
+    std::unique_ptr<Camera> camera; // unique_ptr because we need to initialize it later (after the window has been created and the client area size is known)
     bool initialized;
 
     // The currently active input instance
@@ -85,7 +89,10 @@ private:
 
     std::unordered_map<D2D1::ColorF::Enum, Resource<ID2D1Brush>> brushMap; //map of color -> brush
 
-    std::deque<ViewObject*> renderQueue; //List of objects, which get rendered on each draw
-    std::vector<Collider*> colliders; //List of colliders for faster direct access
+    std::deque<ViewObject*> renderQueue; // List of objects, which get rendered on each draw
+    std::vector<Collider*> colliders; // List of colliders for faster direct access
+
+    /** optional object, which should be tracked by the camera */
+    ViewObject* trackObject;
 };
 }

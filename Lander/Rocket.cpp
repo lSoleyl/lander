@@ -5,7 +5,7 @@
 
 namespace Lander {
 Rocket::Rocket(const Platform& startPlatform, const Platform& landingPlatform, ScreenText& screenText, TimeCounter& timeCounter) : startPlatform(startPlatform), landingPlatform(landingPlatform), screenText(screenText), timeCounter(timeCounter) {
-  size = Size(startPlatform.size.width*2/3, 100); //Rocket has smaller width than the platform it is starting from
+  size = Size(startPlatform.size.width*2/3, 100); // Rocket has smaller width than the platform it is starting from
 }
 
 
@@ -79,7 +79,7 @@ void Rocket::PhysicsUpdate(double secondsSinceLastFrame) {
 
 }
 
-void Rocket::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
+void Rocket::Draw(RenderInterface& renderTarget, const Rectangle& visibleRect, double secondsSinceLastFrame) {
   ///
   // Rocket
   ///

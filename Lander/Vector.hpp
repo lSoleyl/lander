@@ -127,6 +127,19 @@ public:
   Vector BottomCenter() const;
   Vector LeftCenter() const;
 
+  /** Moves the whole rectangle by the specified vector offset
+   */
+  void operator+=(Vector offset);
+
+  /** True if the specified position is inside this rectangle
+   */
+  bool Contains(Vector pos) const;
+  /** True if this rectangle contains all corner points of the given rectangle
+   */
+  bool Contains(const Rectangle& other) const;
+  bool Intersects(const Rectangle& other) const;
+  
+
   Vector topLeft, bottomRight;
 };
 

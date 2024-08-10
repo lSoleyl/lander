@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Camera.hpp"
 
 namespace Lander {
 
@@ -16,5 +17,11 @@ Vector ViewObject::ObjectToWorld(Vector objectVector) const {
 Vector ViewObject::Center() const {
   return Vector::Right * size.width/2 + Vector::Down * size.height/2;
 }
+
+
+Vector ViewObject::GetScreenPosition(const Camera& camera) const {
+  return camera.WorldToScreen(pos);
+}
+
 
 }

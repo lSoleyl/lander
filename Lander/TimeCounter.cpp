@@ -32,7 +32,7 @@ namespace Lander {
     pos = Vector::Right * (windowSize.width - size.width);
   }
 
-  void TimeCounter::Draw(RenderInterface& renderInterface, double secondsPassed) {
+  void TimeCounter::Draw(RenderInterface& renderInterface, const Rectangle& visibleRect, double secondsPassed) {
 
     if (started) {   
       // Calculate passed time

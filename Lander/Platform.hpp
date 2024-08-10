@@ -15,7 +15,7 @@ public:
   virtual void Update(double secondsSinceLastFrame) override;
 
 
-  virtual void Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) override;
+  virtual void Draw(RenderInterface& renderTarget, const Rectangle& visibleRect, double secondsSinceLastFrame) override;
 
 private:
   float xPos;

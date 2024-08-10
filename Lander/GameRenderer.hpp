@@ -3,6 +3,7 @@
 namespace Lander {
 
 class Game;
+class Camera;
 class FontLoader;
 
 /** This class implements the RenderInterface interface for the Game class and draws onto the 
@@ -10,7 +11,7 @@ class FontLoader;
  */
 class GameRenderer : public RenderInterface {
   public:
-  GameRenderer(Game& game, ID2D1HwndRenderTarget** ppRenderTarget);
+  GameRenderer(Game& game, Camera& camera, ID2D1HwndRenderTarget** ppRenderTarget);
   ~GameRenderer();
 
   /** Returns the current size of the renderTarget
@@ -74,6 +75,17 @@ private:
   Resource<ID2D1Bitmap> LoadImageResource(int resourceId);
 
 
+  /** Returns the translation matrix for the current view object, which should be applied before the rotation matrix.
+   *  This already includes the cameraOffset.
+   */
+  D2D1::Matrix3x2F TranslationMatrix() const;
+
+  /** Returns the current view object's rotation matrix
+   */
+  D2D1::Matrix3x2F RotationMatrix() const;
+
+
+
   struct FONT_ENTRY { 
     FONT_ENTRY() = default;
     FONT_ENTRY(const wchar_t* fontName, float fontSize, IDWriteTextFormat* format);
@@ -88,12 +100,14 @@ private:
   };
 
   Game& game;
+  Camera& camera;
   ID2D1HwndRenderTarget** ppRenderTarget; //The GameRender doesn't own the renderTarget, so it isn't wrapped inside a Resource<>
   Resource<IWICImagingFactory> imageFactory;
   Resource<IDWriteFactory> writeFactory;
   Resource<FontLoader> fontLoader;
   std::vector<FONT_ENTRY> textFormats;
   std::unordered_map<int/*resourceId*/, Resource<ID2D1Bitmap>> loadedImages;
+  
   
   ViewObject* viewObject; //the currently drawn view object
 

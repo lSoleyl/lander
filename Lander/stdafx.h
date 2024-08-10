@@ -41,6 +41,7 @@
 
 #include "RenderInterface.hpp"
 #include "ViewObject.hpp"
+#include "OverlayObject.hpp"
 #include "Collider.hpp"
 #include "PhysicsObject.hpp"
 

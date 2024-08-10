@@ -3,13 +3,13 @@
 
 namespace Lander {
 
-  class InstrumentPanel : public ViewObject {
+  class InstrumentPanel : public OverlayObject {
   public:
     InstrumentPanel(Rocket& rocket);
 
     virtual void Initialize(Size size) override;
 
-    virtual void Draw(RenderInterface& renderInterface, double secondsPassed) override;
+    virtual void Draw(RenderInterface& renderInterface, const Rectangle& visibleRect, double secondsPassed) override;
 
     /** Specify low render priority to be always visible
      */

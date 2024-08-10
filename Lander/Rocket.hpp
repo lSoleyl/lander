@@ -14,7 +14,7 @@ public:
    */
   virtual void PhysicsUpdate(double secondsSinceLastFrame) override;
 
-  virtual void Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) override;
+  virtual void Draw(RenderInterface& renderTarget, const Rectangle& visibleRect, double secondsSinceLastFrame) override;
 
 private:
   /** Handle collisions

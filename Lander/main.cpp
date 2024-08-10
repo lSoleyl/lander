@@ -53,6 +53,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR /*cmdline*/, int) {
 
       Rocket rocket(startPlatform, landingPlatform, screenText, timeCounter);
       app.AddObject(rocket);
+      app.TrackObject(rocket);
 
       InstrumentPanel panel(rocket);
       app.AddObject(panel);

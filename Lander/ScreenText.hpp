@@ -2,7 +2,7 @@
 
 namespace Lander {
 
-  class ScreenText : public ViewObject {
+  class ScreenText : public OverlayObject {
   public:
     ScreenText();
 
@@ -12,7 +12,7 @@ namespace Lander {
 
     virtual void Initialize(Size size) override;
 
-    virtual void Draw(RenderInterface& renderInterface, double secondsPassed) override;
+    virtual void Draw(RenderInterface& renderInterface, const Rectangle& visibleRect, double secondsPassed) override;
 
     virtual bool DrawBoundingBox() override { return false; }
 

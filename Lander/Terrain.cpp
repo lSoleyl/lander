@@ -7,12 +7,12 @@
 namespace Lander {
 
 void Terrain::Initialize(Size size) {
-  this->size = size; //The terrain spans the whole display
+  this->size = size; // The terrain spans the whole display
 }
 
-void Terrain::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
+void Terrain::Draw(RenderInterface& renderTarget, const Rectangle& visibleRect, double secondsSinceLastFrame) {
   Vector baseLine = Vector::Down * size.height;
-  for(int x = 0; x < size.width; ++x) {
+  for (int x = visibleRect.topLeft.x; x <= visibleRect.bottomRight.x; ++x) {
     baseLine.x = static_cast<float>(x);
     renderTarget.DrawLine(baseLine, baseLine + (Vector::Up*GetTerrainHeight(baseLine.x)), Color::LightSlateGray);
   }
@@ -39,7 +39,7 @@ float Terrain::GetTerrainHeight(float x) const {
   const double amplitude = size.height/7.0;
   const double horizScale = 0.02;
   double height = amplitude/2;
-  //Generate terrain by adding some curves
+  // Generate terrain by adding some curves
   height += amplitude*sin(x*horizScale);
   height += abs(amplitude*0.75*cos(x*horizScale*1.7));
   height += amplitude/2*cos(x*horizScale/3);

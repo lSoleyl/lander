@@ -38,7 +38,7 @@ void InstrumentPanel::Initialize(Size _size) {
   pos = Vector() + Vector::Right * (windowSize.width - size.width) + Vector::Down * 30;
 }
 
-void InstrumentPanel::Draw(RenderInterface& renderInterface, double secondsPassed) {
+void InstrumentPanel::Draw(RenderInterface& renderInterface, const Rectangle& visibleRect, double secondsPassed) {
   
   auto velocity = rocket.velocity.Length();
   auto rotation = rocket.rotation;

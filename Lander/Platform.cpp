@@ -17,9 +17,12 @@ void Platform::Update(double secondsSinceLastFrame) {
 }
 
 
-void Platform::Draw(RenderInterface& renderTarget, double secondsSinceLastFrame) {
-  //TODO: Replace line with Image
-  renderTarget.DrawLine(Vector::Down, Vector::Down + Vector::Right*size.width, Color::YellowGreen, 2);
+void Platform::Draw(RenderInterface& renderTarget, const Rectangle& visibleRect, double secondsSinceLastFrame) {
+  // only draw if the platform is visible
+  if (visibleRect.Intersects(Rectangle(pos, size))) {
+    //TODO: Replace line with Image
+    renderTarget.DrawLine(Vector::Down, Vector::Down + Vector::Right*size.width, Color::YellowGreen, 2);
+  }
 }
 
 

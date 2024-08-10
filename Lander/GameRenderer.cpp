@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Game.hpp"
+#include "Camera.hpp"
 #include "GameRenderer.hpp"
 #include "FontLoader.hpp"
 
@@ -7,7 +8,7 @@
 
 namespace Lander {
 
-GameRenderer::GameRenderer(Game& game, ID2D1HwndRenderTarget** ppRenderTarget) : game(game), ppRenderTarget(ppRenderTarget), viewObject(nullptr) {}
+GameRenderer::GameRenderer(Game& game, Camera& camera, ID2D1HwndRenderTarget** ppRenderTarget) : game(game), camera(camera), ppRenderTarget(ppRenderTarget), viewObject(nullptr) {}
 
 GameRenderer::~GameRenderer() {
   // cleanup
@@ -93,12 +94,12 @@ void GameRenderer::DrawImage(int resourceId, Rectangle targetRectangle) {
 void GameRenderer::DrawImage(int resourceId, Rectangle targetRectangle, float rotationAngle, bool rotateCenter) {
   D2D1::Matrix3x2F originalTransform;
   RenderTarget().GetTransform(&originalTransform);
-  auto rotationPoint = viewObject->pos + targetRectangle.topLeft;
+  auto rotationPoint = camera.WorldToScreen(viewObject->pos) + targetRectangle.topLeft;
   if (rotateCenter) {
     rotationPoint += (targetRectangle.bottomRight - targetRectangle.topLeft) / 2; //rotation around center
   }
 
-  RenderTarget().SetTransform(D2D1::Matrix3x2F::Translation(viewObject->pos.x, viewObject->pos.y) * D2D1::Matrix3x2F::Rotation(rotationAngle, rotationPoint) * D2D1::Matrix3x2F::Rotation(viewObject->rotation, RotationCenter()));
+  RenderTarget().SetTransform(TranslationMatrix() * D2D1::Matrix3x2F::Rotation(rotationAngle, rotationPoint) * RotationMatrix());
   DrawImage(resourceId, targetRectangle);
   RenderTarget().SetTransform(originalTransform); //Restore original transform
 }
@@ -216,11 +217,20 @@ ID2D1RenderTarget& GameRenderer::RenderTarget() {
   return **ppRenderTarget;
 }
 
+D2D1::Matrix3x2F GameRenderer::TranslationMatrix() const {
+  auto position = viewObject->GetScreenPosition(camera);
+  return D2D1::Matrix3x2F::Translation(position.x, position.y);
+}
+
+D2D1::Matrix3x2F GameRenderer::RotationMatrix() const {
+  return D2D1::Matrix3x2F::Rotation(viewObject->rotation, RotationCenter());
+}
+
 void GameRenderer::DrawObject(ViewObject* currentObject, double secondsPassed) {
   viewObject = currentObject;
 
   // Set the object's translation to have object relative coordinates
-  RenderTarget().SetTransform(D2D1::Matrix3x2F::Translation(viewObject->pos.x, viewObject->pos.y) * D2D1::Matrix3x2F::Rotation(viewObject->rotation, RotationCenter()));
+  RenderTarget().SetTransform(TranslationMatrix() * RotationMatrix());
   
 
   // First draw bounding box (Only a debugging measure)
@@ -231,12 +241,12 @@ void GameRenderer::DrawObject(ViewObject* currentObject, double secondsPassed) {
 
   if (viewObject->enabled && viewObject->visible) {
     // Now draw the actual object
-    viewObject->Draw(*this, secondsPassed);
+    viewObject->Draw(*this, camera.GetVisibleRect(), secondsPassed);
   }
 }
 
 Vector GameRenderer::RotationCenter() const {
-  return viewObject->pos + (viewObject->size.height/2 * Vector::Down) + (viewObject->size.width/2 * Vector::Right);
+  return camera.WorldToScreen(viewObject->pos) + (viewObject->size.height/2 * Vector::Down) + (viewObject->size.width/2 * Vector::Right);
 }
 
 GameRenderer::FONT_ENTRY::FONT_ENTRY(const wchar_t* fontName, float fontSize, IDWriteTextFormat* format) : fontName(fontName), fontSize(fontSize), textFormat(format) {}

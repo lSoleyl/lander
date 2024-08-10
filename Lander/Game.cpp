@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "KeyboardInput.hpp"
+#include "Camera.hpp"
 #include "Game.hpp"
 
 #include <chrono>
@@ -10,7 +11,7 @@ namespace Lander {
 
 Game* Game::instance = nullptr;
 
-Game::Game() : hWnd(NULL), initialized(false), input(new KeyboardInput) {
+Game::Game() : hWnd(NULL), initialized(false), input(new KeyboardInput), trackObject(nullptr) {
   Game::instance = this;
 }
 
@@ -73,7 +74,6 @@ HRESULT Game::Initialize()
   // Initialize device-indpendent resources, such
   // as the Direct2D factory.
   HRESULT hr = CreateDeviceIndependentResources();
-  gameRenderer.reset(new GameRenderer(*this,&renderTarget));
 
   if (SUCCEEDED(hr)) {
     // Register the window class.
@@ -111,18 +111,23 @@ HRESULT Game::Initialize()
     }
   }
 
-  //Initialize all already registered view objects and create the RenderSurface
+  // Initialize all already registered view objects and create the RenderSurface
   if (SUCCEEDED(hr)) {
     RECT rcClient;
     GetClientRect(hWnd, &rcClient);
     auto size = Rectangle(rcClient).Size().Abs();
+
+    // Now that we know the size of the actual draw area, we can initialize our camera
+    camera.reset(new Camera(Rectangle(Vector::Zero, size)));
+    gameRenderer.reset(new GameRenderer(*this, *camera, &renderTarget));
+
+
     for (auto viewObject : renderQueue) {
       viewObject->Initialize(size);
     }
   }
    
   initialized = true;
-
   return hr;
 }
 
@@ -132,6 +137,10 @@ const std::vector<Collider*>& Game::GetColliders() const {
 
 const Input& Game::GetInput() const {
   return *input;
+}
+
+void Game::TrackObject(ViewObject& viewObject) {
+  trackObject = &viewObject;
 }
 
 
@@ -284,11 +293,16 @@ HRESULT Game::OnRender()
     auto secondsPassed = chrono::duration<double>(now-lastUpdate).count();
     lastUpdate = now;
 
-    //Give objects time to update positions
+    // Give objects time to update positions
     for (auto viewObject : renderQueue) {
       if (viewObject->enabled) {
         viewObject->Update(secondsPassed);
       }
+    }
+
+    if (trackObject) {
+      // Let camera tack the given object
+      camera->TrackObject(*trackObject, secondsPassed);
     }
 
 
