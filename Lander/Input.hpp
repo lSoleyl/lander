@@ -9,10 +9,11 @@ public:
   /** The input values are defined in a way to make them combinable as a bitmask
    */
   enum Type : int {
-    Reset     = 0x01, // Esc key
-    Thrust    = 0x02, // Up or Space key
-    RollLeft  = 0x04, // Left key
-    RollRight = 0x08  // Right key
+    Reset      = 0x01, // Esc key
+    Thrust     = 0x02, // Up or Space key
+    RollLeft   = 0x04, // Left key
+    RollRight  = 0x08, // Right key
+    SaveReplay = 0x10  // F5 key
   };
 
   /** Checks whether a specific input is made

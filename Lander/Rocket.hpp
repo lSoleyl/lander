@@ -2,6 +2,7 @@
 #include "FuelTank.hpp"
 #include "ScreenText.hpp"
 #include "TimeCounter.hpp"
+#include "Recorder.hpp"
 
 namespace Lander {
 class Platform;
@@ -42,6 +43,8 @@ private:
 
   enum class STATE {UNSTARTED, STARTED, CRASHED, LANDED, SUCCESS};
   STATE state = STATE::UNSTARTED;
+
+  Recorder recorder; // input recorder
 };
 
 

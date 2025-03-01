@@ -100,6 +100,7 @@
     <ClInclude Include="OverlayObject.hpp" />
     <ClInclude Include="PhysicsObject.hpp" />
     <ClInclude Include="Platform.hpp" />
+    <ClInclude Include="Recorder.hpp" />
     <ClInclude Include="resourceMacros.h" />
     <ClInclude Include="resources.h" />
     <ClInclude Include="Rocket.hpp" />
@@ -131,6 +132,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PhysicsObject.cpp" />
     <ClCompile Include="Platform.cpp" />
+    <ClCompile Include="Recorder.cpp" />
     <ClCompile Include="resources.cpp" />
     <ClCompile Include="Rocket.cpp" />
     <ClCompile Include="ScreenText.cpp" />

@@ -28,7 +28,13 @@ void Rocket::PhysicsUpdate(double secondsSinceLastFrame) {
     state = STATE::UNSTARTED;
     Tank.Refill();
     timeCounter.ResetCount();
+    recorder.StopRecording();
   }
+
+  if (input.IsActive(Input::SaveReplay)) {
+    recorder.SaveReplay(); // only works if the recorder is stopped
+  }
+
 
   switch (state) {
 
@@ -36,12 +42,14 @@ void Rocket::PhysicsUpdate(double secondsSinceLastFrame) {
       Stop();
       screenText.SetGameOver();
       timeCounter.StopCount();
+      recorder.StopRecording();
       break;
 
     case STATE::SUCCESS:
       Stop();
       screenText.SetVictory();
       timeCounter.StopCount();
+      recorder.StopRecording();
       break;
 
     case STATE::LANDED:
@@ -54,11 +62,11 @@ void Rocket::PhysicsUpdate(double secondsSinceLastFrame) {
       if (input.IsActive(Input::Thrust)) {
         state = STATE::STARTED;  // Do not position Rocket on platform anymore
         timeCounter.StartCount();
+        recorder.StartRecording();
       }
       break;
 
     case STATE::STARTED:
-
       CheckCollisions();
       if (input.IsActive(Input::Thrust)) {
         ApplyForce((Vector::Up * Tank.GetThrust(static_cast<float>(secondsSinceLastFrame))).Rotate(rotation));
@@ -77,6 +85,7 @@ void Rocket::PhysicsUpdate(double secondsSinceLastFrame) {
 
   }
 
+  recorder.RecordInput(input);
 }
 
 void Rocket::Draw(RenderInterface& renderTarget, const Rectangle& visibleRect, double secondsSinceLastFrame) {

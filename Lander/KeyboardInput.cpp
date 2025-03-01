@@ -21,6 +21,9 @@ bool Lander::KeyboardInput::IsActive(Type input) const {
 
     case Type::RollRight:
       return KeyPressed(VK_RIGHT) && !KeyPressed(VK_LEFT);
+
+    case Type::SaveReplay:
+      return KeyPressed(VK_F5);
   }
 
   // only for unsupported inputs (which shouldn't exist)
