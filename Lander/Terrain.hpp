@@ -19,6 +19,8 @@ public:
 
   virtual bool IsPointInside(Vector point) const override;
 
+  virtual bool DrawBoundingBox() override { return false; }
+
 private:
   /** Returns the terrain height at the given position
    */
