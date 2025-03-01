@@ -3,6 +3,8 @@
 #include "Input.hpp"
 #include "GameRenderer.hpp"
 
+#include <chrono>
+
 namespace Lander {
 
 class Game
@@ -74,7 +76,7 @@ private:
     // The windows procedure.
     static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam,LPARAM lParam);
 
-    //The current game instance
+    // The current game instance
     static Game* instance;
 
     HWND hWnd;
@@ -83,11 +85,20 @@ private:
     std::unique_ptr<GameRenderer> gameRenderer;
     std::unique_ptr<Camera> camera; // unique_ptr because we need to initialize it later (after the window has been created and the client area size is known)
     bool initialized;
+    
+
+    std::chrono::steady_clock::time_point simulationStartTime; // Basically the time when first calling OnRender()
+    /** Fixed phyics tick duration for the simulation. We hold it as int milliseconds per tick instead of 
+     *  a double seconds per tick to avoid imprecision when calculating expectedTicks=elapsedTime/SECONDS_PER_TICK,
+     *  which would get more and more inprecise the larger elapsed time becomes.
+     */
+    static const int MILLIS_PER_TICK; 
+    int gameTick; // The current game tick (used to control physics simulation speed)
 
     // The currently active input instance
     std::unique_ptr<Input> input;
 
-    std::unordered_map<D2D1::ColorF::Enum, Resource<ID2D1Brush>> brushMap; //map of color -> brush
+    std::unordered_map<D2D1::ColorF::Enum, Resource<ID2D1Brush>> brushMap; // map of color -> brush
 
     std::deque<ViewObject*> renderQueue; // List of objects, which get rendered on each draw
     std::vector<Collider*> colliders; // List of colliders for faster direct access

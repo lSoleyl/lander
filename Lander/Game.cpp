@@ -4,14 +4,14 @@
 #include "Camera.hpp"
 #include "Game.hpp"
 
-#include <chrono>
-
 using namespace std;
 namespace Lander {
 
 Game* Game::instance = nullptr;
+const int Game::MILLIS_PER_TICK = 5; // 5ms per physics tick (which is more than double my default rate)
 
-Game::Game() : hWnd(NULL), initialized(false), input(new KeyboardInput), trackObject(nullptr) {
+
+Game::Game() : hWnd(NULL), initialized(false), input(new KeyboardInput), trackObject(nullptr), gameTick(0) {
   Game::instance = this;
 }
 
@@ -38,9 +38,7 @@ Game::~Game()
 
 void Game::RunMessageLoop()
 {
-
-  auto lastFrame = chrono::high_resolution_clock::now();
-  double msElapsed = 0; //Elapsed milliseconds since last frame
+  simulationStartTime = std::chrono::steady_clock::now();
 
   // MessageLoop:
 	while(true)    
@@ -54,16 +52,9 @@ void Game::RunMessageLoop()
       TranslateMessage(&msg);
       DispatchMessage(&msg);
     } else {
-      //Frame timing
-      auto currentTime = chrono::high_resolution_clock::now();
-      msElapsed = (chrono::duration_cast<chrono::microseconds>(currentTime - lastFrame).count() / 1000.0);
-      
-      if (msElapsed < 10) { //Max framerate = 100 fps
-        continue;
-      }
-
-      lastFrame = currentTime;
-      OnRender(); //Render frame
+      // We don't need to limit the frame rate manually, this is already done by the draw calls, 
+      // just draw at the maximum possible frame rate.
+      OnRender(); // Render the frame
     }
   }
 }
@@ -283,41 +274,50 @@ LRESULT CALLBACK Game::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 HRESULT Game::OnRender()
 {
   using namespace D2D1;
-  static chrono::steady_clock::time_point lastUpdate = chrono::steady_clock::now();
+  static chrono::steady_clock::time_point lastFrameUpdate = chrono::steady_clock::now();
+  static const double SECONDS_PER_TICK = MILLIS_PER_TICK / 1000.0;
 
-  //Create device resources if not already done
+  // Create device resources if not already done
   HRESULT res = CreateDeviceResources();
   if (SUCCEEDED(res)) {
-    //Get the time since the last frame
+    // Get the time since the last frame
     auto now = chrono::steady_clock::now();
-    auto secondsPassed = chrono::duration<double>(now-lastUpdate).count();
-    lastUpdate = now;
+    auto secondsSinceLastDraw = chrono::duration<double>(now-lastFrameUpdate).count();
+    lastFrameUpdate = now;
 
-    // Give objects time to update positions
-    for (auto viewObject : renderQueue) {
-      if (viewObject->enabled) {
-        viewObject->Update(secondsPassed);
+
+    // Run the required amount of physics steps let the physics simulation catch up to the current frame time
+    auto millisSinceGameStart = chrono::duration_cast<std::chrono::milliseconds>(now - simulationStartTime).count();
+    int expectedTicksSinceGameStart = millisSinceGameStart / MILLIS_PER_TICK; // simply round down for now
+    for (; gameTick < expectedTicksSinceGameStart; ++gameTick) {
+      // Give objects time to update positions (takes ~25 microseconds in Debug)
+      for (auto viewObject : renderQueue) {
+        if (viewObject->enabled) {
+          // update physics at a constant tick rate to make the simulation deterministic
+          viewObject->Update(SECONDS_PER_TICK);
+        }
       }
     }
+    
+
 
     if (trackObject) {
       // Let camera tack the given object
-      camera->TrackObject(*trackObject, secondsPassed);
+      camera->TrackObject(*trackObject, secondsSinceLastDraw);
     }
 
 
-    renderTarget->BeginDraw();  //Initiate drawing
+    renderTarget->BeginDraw();  // Initiate drawing
     renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
-    renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black)); //Set background color
+    renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black)); // Set background color
 
 
-    //Render each object of the render queue
+    // Render each object of the render queue
     for (auto viewObject : renderQueue) {
-      gameRenderer->DrawObject(viewObject, secondsPassed);
+      gameRenderer->DrawObject(viewObject, secondsSinceLastDraw);
     }
-    
-    
-    res = renderTarget->EndDraw();
+
+    res = renderTarget->EndDraw(); // This single call takes ~14.7ms (on my machine) and effectively determines the frame rate
     if (res == D2DERR_RECREATE_TARGET) {
       res = S_OK;
       DiscardDeviceResources();    
