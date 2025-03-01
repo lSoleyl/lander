@@ -11,16 +11,21 @@ PhysicsObject::PhysicsObject() : angularVelocity(0), angularAcceleration(0), mas
 
 
 void PhysicsObject::Update(double secondsSinceLastFrame) {
-  PhysicsUpdate(secondsSinceLastFrame);  
+  PhysicsUpdate(secondsSinceLastFrame);
   const float secondsPassed = static_cast<float>(secondsSinceLastFrame);
   
-  //Apply acceleration
+  // Apply acceleration (calculate velocities at end of frame)
   velocity += acceleration * secondsPassed;
   angularVelocity += angularAcceleration * secondsPassed;
 
-  //Apply velocity
-  pos += velocity * secondsPassed * PIXEL_PER_METER;
-  rotation += angularVelocity * secondsPassed;
+  // To update the position correctly we must calculate the average velocity of this frame
+  // and not just take the updated velocity because we just reached that velocity at the end of the frame.
+  auto avgVelocity = velocity - (acceleration * (secondsPassed / 2));
+  auto avgAngularVelocity = angularVelocity - (angularAcceleration * (secondsPassed / 2));
+
+  // Apply velocity
+  pos += avgVelocity * secondsPassed * PIXEL_PER_METER;
+  rotation += avgAngularVelocity * secondsPassed;
   
   // Reset acceleration values
   acceleration = Vector::Zero;
@@ -44,7 +49,7 @@ void PhysicsObject::ApplyAngularAcceleration(float angularAcceleration) {
 }
 
 void PhysicsObject::ApplyForce(Vector force) {
-  assert(mass != 0); //Cannot apply a force to an object without mass
+  assert(mass != 0); // Cannot apply a force to an object without mass
   acceleration += force / mass; // F = m*a;  a = F/m
 }
 
