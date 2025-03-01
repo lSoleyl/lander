@@ -27,15 +27,3 @@ bool Lander::KeyboardInput::IsActive(Type input) const {
   return false;
 }
 
-int Lander::KeyboardInput::AllActiveInputs() const {
-  int result = 0;
-
-  for (auto input : { Type::Reset, Type::Thrust, Type::RollLeft, Type::RollRight }) {
-    if (IsActive(input)) {
-      result |= input;
-    }
-  }
-
-  return result;
-}
-

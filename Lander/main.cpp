@@ -11,6 +11,8 @@
 #include "TimeCounter.hpp"
 #include "InstrumentPanel.hpp"
 
+#include "HoverAIInput.hpp"
+
 #include "resources.h"
 
 using namespace Lander;
@@ -57,6 +59,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR /*cmdline*/, int) {
 
       InstrumentPanel panel(rocket);
       app.AddObject(panel);
+
+      // Comment in to hover the rocket in place until it runs out of fuel
+      //app.SetInput(std::make_unique<HoverAIInput>(rocket));
 
       if (SUCCEEDED(app.Initialize())) {
         app.RunMessageLoop();

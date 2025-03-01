@@ -94,6 +94,7 @@
     <ClInclude Include="FuelTank.hpp" />
     <ClInclude Include="GameRenderer.hpp" />
     <ClInclude Include="Helper.hpp" />
+    <ClInclude Include="HoverAIInput.hpp" />
     <ClInclude Include="Input.hpp" />
     <ClInclude Include="KeyboardInput.hpp" />
     <ClInclude Include="OverlayObject.hpp" />
@@ -124,6 +125,8 @@
     <ClCompile Include="FuelTank.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameRenderer.cpp" />
+    <ClCompile Include="HoverAIInput.cpp" />
+    <ClCompile Include="Input.cpp" />
     <ClCompile Include="KeyboardInput.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PhysicsObject.cpp" />

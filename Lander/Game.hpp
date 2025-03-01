@@ -45,6 +45,11 @@ public:
      */
     const Input& GetInput() const;
 
+    /** Sets a new input device as the currently active and deletes the old input device
+     */
+    void SetInput(std::unique_ptr<Input>&& input);
+
+
     /** Enables camera tracking for the given view object
      */
     void TrackObject(ViewObject& viewObject);

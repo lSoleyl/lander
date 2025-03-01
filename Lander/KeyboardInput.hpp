@@ -10,7 +10,6 @@ namespace Lander {
 class KeyboardInput : public Input {
 public:
   virtual bool IsActive(Type type) const override;
-  virtual int AllActiveInputs() const override;
 };
 
 

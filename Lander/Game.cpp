@@ -130,6 +130,10 @@ const Input& Game::GetInput() const {
   return *input;
 }
 
+void Game::SetInput(std::unique_ptr<Input>&& input) {
+  this->input = std::move(input);
+}
+
 void Game::TrackObject(ViewObject& viewObject) {
   trackObject = &viewObject;
 }

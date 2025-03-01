@@ -22,7 +22,7 @@ public:
   /** Returns a combination of all currently made inputs in a single number.
    *  Use the Input::Type values to check for single inputs.
    */
-  virtual int AllActiveInputs() const = 0;
+  int AllActiveInputs() const;
 };
 
 
