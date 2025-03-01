@@ -123,6 +123,9 @@
     <ClInclude Include="Recorder.hpp">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="ReplayInput.hpp">
+      <Filter>Headerdateien\Inputs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -196,6 +199,9 @@
     </ClCompile>
     <ClCompile Include="Recorder.cpp">
       <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="ReplayInput.cpp">
+      <Filter>Quelldateien\Inputs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "KeyboardInput.hpp"
+#include "ReplayInput.hpp"
 #include "Camera.hpp"
 #include "Game.hpp"
 
@@ -224,36 +225,43 @@ LRESULT CALLBACK Game::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
 
   if (game) {
     switch (message) {
-    case WM_SIZE:
-      // Handle resizing of the window
-      game->OnResize(LOWORD(lParam), HIWORD(lParam));
-      return 0;
+      case WM_SIZE:
+        // Handle resizing of the window
+        game->OnResize(LOWORD(lParam), HIWORD(lParam));
+        return 0;
 
-    case WM_DISPLAYCHANGE:
-      InvalidateRect(hWnd, NULL, FALSE);
-      return 0;
+      case WM_DISPLAYCHANGE:
+        InvalidateRect(hWnd, NULL, FALSE);
+        return 0;
 
-    case WM_PAINT:
-      //Rendering here is unnecessary
-      ValidateRect(hWnd, NULL);
-      return 0;
+      case WM_PAINT:
+        //Rendering here is unnecessary
+        ValidateRect(hWnd, NULL);
+        return 0;
 
-    // prevent size change by grabbing the border by returning a non resizable border
-    case WM_NCHITTEST:
-    {
-      auto result = DefWindowProc(hWnd, message, wParam, lParam);
-      switch (result) {
-      case HTSIZE: 
-      case HTBOTTOM:
-      case HTBOTTOMLEFT:
-      case HTBOTTOMRIGHT:
-      case HTLEFT:
-      case HTRIGHT:
-      case HTTOP:
-        return HTBORDER;
-      }
+      case WM_KEYUP:
+      case WM_SYSKEYUP:
+        if (wParam == VK_F9) {
+          game->LoadReplay(hWnd);
+        }
+        return 0;
 
-      return result;
+      // prevent size change by grabbing the border by returning a non resizable border
+      case WM_NCHITTEST:
+      {
+        auto result = DefWindowProc(hWnd, message, wParam, lParam);
+        switch (result) {
+        case HTSIZE: 
+        case HTBOTTOM:
+        case HTBOTTOMLEFT:
+        case HTBOTTOMRIGHT:
+        case HTLEFT:
+        case HTRIGHT:
+        case HTTOP:
+          return HTBORDER;
+        }
+
+        return result;
     }
 
     // prevent size change when maximizing by returning the window's height/width as max size
@@ -273,6 +281,40 @@ LRESULT CALLBACK Game::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lP
   }
 
   return DefWindowProc(hWnd, message, wParam, lParam);
+}
+
+
+void Game::LoadReplay(HWND dialogOwner) {
+  constexpr size_t BUF_SIZE = 1024;
+  TCHAR currentDirectory[BUF_SIZE] = { 0 };
+  GetCurrentDirectory(BUF_SIZE, currentDirectory);
+  std::basic_string<TCHAR> startDirectory = currentDirectory;
+  startDirectory += _T("\\saves");
+
+  TCHAR fileNameBuffer[BUF_SIZE] = { 0 };
+  OPENFILENAME params = { 0 };
+  params.lStructSize = sizeof(params);
+  params.hwndOwner = hWnd;
+  params.lpstrFilter = _T(".sav");
+  params.lpstrFile = fileNameBuffer;
+  params.nMaxFile = BUF_SIZE;
+  params.lpstrTitle = _T("Select a recording to replay");
+  params.lpstrInitialDir = startDirectory.c_str();
+  params.Flags = OFN_DONTADDTORECENT | OFN_FILEMUSTEXIST;
+  if (GetOpenFileName(&params)) {
+    // User selected a .sav file -> load it into the replayinput
+    try {
+      SetInput(std::make_unique<ReplayInput>(fileNameBuffer));
+
+      // reset the game time and ticks to not JUMP into the recording
+      simulationStartTime = std::chrono::steady_clock::now();
+      gameTick = 0;
+    } catch (std::exception&) {
+      MessageBox(hWnd, _T("Failed to open replay file"), _T("Error"), MB_ICONERROR);
+    }
+  }
+  // Restore current directory (file dialog modifies that)
+  SetCurrentDirectory(currentDirectory);
 }
 
 HRESULT Game::OnRender()
@@ -295,6 +337,7 @@ HRESULT Game::OnRender()
     int expectedTicksSinceGameStart = millisSinceGameStart / MILLIS_PER_TICK; // simply round down for now
     for (; gameTick < expectedTicksSinceGameStart; ++gameTick) {
       // Give objects time to update positions (takes ~25 microseconds in Debug)
+      input->Tick();
       for (auto viewObject : renderQueue) {
         if (viewObject->enabled) {
           // update physics at a constant tick rate to make the simulation deterministic

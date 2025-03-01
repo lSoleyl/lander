@@ -20,6 +20,11 @@ public:
    */
   virtual bool IsActive(Type type) const = 0;
 
+  /** This method is called once per physics tick (before calling Update() on each object) 
+   *  and may be used to query the button state only once and cache the results.
+   */
+  virtual void Tick() {};
+
   /** Returns a combination of all currently made inputs in a single number.
    *  Use the Input::Type values to check for single inputs.
    */

@@ -78,8 +78,12 @@ private:
     // Resize the render target.
     void OnResize(UINT width, UINT height);
 
+
     // The windows procedure.
     static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam,LPARAM lParam);
+
+    // Opens a dialog to select a replay and loads it
+    void LoadReplay(HWND dialogOwner);
 
     // The current game instance
     static Game* instance;
